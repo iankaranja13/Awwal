@@ -4,13 +4,13 @@ from collections.abc import Callable
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import Depends, Header, Query
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
-from app.core.enums import ConsentScope
+from app.core.enums import ConsentScope, Language
 from app.core.errors import AuthError, ConsentRequiredError
 from app.core.security import decode_access_token
 from app.models import User
@@ -88,3 +88,37 @@ def require_consent(scope: ConsentScope) -> Callable[[User, Session], User]:
         return user
 
     return _check_consent
+
+
+ConsentedIntakeUser = Annotated[User, Depends(require_consent(ConsentScope.INTAKE))]
+
+
+def get_language(
+    lang: Annotated[str | None, Query()] = None,
+    accept_language: Annotated[str | None, Header()] = None,
+) -> Language:
+    """Resolve the response language from query or header.
+
+    Explicit ?lang wins; otherwise the Accept-Language prefix applies;
+    anything unknown falls back to English.
+
+    Args:
+        lang: Optional explicit language query value.
+        accept_language: Optional Accept-Language header value.
+
+    Returns:
+        Resolved language.
+    """
+    if lang is not None:
+        normalized = lang.strip().lower()
+        if normalized.startswith("ar"):
+            return Language.AR
+        return Language.EN
+    if accept_language is not None:
+        first = accept_language.split(",")[0].strip().lower()
+        if first.startswith("ar"):
+            return Language.AR
+    return Language.EN
+
+
+LanguageDep = Annotated[Language, Depends(get_language)]

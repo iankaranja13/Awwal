@@ -1,12 +1,8 @@
 """Intake endpoints."""
 
-from typing import Annotated
+from fastapi import APIRouter
 
-from fastapi import APIRouter, Depends
-
-from app.core.deps import CurrentUserDep, SessionDep, SettingsDep, require_consent
-from app.core.enums import ConsentScope
-from app.models import User
+from app.core.deps import ConsentedIntakeUser, CurrentUserDep, SessionDep, SettingsDep
 from app.schemas.intake import (
     IntakeGetResponse,
     IntakeResponse,
@@ -16,8 +12,6 @@ from app.schemas.intake import (
 from app.services.intake import load_intake, load_intake_schema, save_answers
 
 router = APIRouter(tags=["intake"])
-
-ConsentedUser = Annotated[User, Depends(require_consent(ConsentScope.INTAKE))]
 
 
 @router.get("/intake/schema", response_model=IntakeSchemaDocument)
@@ -36,7 +30,10 @@ def get_schema(_user: CurrentUserDep, settings: SettingsDep) -> IntakeSchemaDocu
 
 @router.put("/intake", response_model=IntakeResponse)
 def put_intake(
-    user: ConsentedUser, session: SessionDep, settings: SettingsDep, body: IntakeUpdateRequest
+    user: ConsentedIntakeUser,
+    session: SessionDep,
+    settings: SettingsDep,
+    body: IntakeUpdateRequest,
 ) -> IntakeResponse:
     """Save intake answers (partial updates allowed).
 

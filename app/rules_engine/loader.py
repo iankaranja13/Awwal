@@ -1,6 +1,7 @@
 """Load and validate versioned rule files (fail fast with clear errors)."""
 
 from collections.abc import Mapping
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -310,8 +311,12 @@ def _resolve_red_flag(rule: RedFlagRule, params: Mapping[str, ParamDef]) -> RedF
     return rule.model_copy(update={"present_when": resolved})
 
 
+@lru_cache(maxsize=8)
 def load_rules(rules_dir: Path, version: str) -> RuleSet:
     """Load one versioned rule set from a directory.
+
+    Results are cached by directory and version; the application warms the
+    cache at startup so invalid rules fail fast before serving traffic.
 
     Args:
         rules_dir: Directory holding the versioned YAML files.
