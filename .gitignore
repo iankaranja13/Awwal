@@ -1,0 +1,53 @@
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+.env/
+
+# Environment files (example only is committed)
+.env
+!.env.example
+
+# Test and coverage artefacts
+.pytest_cache/
+.coverage*
+coverage.xml
+htmlcov/
+coverage_html/
+
+# Linter and type-checker caches
+.ruff_cache/
+.mypy_cache/
+.pyright/
+
+# Database volumes and local database files
+pgdata/
+*.db
+*.sqlite3
+
+# Alembic smoke-test artefacts
+*.db-journal
+
+# Benchmark reports are generated locally
+benchmark/reports/*.json
+benchmark/reports/*.md
+!benchmark/reports/.gitkeep
+
+# IDE and editor folders
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# Build artefacts
+dist/
+build/
+*.egg-info/
