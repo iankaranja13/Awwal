@@ -23,7 +23,7 @@ from app.models import User
 from app.rules_engine.loader import load_rules
 from app.rules_engine.models import AssessmentInput, FlagResult
 from app.schemas.explain import BriefOutput
-from app.services.assessment import get_own_assessment, latest_explanation
+from app.services.assessment import get_accessible_assessment, latest_explanation
 from app.services.audit import record as record_audit
 from app.services.content import load_explainer
 from app.services.intake import get_stored_answers
@@ -98,13 +98,13 @@ def build_brief(
 ) -> BriefResult:
     """Generate a clinician brief with validation and fallback.
 
-    Phase 4 serves the assessment owner only; shared-clinician access lands
-    with shares in Phase 6. Briefs are generated on demand and audited, but
-    never stored.
+    Owners always qualify; clinicians qualify with an active share covering
+    the assessment. Briefs are generated on demand and audited, but never
+    stored.
 
     Args:
         session: Database session.
-        user: Requesting user (must own the assessment).
+        user: Requesting user.
         assessment_id: Assessment id.
         language: Requested language (defaults to the stored one).
         settings: Application settings.
@@ -113,14 +113,24 @@ def build_brief(
     Returns:
         Generated brief with fallback metadata.
     """
-    row = get_own_assessment(session, user, assessment_id)
+    row = get_accessible_assessment(session, user, assessment_id, "brief.read")
     latest = latest_explanation(session, row.id)
     target = language if language is not None else latest.language
     rules = load_rules(Path(settings.rules_dir), settings.rules_version)
     flags = [FlagResult.model_validate(raw) for raw in row.flags]
     explainer = load_explainer(settings.content_dir, target)
+    if row.user_id == user.id:
+        scope_note = explainer.brief_scope_owner
+    else:
+        scope_note = explainer.brief_scope_shared
     template = build_brief_template(
-        row.route, list(row.route_reason), flags, list(row.missing_items), target, explainer
+        row.route,
+        list(row.route_reason),
+        flags,
+        list(row.missing_items),
+        target,
+        explainer,
+        scope_note,
     )
     stored, _ = get_stored_answers(session, user, settings.field_encryption_key)
     inputs = AssessmentInput.model_validate({"answers": stored})

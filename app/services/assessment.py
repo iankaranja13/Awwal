@@ -5,9 +5,11 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.enums import Language, Route
-from app.core.errors import NotFoundError
+from app.core.enums import Language, Role, Route
+from app.core.errors import ForbiddenError, NotFoundError
 from app.models import Assessment, Explanation, User, WorkflowTrace
+from app.services.audit import record as record_audit
+from app.services.share import has_active_share
 from app.rules_engine.models import FlagResult, RuleSet
 from app.schemas.assess import (
     AssessFlag,
@@ -49,6 +51,44 @@ def get_own_assessment(session: Session, user: User, assessment_id: UUID) -> Ass
     row = session.get(Assessment, assessment_id)
     if row is None or row.user_id != user.id:
         raise NotFoundError("Assessment not found.")
+    return row
+
+
+def get_accessible_assessment(
+    session: Session, user: User, assessment_id: UUID, read_action: str = "assessment.read"
+) -> Assessment:
+    """Load one assessment the caller may read, auditing clinician reads.
+
+    Args:
+        session: Database session.
+        user: Authenticated user.
+        assessment_id: Assessment id.
+        read_action: Audit action for clinician reads.
+
+    Returns:
+        The assessment row.
+
+    Raises:
+        NotFoundError: If the assessment is missing or hidden from the caller.
+        ForbiddenError: If a clinician lacks an active share.
+    """
+    row = session.get(Assessment, assessment_id)
+    if row is None:
+        raise NotFoundError("Assessment not found.")
+    if row.user_id == user.id:
+        return row
+    if user.role != Role.CLINICIAN:
+        raise NotFoundError("Assessment not found.")
+    if not has_active_share(session, row.user_id, user.id, row.id):
+        raise ForbiddenError("No active share covers this record.")
+    record_audit(
+        session,
+        actor_id=user.id,
+        actor_role=user.role,
+        action=read_action,
+        object_type="assessment",
+        object_id=row.id,
+    )
     return row
 
 

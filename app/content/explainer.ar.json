@@ -6,6 +6,7 @@
   "summary_clear": "لم توجد مؤشرات في إجاباتك.",
   "modifiable_note": "هذا عامل قد تتمكن من تغييره؛ والدعم متاح.",
   "brief_scope_owner": "عرض المالك: السجل الكامل.",
+  "brief_scope_shared": "عرض مشترك: هذا التقييم فقط.",
   "brief_rationale_prefix": "اختير المسار بناءً على",
   "brief_rationale_none": "لا توجد مؤشرات وجهت هذا المسار."
 }

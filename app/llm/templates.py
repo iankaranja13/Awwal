@@ -81,6 +81,7 @@ def build_brief_template(
     missing_items: list[str],
     language: Language,
     explainer: ExplainerFile,
+    scope_note: str,
 ) -> BriefOutput:
     """Build a deterministic clinician brief from structured data.
 
@@ -91,6 +92,7 @@ def build_brief_template(
         missing_items: Missing key item ids.
         language: Brief language.
         explainer: Template strings for the language.
+        scope_note: Record scope note.
 
     Returns:
         Brief document in the shared output contract.
@@ -127,5 +129,5 @@ def build_brief_template(
         missing_information=list(missing_items),
         route=route,
         route_rationale=rationale,
-        scope_note=explainer.brief_scope_owner,
+        scope_note=scope_note,
     )

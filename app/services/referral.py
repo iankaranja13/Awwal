@@ -16,7 +16,7 @@ from app.core.errors import (
     InvalidTransitionError,
     NotFoundError,
 )
-from app.models import ClinicianReview, Referral, ReferralEvent, Reminder, User
+from app.models import Assessment, ClinicianReview, Referral, ReferralEvent, Reminder, User
 from app.schemas.referral import ReferralCreate, ReferralEventOut, ReferralOut
 from app.services.assessment import get_own_assessment
 from app.services.audit import record as record_audit
@@ -138,9 +138,13 @@ def to_out(session: Session, referral: Referral, key: str) -> ReferralOut:
         )
         for event in list_events(session, referral.id)
     ]
+    assessment = session.get(Assessment, referral.assessment_id)
+    if assessment is None:
+        raise NotFoundError("Assessment not found.")
     return ReferralOut(
         id=referral.id,
         assessment_id=referral.assessment_id,
+        assessment_route=assessment.route,
         user_id=referral.user_id,
         type=referral.type,
         provider_id=referral.provider_id,

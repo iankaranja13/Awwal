@@ -1,0 +1,26 @@
+{
+  "needs_native_review": true,
+  "title": "Privacy and data use",
+  "sections": [
+    {
+      "heading": "What we store",
+      "body": "Your intake answers, screening results, referrals and consent choices. Contact details are collected only if you book, and answers are encrypted."
+    },
+    {
+      "heading": "Your consent controls everything",
+      "body": "Nothing is stored, shared, used for reminders or analysed without the matching consent, which you can grant or revoke at any time. Revocation takes effect immediately."
+    },
+    {
+      "heading": "Who can see your data",
+      "body": "Only you, unless you share a record with a clinician for a limited time. Every clinician read is logged and visible to you."
+    },
+    {
+      "heading": "Your rights",
+      "body": "You can export everything we hold about you, and you can delete your personal data at any time from this app."
+    },
+    {
+      "heading": "Prototype honesty",
+      "body": "This prototype uses synthetic data only and is not clinically validated. It makes no compliance claims."
+    }
+  ]
+}

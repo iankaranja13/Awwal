@@ -8,6 +8,7 @@ from app.models.explanation import Explanation
 from app.models.intake import IntakeAnswers
 from app.models.provider import Provider
 from app.models.referral import ClinicianReview, Referral, ReferralEvent, Reminder
+from app.models.share import Share
 from app.models.trace import WorkflowTrace
 from app.models.user import User
 
@@ -23,6 +24,7 @@ __all__ = [
     "Referral",
     "ReferralEvent",
     "Reminder",
+    "Share",
     "User",
     "WorkflowTrace",
 ]

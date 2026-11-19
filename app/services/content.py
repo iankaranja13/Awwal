@@ -8,6 +8,7 @@ from typing import Any, TypeVar
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from app.core.enums import Language
+from app.schemas.privacy import PrivacyCopy, PrivacySection
 
 
 class ContentError(Exception):
@@ -50,6 +51,16 @@ class NextStepsFile(BaseModel):
     steps: dict[str, str] = Field(description="Next-step text by route.")
 
 
+class PrivacyFile(BaseModel):
+    """Privacy copy content file."""
+
+    model_config = ConfigDict(frozen=True)
+
+    needs_native_review: bool = Field(description="True until Arabic review exists.")
+    title: str = Field(min_length=1, description="Page title.")
+    sections: list[PrivacySection] = Field(description="Sections.")
+
+
 class ExplainerFile(BaseModel):
     """Template explainer strings file."""
 
@@ -62,6 +73,7 @@ class ExplainerFile(BaseModel):
     summary_clear: str = Field(description="Summary for no signals.")
     modifiable_note: str = Field(min_length=1, description="Modifiable factor note.")
     brief_scope_owner: str = Field(min_length=1, description="Owner-view scope note.")
+    brief_scope_shared: str = Field(min_length=1, description="Shared-view scope note.")
     brief_rationale_prefix: str = Field(min_length=1, description="Route rationale prefix.")
     brief_rationale_none: str = Field(min_length=1, description="Rationale when undriven.")
 
@@ -183,6 +195,26 @@ def load_next_steps(content_dir: str, language: Language) -> NextStepsFile:
     loaded = _parse("next_steps", NextStepsFile, raw)
     _require_review("next_steps", loaded.needs_native_review)
     return loaded
+
+
+@lru_cache(maxsize=16)
+def load_privacy_copy(content_dir: str, language: Language) -> PrivacyCopy:
+    """Load privacy copy for one language.
+
+    Args:
+        content_dir: Content directory.
+        language: Language to load.
+
+    Returns:
+        Validated privacy copy.
+
+    Raises:
+        ContentError: If the file is missing or invalid.
+    """
+    raw = _load_json(content_dir, f"privacy_copy.{language.value}.json")
+    loaded = _parse("privacy_copy", PrivacyFile, raw)
+    _require_review("privacy_copy", loaded.needs_native_review)
+    return PrivacyCopy(title=loaded.title, sections=list(loaded.sections))
 
 
 @lru_cache(maxsize=16)

@@ -6,6 +6,7 @@
   "summary_clear": "No signals were found in what you provided.",
   "modifiable_note": "This is a factor you may be able to change; support is available.",
   "brief_scope_owner": "Owner view: full record.",
+  "brief_scope_shared": "Shared view: this assessment only.",
   "brief_rationale_prefix": "Route selected from",
   "brief_rationale_none": "No signals drove this route."
 }
