@@ -1,6 +1,7 @@
 """Append-only enforcement for the consent ledger and audit log."""
 
 import os
+import uuid
 from pathlib import Path
 
 import pytest
@@ -11,9 +12,9 @@ from sqlalchemy.orm import Session
 from app.core.enums import ConsentScope, Language, Role
 from app.models import AuditLog, Consent, User
 
-MIGRATION = (
-    Path(__file__).resolve().parents[2] / "alembic" / "versions" / "phase2_initial.py"
-)
+MIGRATIONS = Path(__file__).resolve().parents[2] / "alembic" / "versions"
+MIGRATION = MIGRATIONS / "phase2_initial.py"
+MIGRATION6 = MIGRATIONS / "phase6_shares.py"
 
 needs_postgres = pytest.mark.skipif(
     "postgresql" not in os.environ.get("DATABASE_URL", ""),
@@ -30,6 +31,14 @@ def test_migration_defines_append_only_triggers() -> None:
     assert "EXECUTE FUNCTION reject_mutation()" in source
     assert "DROP TRIGGER IF EXISTS " in source
     assert "DROP FUNCTION IF EXISTS reject_mutation()" in source
+
+
+def test_migration_defines_audit_guard_trigger() -> None:
+    """Ship the audit trigger that allows anonymisation only."""
+    source = MIGRATION6.read_text(encoding="utf-8")
+    assert "audit_log_guarded" in source
+    assert "NEW.actor_id IS NOT NULL" in source
+    assert "DROP TRIGGER IF EXISTS audit_log_guarded" in source
 
 
 @needs_postgres
@@ -54,6 +63,34 @@ def test_consents_reject_update_and_delete() -> None:
         savepoint = session.begin_nested()
         with pytest.raises(DBAPIError, match="append-only"):
             session.execute(text("DELETE FROM consents"))
+            session.flush()
+        savepoint.rollback()
+    finally:
+        session.rollback()
+        session.close()
+        engine.dispose()
+
+
+@needs_postgres
+def test_audit_log_allows_anonymisation_only() -> None:
+    """Allow nulling actor_id but nothing else on audit_log in Postgres."""
+    engine = create_engine(os.environ["DATABASE_URL"])
+    session = Session(engine)
+    try:
+        entry = AuditLog(
+            actor_id=uuid.uuid4(),
+            actor_role="user",
+            action="test.ping",
+            object_type="test",
+            detail={},
+        )
+        session.add(entry)
+        session.flush()
+        session.execute(text("UPDATE audit_log SET actor_id = NULL"))
+        session.flush()
+        savepoint = session.begin_nested()
+        with pytest.raises(DBAPIError, match="append-only"):
+            session.execute(text("UPDATE audit_log SET action = 'test.pong'"))
             session.flush()
         savepoint.rollback()
     finally:

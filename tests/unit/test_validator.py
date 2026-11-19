@@ -107,7 +107,7 @@ def test_template_brief_passes() -> None:
     flags = [_flag("MB_DIABETES", "PRESENT", "SNP_DIABETES")]
     explainer = load_explainer(str(APP_CONTENT_DIR), Language.EN)
     brief = build_brief_template(
-        Route.PRIMARY_CARE, ["MB_DIABETES"], flags, [], Language.EN, explainer
+        Route.PRIMARY_CARE, ["MB_DIABETES"], flags, [], Language.EN, explainer, "Owner view."
     )
     context = ValidationContext(
         language=Language.EN,

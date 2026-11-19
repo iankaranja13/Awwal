@@ -227,6 +227,7 @@ def test_template_marks_modifiable_and_unknowns() -> None:
         summary_clear="Clear.",
         modifiable_note="Changeable.",
         brief_scope_owner="Owner view.",
+        brief_scope_shared="Shared view.",
         brief_rationale_prefix="Route from",
         brief_rationale_none="No drivers.",
     )

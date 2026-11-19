@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.enums import ReferralStatus, ReferralType, ReviewDecision
+from app.core.enums import ReferralStatus, ReferralType, ReviewDecision, Route
 
 
 class ContactIn(BaseModel):
@@ -74,6 +74,7 @@ class ReferralOut(BaseModel):
 
     id: UUID = Field(description="Referral id.")
     assessment_id: UUID = Field(description="Assessment id.")
+    assessment_route: Route = Field(description="Assessment route.")
     user_id: UUID = Field(description="Owning user id.")
     type: ReferralType = Field(description="Service type.")
     provider_id: UUID | None = Field(description="Chosen provider id.")
