@@ -147,3 +147,17 @@ multi-service journeys; encrypted free text follows the privacy rules;
 consent-gated reminders follow the consent rules; distinct stamps keep the
 event history ordered even on second-precision clocks.
 
+## DR-014: Sharing and erasure semantics
+
+What: shares go to clinicians only; assessment, trace and brief reads need
+an active share covering the record, while whole-record intake reads need
+an all-scope share; every clinician read is audited and visible to the
+owner. Erasure deletes the referral aggregate with its events, anonymises
+audit rows by nulling actor ids (the one update the audit trigger allows),
+marks the user, and keeps consent receipts as the legal record.
+
+Why: navigators get route context through referrals, so only clinicians
+need shares; intake answers span every assessment, so only all-scope
+shares unlock them; referral events are meaningless without their
+referral, while the access trail must survive erasure for accountability.
+
