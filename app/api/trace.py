@@ -6,7 +6,7 @@ from fastapi import APIRouter
 
 from app.core.deps import CurrentUserDep, SessionDep
 from app.schemas.assess import TraceResponse
-from app.services.assessment import build_trace_response, get_own_assessment, get_trace
+from app.services.assessment import build_trace_response, get_accessible_assessment, get_trace
 
 router = APIRouter(tags=["trace"])
 
@@ -25,5 +25,5 @@ def get_assessment_trace(
     Returns:
         Trace response with ordered steps.
     """
-    row = get_own_assessment(session, user, assessment_id)
+    row = get_accessible_assessment(session, user, assessment_id, "trace.read")
     return build_trace_response(get_trace(session, row.id))

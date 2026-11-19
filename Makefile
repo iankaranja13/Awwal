@@ -33,11 +33,11 @@ test:  ## Run tests (with coverage when pytest-cov is installed).
 migrate:  ## Apply Alembic migrations to head.
 	$(PYTHON) -m alembic upgrade head
 
-seed:  ## Seed demo data (lands in Phase 2).
-	echo "Seeding lands in Phase 2 (not implemented yet)." && exit 1
+seed:  ## Seed demo data.
+	$(PYTHON) -c "from app.services.seed import run_seed; print(run_seed())"
 
-reset:  ## Reset demo data (lands in Phase 6).
-	echo "Reset lands in Phase 6 (not implemented yet)." && exit 1
+reset:  ## Reset demo user data (keeps staff and providers).
+	$(PYTHON) -c "from app.services.seed import run_reset; print(run_reset())"
 
 benchmark:  ## Run the evaluation harness (lands in Phase 7).
 	echo "Benchmark lands in Phase 7 (not implemented yet)." && exit 1

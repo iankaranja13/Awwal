@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Demo Tele Andrology",
+    "type": "teleconsult",
+    "languages": ["en", "ar"],
+    "clinician_gender": "male",
+    "tele": true,
+    "home_sampling": false,
+    "notes": "Mock teleconsult provider."
+  },
+  {
+    "name": "Demo Tele Urology (AR)",
+    "type": "teleconsult",
+    "languages": ["ar"],
+    "clinician_gender": "female",
+    "tele": true,
+    "home_sampling": false,
+    "notes": "Mock Arabic-language teleconsult provider."
+  },
+  {
+    "name": "Demo Fertility Centre",
+    "type": "in_person",
+    "languages": ["en", "ar", "ur"],
+    "clinician_gender": "female",
+    "tele": false,
+    "home_sampling": false,
+    "notes": "Mock in-person fertility clinic."
+  },
+  {
+    "name": "Demo Andrology Clinic",
+    "type": "in_person",
+    "languages": ["en"],
+    "clinician_gender": "male",
+    "tele": false,
+    "home_sampling": false,
+    "notes": "Mock in-person andrology clinic."
+  },
+  {
+    "name": "Demo Primary Care",
+    "type": "in_person",
+    "languages": ["en", "ar", "tl"],
+    "clinician_gender": "female",
+    "tele": true,
+    "home_sampling": false,
+    "notes": "Mock primary-care practice with teleconsult."
+  },
+  {
+    "name": "Demo Men's Health GP",
+    "type": "in_person",
+    "languages": ["en"],
+    "clinician_gender": "male",
+    "tele": false,
+    "home_sampling": false,
+    "notes": "Mock general practice."
+  },
+  {
+    "name": "Demo Blood Lab",
+    "type": "blood_test",
+    "languages": ["en", "ar"],
+    "clinician_gender": "female",
+    "tele": false,
+    "home_sampling": false,
+    "notes": "Mock laboratory for clinician-ordered blood tests."
+  },
+  {
+    "name": "Demo Home Lab",
+    "type": "blood_test",
+    "languages": ["en"],
+    "clinician_gender": "male",
+    "tele": false,
+    "home_sampling": true,
+    "notes": "Mock laboratory with home sampling."
+  },
+  {
+    "name": "Demo Sample Collection",
+    "type": "sample_collection",
+    "languages": ["en", "ar"],
+    "clinician_gender": "male",
+    "tele": false,
+    "home_sampling": true,
+    "notes": "Mock collection service with home sampling."
+  },
+  {
+    "name": "Demo Sample Clinic",
+    "type": "sample_collection",
+    "languages": ["ar", "ur"],
+    "clinician_gender": "female",
+    "tele": false,
+    "home_sampling": false,
+    "notes": "Mock in-clinic collection service."
+  }
+]

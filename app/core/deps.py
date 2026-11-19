@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
 from app.core.enums import ConsentScope, Language, Role
-from app.core.errors import AuthError, ConsentRequiredError, ForbiddenError
+from app.core.errors import AuthError, ConsentRequiredError, ForbiddenError, NotFoundError
 from app.core.security import decode_access_token
 from app.llm.client import LLMClient, create_client
 from app.models import User
@@ -121,6 +121,22 @@ def require_role(*roles: Role) -> Callable[[User], User]:
         return user
 
     return _check_role
+
+
+def require_dev_admin(settings: SettingsDep) -> None:
+    """Gate dev-only endpoints behind the admin flag.
+
+    Args:
+        settings: Application settings.
+
+    Raises:
+        NotFoundError: If dev admin endpoints are disabled.
+    """
+    if not settings.enable_dev_admin:
+        raise NotFoundError("Not found.")
+
+
+DevAdminDep = Annotated[None, Depends(require_dev_admin)]
 
 
 def get_language(

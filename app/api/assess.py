@@ -11,7 +11,7 @@ from app.rules_engine.loader import load_rules
 from app.schemas.assess import AssessResponse
 from app.services.assessment import (
     build_assess_response,
-    get_own_assessment,
+    get_accessible_assessment,
     get_trace,
     latest_explanation,
 )
@@ -64,7 +64,7 @@ def get_assessment(
     Returns:
         Full assessment response.
     """
-    row = get_own_assessment(session, user, assessment_id)
+    row = get_accessible_assessment(session, user, assessment_id)
     explanation = latest_explanation(session, row.id)
     schema = load_intake_schema(settings.content_dir)
     rules = load_rules(Path(settings.rules_dir), settings.rules_version)
