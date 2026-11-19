@@ -109,3 +109,14 @@ real Postgres service. Storing enum values (not names) keeps CHECKs honest
 on both backends, and microsecond Python timestamps avoid SQLite's
 second-precision ties in ledger ordering.
 
+## DR-011: Assessment API semantics
+
+What: POST /assess with no saved intake returns provisional (never 404);
+GET /assessments shows the latest explanation; route action codes live in
+code (they are frontend codes, not user-facing strings); urgent responses
+carry an empty flags list with red drivers in route_reason.
+
+Why: empty intake is just maximal missingness, so provisional is the honest
+answer; latest-explanation keeps one stable record per assessment; codes in
+code keep content files to human-readable strings only.
+

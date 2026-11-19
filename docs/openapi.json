@@ -246,6 +246,175 @@
           }
         ]
       }
+    },
+    "/api/v1/assess": {
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Post Assess",
+        "description": "Run the assessment pipeline for the caller.\n\nArgs:\n    user: Authenticated user with intake consent.\n    session: Request database session.\n    settings: Application settings.\n    language: Response language.\n\nReturns:\n    Full assessment response.",
+        "operationId": "post_assess_api_v1_assess_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lang"
+            }
+          },
+          {
+            "name": "accept-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{assessment_id}": {
+      "get": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Get Assessment",
+        "description": "Return one stored assessment with its latest explanation.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    assessment_id: Assessment id.\n\nReturns:\n    Full assessment response.",
+        "operationId": "get_assessment_api_v1_assessments__assessment_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trace/{assessment_id}": {
+      "get": {
+        "tags": [
+          "trace"
+        ],
+        "summary": "Get Assessment Trace",
+        "description": "Return the workflow trace for one assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    assessment_id: Assessment id.\n\nReturns:\n    Trace response with ordered steps.",
+        "operationId": "get_assessment_trace_api_v1_trace__assessment_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -267,6 +436,185 @@
         ],
         "title": "AnswerIn",
         "description": "One submitted answer."
+      },
+      "AssessFlag": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Flag id."
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState",
+            "description": "Three-state outcome."
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Clinical domain."
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display label in the response language."
+          },
+          "reason_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Fields",
+            "description": "Decisive fields."
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields",
+            "description": "Missing required fields."
+          },
+          "modifiable": {
+            "type": "boolean",
+            "title": "Modifiable",
+            "description": "Whether the user can act on this factor."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Guideline source hint (unvalidated)."
+          },
+          "requires_clinical_validation": {
+            "type": "boolean",
+            "title": "Requires Clinical Validation",
+            "description": "True until a validation flow exists."
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation",
+            "description": "Plain-language explanation."
+          },
+          "why_we_ask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Why We Ask",
+            "description": "Why text for missing fields."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "domain",
+          "label",
+          "modifiable",
+          "source",
+          "requires_clinical_validation",
+          "explanation"
+        ],
+        "title": "AssessFlag",
+        "description": "One flag as served in assessment responses."
+      },
+      "AssessResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version",
+            "description": "Combined rule version string."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Response language."
+          },
+          "urgent": {
+            "type": "boolean",
+            "title": "Urgent",
+            "description": "Whether a red flag short-circuited the pipeline."
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route",
+            "description": "Selected route."
+          },
+          "route_reason": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Route Reason",
+            "description": "Driver rule ids."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/AssessFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Flag outcomes."
+          },
+          "missing_items": {
+            "items": {
+              "$ref": "#/components/schemas/MissingItem"
+            },
+            "type": "array",
+            "title": "Missing Items",
+            "description": "Missing key items."
+          },
+          "next_step": {
+            "$ref": "#/components/schemas/NextStep",
+            "description": "Next step."
+          },
+          "static_safety_message": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StaticSafetyMessage"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Urgent static message."
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "description": "Screening disclaimer."
+          },
+          "explanation_source": {
+            "$ref": "#/components/schemas/ExplanationSource"
+          },
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trace Id",
+            "description": "Workflow trace id."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "rules_version",
+          "language",
+          "urgent",
+          "route",
+          "next_step",
+          "disclaimer",
+          "explanation_source",
+          "trace_id"
+        ],
+        "title": "AssessResponse",
+        "description": "Full assessment response."
       },
       "ConsentHistoryResponse": {
         "properties": {
@@ -394,6 +742,26 @@
         ],
         "title": "ConsentStateResponse",
         "description": "Current consent state for all scopes."
+      },
+      "ExplanationSource": {
+        "type": "string",
+        "enum": [
+          "llm",
+          "template",
+          "static"
+        ],
+        "title": "ExplanationSource",
+        "description": "Explanation origin."
+      },
+      "FlagState": {
+        "type": "string",
+        "enum": [
+          "PRESENT",
+          "NOT_PRESENT_FROM_PROVIDED_DATA",
+          "NOT_ASSESSABLE"
+        ],
+        "title": "FlagState",
+        "description": "Three-state screening flag outcome."
       },
       "HTTPValidationError": {
         "properties": {
@@ -731,6 +1099,56 @@
         "title": "Language",
         "description": "Supported interface language."
       },
+      "MissingItem": {
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "title": "Item Id",
+            "description": "Missing item id."
+          },
+          "why_we_ask": {
+            "type": "string",
+            "title": "Why We Ask",
+            "description": "Why text in the response language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "why_we_ask"
+        ],
+        "title": "MissingItem",
+        "description": "One missing key item with its reason."
+      },
+      "NextStep": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Next-step text."
+          },
+          "requires_clinician_review": {
+            "type": "boolean",
+            "title": "Requires Clinician Review",
+            "description": "Whether sign-off gates confirmation."
+          },
+          "actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Actions",
+            "description": "Frontend action codes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "requires_clinician_review"
+        ],
+        "title": "NextStep",
+        "description": "Next step for the selected route."
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -740,6 +1158,19 @@
         ],
         "title": "Role",
         "description": "Caller role."
+      },
+      "Route": {
+        "type": "string",
+        "enum": [
+          "URGENT",
+          "ANDROLOGY_UROLOGY",
+          "FERTILITY_SERVICES",
+          "PRIMARY_CARE",
+          "SELF_CARE",
+          "SELF_CARE_PROVISIONAL"
+        ],
+        "title": "Route",
+        "description": "Triage route outcome."
       },
       "SessionRequest": {
         "properties": {
@@ -784,6 +1215,117 @@
         ],
         "title": "SessionResponse",
         "description": "Created session with access token."
+      },
+      "StaticSafetyMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Static message id."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Message title."
+          },
+          "body": {
+            "type": "string",
+            "title": "Body",
+            "description": "Message body."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "body"
+        ],
+        "title": "StaticSafetyMessage",
+        "description": "Static urgent safety message."
+      },
+      "TraceResponse": {
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trace Id",
+            "description": "Trace id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/TraceStep"
+            },
+            "type": "array",
+            "title": "Steps",
+            "description": "Recorded steps in order."
+          },
+          "duration_ms": {
+            "type": "number",
+            "title": "Duration Ms",
+            "description": "Total milliseconds across steps."
+          }
+        },
+        "type": "object",
+        "required": [
+          "trace_id",
+          "assessment_id",
+          "steps",
+          "duration_ms"
+        ],
+        "title": "TraceResponse",
+        "description": "Workflow trace response."
+      },
+      "TraceStep": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Step name."
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Step status."
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At",
+            "description": "Step start (UTC)."
+          },
+          "duration_ms": {
+            "type": "number",
+            "title": "Duration Ms",
+            "description": "Step duration in milliseconds."
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version",
+            "description": "Rule version in force."
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail",
+            "description": "Step detail."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "started_at",
+          "duration_ms",
+          "rules_version"
+        ],
+        "title": "TraceStep",
+        "description": "One workflow trace step."
       },
       "ValidationError": {
         "properties": {
