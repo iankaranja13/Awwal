@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api.assess import router as assess_router
 from app.api.consent import router as consent_router
+from app.api.explain import router as explain_router
 from app.api.health import build_health_response, router as health_router
 from app.api.intake import router as intake_router
 from app.api.sessions import router as sessions_router
@@ -20,6 +21,7 @@ from app.core.deps import SettingsDep
 from app.core.enums import Language
 from app.core.errors import register_error_handlers
 from app.core.logging import RequestIdMiddleware, configure_logging
+from app.llm.client import load_prompt
 from app.rules_engine.loader import load_rules
 from app.schemas.health import HealthResponse
 from app.services.content import (
@@ -44,6 +46,8 @@ def _warm_caches(settings: Settings) -> None:
     """
     rules = load_rules(Path(settings.rules_dir), settings.rules_version)
     load_intake_schema(settings.content_dir)
+    load_prompt("explain")
+    load_prompt("brief")
     for language in (Language.EN, Language.AR):
         safety = load_static_safety(settings.content_dir, language)
         snippets = load_snippets(settings.content_dir, language)
@@ -108,6 +112,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(sessions_router, prefix="/api/v1")
     app.include_router(consent_router, prefix="/api/v1")
+    app.include_router(explain_router, prefix="/api/v1")
     app.include_router(intake_router, prefix="/api/v1")
     app.include_router(assess_router, prefix="/api/v1")
     app.include_router(trace_router, prefix="/api/v1")

@@ -13,6 +13,7 @@ from app.core.database import get_db
 from app.core.enums import ConsentScope, Language
 from app.core.errors import AuthError, ConsentRequiredError
 from app.core.security import decode_access_token
+from app.llm.client import LLMClient, create_client
 from app.models import User
 from app.services.consent import has_consent
 
@@ -122,3 +123,18 @@ def get_language(
 
 
 LanguageDep = Annotated[Language, Depends(get_language)]
+
+
+def get_llm_client(settings: SettingsDep) -> LLMClient:
+    """Create the configured LLM client.
+
+    Args:
+        settings: Application settings.
+
+    Returns:
+        Provider client.
+    """
+    return create_client(settings)
+
+
+LLMClientDep = Annotated[LLMClient, Depends(get_llm_client)]
