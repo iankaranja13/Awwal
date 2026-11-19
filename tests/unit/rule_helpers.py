@@ -7,6 +7,7 @@ from app.core.enums import ItemStatus
 from app.rules_engine.models import AssessmentInput, ItemAnswer, RuleSet
 
 REAL_RULES_DIR = Path(__file__).resolve().parents[2] / "rules"
+APP_CONTENT_DIR = Path(__file__).resolve().parents[2] / "app" / "content"
 
 _CLEAN_VALUES: dict[str, Any] = {
     "trying_to_conceive": "no",
