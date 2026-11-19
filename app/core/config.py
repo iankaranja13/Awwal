@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     llm_temperature: float = Field(
         default=0.2, ge=0.0, le=2.0, description="LLM sampling temperature."
     )
+    llm_max_tokens: int = Field(default=1024, gt=0, description="LLM maximum output tokens.")
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Root log level."
     )

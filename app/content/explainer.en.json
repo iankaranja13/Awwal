@@ -4,5 +4,8 @@
   "summary_signals": "Screening found {count} signal(s) that suggest follow-up.",
   "summary_provisional": "Some questions were left unanswered, so this screening is incomplete.",
   "summary_clear": "No signals were found in what you provided.",
-  "modifiable_note": "This is a factor you may be able to change; support is available."
+  "modifiable_note": "This is a factor you may be able to change; support is available.",
+  "brief_scope_owner": "Owner view: full record.",
+  "brief_rationale_prefix": "Route selected from",
+  "brief_rationale_none": "No signals drove this route."
 }

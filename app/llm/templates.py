@@ -2,7 +2,7 @@
 
 from app.core.enums import FlagState, Language, Route
 from app.rules_engine.models import FlagResult
-from app.schemas.explain import ExplainedFlag, ExplainerOutput
+from app.schemas.explain import BriefFlag, BriefOutput, ExplainedFlag, ExplainerOutput
 from app.services.content import ContentError, ExplainerFile, NextStepsFile, SnippetsFile
 
 
@@ -71,4 +71,61 @@ def build_template_explanation(
         flags=explained,
         next_step_text=_required(next_steps.steps, route.value, "next step"),
         disclaimer=explainer.disclaimer,
+    )
+
+
+def build_brief_template(
+    route: Route,
+    route_reason: list[str],
+    flags: list[FlagResult],
+    missing_items: list[str],
+    language: Language,
+    explainer: ExplainerFile,
+) -> BriefOutput:
+    """Build a deterministic clinician brief from structured data.
+
+    Args:
+        route: Selected route.
+        route_reason: Driver rule ids.
+        flags: Evaluated flag outcomes.
+        missing_items: Missing key item ids.
+        language: Brief language.
+        explainer: Template strings for the language.
+
+    Returns:
+        Brief document in the shared output contract.
+    """
+    if route_reason:
+        rationale = f"{explainer.brief_rationale_prefix}: {', '.join(route_reason)}."
+    else:
+        rationale = explainer.brief_rationale_none
+    present_labels = [
+        flag.label.en if language == Language.EN else flag.label.ar
+        for flag in flags
+        if flag.state == FlagState.PRESENT
+    ]
+    if present_labels:
+        reason = f"{', '.join(present_labels)}."
+    elif route_reason:
+        reason = f"{', '.join(route_reason)}."
+    else:
+        reason = explainer.brief_rationale_none
+    entries = [
+        BriefFlag(
+            flag_id=flag.id,
+            state=flag.state,
+            label=flag.label.en if language == Language.EN else flag.label.ar,
+            source=flag.source,
+            note=None,
+        )
+        for flag in flags
+    ]
+    return BriefOutput(
+        language=language,
+        reason_for_contact=reason,
+        flags=entries,
+        missing_information=list(missing_items),
+        route=route,
+        route_rationale=rationale,
+        scope_note=explainer.brief_scope_owner,
     )
