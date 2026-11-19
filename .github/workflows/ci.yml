@@ -8,7 +8,22 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    # Phase 0 tests need no database; add a postgres service in Phase 2.
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: awwal
+          POSTGRES_PASSWORD: awwal
+          POSTGRES_DB: awwal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://awwal:awwal@localhost:5432/awwal
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,5 +33,7 @@ jobs:
         run: pip install uv
       - name: Install dependencies
         run: make dev
+      - name: Migrate test database
+        run: make migrate
       - name: Quality gate
         run: make check

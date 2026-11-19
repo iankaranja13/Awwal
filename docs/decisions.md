@@ -85,3 +85,27 @@ stays optional; but an unanswered red-flag symptom is never a clean bill of
 health, so uncertainty escalates. The per-flag marker keeps the choice
 versioned and clinician-reviewable instead of hard-coded.
 
+## DR-009: Hand-rolled sliding-window rate limiter
+
+What: rate limiting is a small pure function over buckets stored on
+`app.state`, instead of the stack-listed slowapi.
+
+Why: slowapi needs a module-level limiter whose counters are global mutable
+state, which the coding standards forbid; the custom limiter keeps state in
+the sanctioned app holder, is deterministic under injected clocks, and adds
+no dependency. It is single-process and in-memory, which fits a prototype;
+a shared store would be needed for multi-worker deployment.
+
+## DR-010: SQLite-compatible schema with Postgres-only triggers
+
+What: the schema uses portable types (VARCHAR enums with CHECKs, generic
+JSON) so tests run on SQLite; the append-only triggers apply on Postgres
+only. Timestamps use an aware-UTC column type with Python-side defaults, and
+the consent ledger orders by timestamp plus id for determinism.
+
+Why: no Postgres runs in the sandbox, so SQLite keeps every test except the
+two trigger-behaviour tests runnable everywhere; CI runs those against a
+real Postgres service. Storing enum values (not names) keeps CHECKs honest
+on both backends, and microsecond Python timestamps avoid SQLite's
+second-precision ties in ledger ordering.
+

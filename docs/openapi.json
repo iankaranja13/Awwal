@@ -26,10 +26,388 @@
           }
         }
       }
+    },
+    "/api/v1/sessions": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "summary": "Post Session",
+        "description": "Create an anonymous session and return its token.\n\nArgs:\n    request: Incoming request (for rate limiting).\n    session: Request database session.\n    settings: Application settings.\n    body: Optional session creation request.\n\nReturns:\n    Created session with access token.",
+        "operationId": "post_session_api_v1_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SessionRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/consent": {
+      "get": {
+        "tags": [
+          "consent"
+        ],
+        "summary": "Get Consent",
+        "description": "Return the current consent state with full history.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n\nReturns:\n    State and ledger entries oldest first.",
+        "operationId": "get_consent_api_v1_consent_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentHistoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "consent"
+        ],
+        "summary": "Post Consent",
+        "description": "Grant or revoke one consent scope.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    body: Scope and grant flag.\n\nReturns:\n    Current consent state for all scopes.",
+        "operationId": "post_consent_api_v1_consent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentStateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/intake/schema": {
+      "get": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Get Schema",
+        "description": "Return the bilingual intake schema.\n\nArgs:\n    _user: Authenticated user (unused beyond authentication).\n    settings: Application settings.\n\nReturns:\n    Versioned schema document.",
+        "operationId": "get_schema_api_v1_intake_schema_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeSchemaDocument"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/intake": {
+      "get": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Get Intake",
+        "description": "Return the caller's decrypted intake answers.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n\nReturns:\n    Stored answers (empty when never saved).",
+        "operationId": "get_intake_api_v1_intake_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeGetResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Put Intake",
+        "description": "Save intake answers (partial updates allowed).\n\nArgs:\n    user: Authenticated user with intake consent.\n    session: Request database session.\n    settings: Application settings.\n    body: Answers by item id.\n\nReturns:\n    Save receipt with stored ids.",
+        "operationId": "put_intake_api_v1_intake_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "AnswerIn": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "description": "Provided answer value."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ItemStatus",
+            "description": "Answer status."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "AnswerIn",
+        "description": "One submitted answer."
+      },
+      "ConsentHistoryResponse": {
+        "properties": {
+          "state": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ConsentScope"
+            },
+            "type": "object",
+            "title": "State",
+            "description": "Granted flag per scope."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Current policy version."
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentRecord"
+            },
+            "type": "array",
+            "title": "History",
+            "description": "Ledger entries oldest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "policy_version",
+          "history"
+        ],
+        "title": "ConsentHistoryResponse",
+        "description": "Current consent state with full history."
+      },
+      "ConsentRecord": {
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/ConsentScope",
+            "description": "Consent scope."
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted",
+            "description": "True grants, False revokes."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Policy version in force."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Entry timestamp (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "granted",
+          "policy_version",
+          "created_at"
+        ],
+        "title": "ConsentRecord",
+        "description": "One ledger entry."
+      },
+      "ConsentRequest": {
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/ConsentScope",
+            "description": "Consent scope."
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted",
+            "description": "True grants, False revokes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "granted"
+        ],
+        "title": "ConsentRequest",
+        "description": "Consent grant or revocation request."
+      },
+      "ConsentScope": {
+        "type": "string",
+        "enum": [
+          "intake",
+          "share_with_clinician",
+          "reminders",
+          "aggregate_analytics"
+        ],
+        "title": "ConsentScope",
+        "description": "Consent scope for data use."
+      },
+      "ConsentStateResponse": {
+        "properties": {
+          "state": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ConsentScope"
+            },
+            "type": "object",
+            "title": "State",
+            "description": "Granted flag per scope."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Current policy version."
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "policy_version"
+        ],
+        "title": "ConsentStateResponse",
+        "description": "Current consent state for all scopes."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "HealthResponse": {
         "properties": {
           "status": {
@@ -56,6 +434,395 @@
         ],
         "title": "HealthResponse",
         "description": "Liveness probe response."
+      },
+      "IntakeGetResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "description": "Schema version stored."
+          },
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnswerIn"
+            },
+            "type": "object",
+            "title": "Answers",
+            "description": "Answers by item id."
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Storage timestamp (UTC), if ever saved."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "answers",
+          "updated_at"
+        ],
+        "title": "IntakeGetResponse",
+        "description": "Decrypted stored intake answers."
+      },
+      "IntakeItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id",
+            "description": "Stable item id."
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Domain",
+            "description": "Clinical domain."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ItemType",
+            "description": "Answer type."
+          },
+          "required_for_flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required For Flags",
+            "description": "Rules using this item."
+          },
+          "label": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual question text."
+          },
+          "why_we_ask": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual reason for asking."
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ItemOption"
+            },
+            "type": "array",
+            "title": "Options",
+            "description": "Choice options."
+          },
+          "sensitive": {
+            "type": "boolean",
+            "title": "Sensitive",
+            "description": "Whether the item holds sensitive content."
+          },
+          "optional_by_design": {
+            "type": "boolean",
+            "title": "Optional By Design",
+            "description": "Whether the item is optional by design."
+          },
+          "needs_native_review": {
+            "type": "boolean",
+            "title": "Needs Native Review",
+            "description": "True until Arabic review exists."
+          },
+          "min_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Value",
+            "description": "Minimum for number items."
+          },
+          "max_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Value",
+            "description": "Maximum for number items."
+          },
+          "max_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Length",
+            "description": "Maximum length for text items."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "domain",
+          "type",
+          "label",
+          "why_we_ask",
+          "sensitive",
+          "optional_by_design",
+          "needs_native_review"
+        ],
+        "title": "IntakeItem",
+        "description": "One intake schema item."
+      },
+      "IntakeResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "description": "Schema version stored."
+          },
+          "saved_item_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Saved Item Ids",
+            "description": "Item ids saved from this request."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "Storage timestamp (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "saved_item_ids",
+          "updated_at"
+        ],
+        "title": "IntakeResponse",
+        "description": "Intake save receipt."
+      },
+      "IntakeSchemaDocument": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Schema Version",
+            "description": "Schema version."
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IntakeItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Schema items."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "items"
+        ],
+        "title": "IntakeSchemaDocument",
+        "description": "Versioned intake schema document."
+      },
+      "IntakeUpdateRequest": {
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnswerIn"
+            },
+            "type": "object",
+            "title": "Answers",
+            "description": "Answers by item id."
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "IntakeUpdateRequest",
+        "description": "Partial or full intake answers update."
+      },
+      "ItemOption": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Value",
+            "description": "Stored option value."
+          },
+          "label": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual display label."
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "ItemOption",
+        "description": "One selectable option for a choice item."
+      },
+      "ItemStatus": {
+        "type": "string",
+        "enum": [
+          "answered",
+          "skipped",
+          "unsure",
+          "prefer_not_to_say"
+        ],
+        "title": "ItemStatus",
+        "description": "Answer status for one intake item."
+      },
+      "ItemType": {
+        "type": "string",
+        "enum": [
+          "boolean",
+          "single_choice",
+          "multi_choice",
+          "number",
+          "text"
+        ],
+        "title": "ItemType",
+        "description": "Intake schema item type."
+      },
+      "Label": {
+        "properties": {
+          "en": {
+            "type": "string",
+            "minLength": 1,
+            "title": "En",
+            "description": "English text."
+          },
+          "ar": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Ar",
+            "description": "Arabic text."
+          }
+        },
+        "type": "object",
+        "required": [
+          "en",
+          "ar"
+        ],
+        "title": "Label",
+        "description": "Bilingual display text."
+      },
+      "Language": {
+        "type": "string",
+        "enum": [
+          "en",
+          "ar"
+        ],
+        "title": "Language",
+        "description": "Supported interface language."
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "user",
+          "navigator",
+          "clinician"
+        ],
+        "title": "Role",
+        "description": "Caller role."
+      },
+      "SessionRequest": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Preferred interface language.",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "title": "SessionRequest",
+        "description": "Anonymous session creation request."
+      },
+      "SessionResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "User id."
+          },
+          "handle": {
+            "type": "string",
+            "title": "Handle",
+            "description": "Pseudonymous handle."
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "Bearer access token."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "handle",
+          "role",
+          "token"
+        ],
+        "title": "SessionResponse",
+        "description": "Created session with access token."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

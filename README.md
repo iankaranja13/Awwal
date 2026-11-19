@@ -43,7 +43,9 @@ make test
 ```
 
 Tests are deterministic: fixed clock injection, generated throwaway keys, no
-network access, no database needed yet.
+network access. Most database tests run on isolated SQLite files; the two
+append-only trigger tests need Postgres and run when `DATABASE_URL` points
+at a migrated Postgres (CI does this, otherwise they skip).
 
 ## Layout
 

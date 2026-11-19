@@ -25,3 +25,5 @@
 - Phase 7: revisit `uv sync` for `make dev` once `uv.lock` exists. Benchmark
   invariants must use weak monotonicity (DR-007): only non-trigger answers
   go missing in the monotonicity check.
+- Phase 6: compare share expiry in the database (`expires_at > now()`), not
+  in Python, so SQLite's naive timestamp reads can never meet aware clocks.
