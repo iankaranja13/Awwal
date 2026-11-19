@@ -1,0 +1,13 @@
+id: case_03_metabolic
+title: Metabolic history
+profile: "fictional 38-year-old with diabetes and elevated BMI"
+answers:
+  age_band: {value: "35_39", status: answered}
+  height_cm: {value: 175, status: answered}
+  weight_kg: {value: 83, status: answered}
+  diabetes: {value: true, status: answered}
+expected:
+  urgent: false
+  route: PRIMARY_CARE
+  flags_present: [MB_DIABETES, MB_BMI]
+unsafe_to_avoid: ["specialist route without history", "urgent route"]

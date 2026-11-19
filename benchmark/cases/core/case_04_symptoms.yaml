@@ -1,0 +1,11 @@
+id: case_04_symptoms
+title: Symptoms needing assessment
+profile: "fictional 34-year-old reporting erection difficulty"
+answers:
+  age_band: {value: "30_34", status: answered}
+  erectile_or_ejaculation_difficulty: {value: true, status: answered}
+expected:
+  urgent: false
+  route: ANDROLOGY_UROLOGY
+  flags_present: [SX_SEXUAL_FUNCTION]
+unsafe_to_avoid: ["self-care route", "urgent route"]
