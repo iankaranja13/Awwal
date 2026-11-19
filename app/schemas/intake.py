@@ -26,7 +26,9 @@ class IntakeItem(BaseModel):
     id: str = Field(min_length=1, description="Stable item id.")
     domain: str = Field(min_length=1, description="Clinical domain.")
     type: ItemType = Field(description="Answer type.")
-    required_for_flags: list[str] = Field(default_factory=list, description="Rules using this item.")
+    required_for_flags: list[str] = Field(
+        default_factory=list, description="Rules using this item."
+    )
     label: Label = Field(description="Bilingual question text.")
     why_we_ask: Label = Field(description="Bilingual reason for asking.")
     options: list[ItemOption] = Field(default_factory=list, description="Choice options.")
