@@ -27,6 +27,438 @@
         }
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Post Login",
+        "description": "Log in a seeded role account and return its token.\n\nArgs:\n    request: Incoming request (for rate limiting).\n    session: Request database session.\n    settings: Application settings.\n    body: Handle with password.\n\nReturns:\n    Session with access token.",
+        "operationId": "post_login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/providers": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Get Providers",
+        "description": "List providers with optional filters.\n\nArgs:\n    _user: Authenticated user (unused beyond authentication).\n    session: Request database session.\n    type: Service type filter.\n    language: Language filter.\n    clinician_gender: Clinician gender filter.\n    tele: Teleconsult filter.\n    home_sampling: Home sampling filter.\n\nReturns:\n    Matching providers ordered by name.",
+        "operationId": "get_providers_api_v1_providers_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReferralType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Language"
+            }
+          },
+          {
+            "name": "clinician_gender",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "male",
+                    "female"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Clinician Gender"
+            }
+          },
+          {
+            "name": "tele",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tele"
+            }
+          },
+          {
+            "name": "home_sampling",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Home Sampling"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderOut"
+                  },
+                  "title": "Response Get Providers Api V1 Providers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/referrals": {
+      "get": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Get Referrals",
+        "description": "List referrals visible to the caller.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n\nReturns:\n    Own referrals for users, all referrals for staff roles.",
+        "operationId": "get_referrals_api_v1_referrals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReferralOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Referrals Api V1 Referrals Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Post Referral",
+        "description": "Create one referral for the caller's own assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    body: Creation request.\n\nReturns:\n    Created referral in clinician review.",
+        "operationId": "post_referral_api_v1_referrals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/referrals/{referral_id}": {
+      "get": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Get Referral",
+        "description": "Return one visible referral.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    referral_id: Referral id.\n\nReturns:\n    Referral with transition history.",
+        "operationId": "get_referral_api_v1_referrals__referral_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/referrals/{referral_id}/status": {
+      "patch": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Patch Referral Status",
+        "description": "Move one referral to a new status.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    referral_id: Referral id.\n    body: Transition request.\n\nReturns:\n    Updated referral.",
+        "operationId": "patch_referral_status_api_v1_referrals__referral_id__status_patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/clinician/queue": {
+      "get": {
+        "tags": [
+          "clinician"
+        ],
+        "summary": "Get Queue",
+        "description": "List referrals awaiting clinician review.\n\nArgs:\n    user: Authenticated clinician (unused beyond authorisation).\n    session: Request database session.\n\nReturns:\n    Queue entries oldest first.",
+        "operationId": "get_queue_api_v1_clinician_queue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QueueEntry"
+                  },
+                  "type": "array",
+                  "title": "Response Get Queue Api V1 Clinician Queue Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/clinician/review": {
+      "post": {
+        "tags": [
+          "clinician"
+        ],
+        "summary": "Post Review",
+        "description": "Record one clinician review and move its referral.\n\nArgs:\n    user: Authenticated clinician.\n    session: Request database session.\n    settings: Application settings.\n    body: Review request.\n\nReturns:\n    Stored review with referral outcome.",
+        "operationId": "post_review_api_v1_clinician_review_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/sessions": {
       "post": {
         "tags": [
@@ -1009,6 +1441,52 @@
         "title": "ConsentStateResponse",
         "description": "Current consent state for all scopes."
       },
+      "ContactIn": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Contact name."
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "Contact phone."
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "Contact email."
+          }
+        },
+        "type": "object",
+        "title": "ContactIn",
+        "description": "Contact details collected at booking."
+      },
       "ExplainRequest": {
         "properties": {
           "assessment_id": {
@@ -1538,6 +2016,31 @@
         "title": "Language",
         "description": "Supported interface language."
       },
+      "LoginRequest": {
+        "properties": {
+          "handle": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Handle",
+            "description": "Account handle."
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "description": "Account password."
+          }
+        },
+        "type": "object",
+        "required": [
+          "handle",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "description": "Role account login request."
+      },
       "MissingItem": {
         "properties": {
           "item_id": {
@@ -1587,6 +2090,497 @@
         ],
         "title": "NextStep",
         "description": "Next step for the selected route."
+      },
+      "ProviderOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Provider id."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider name."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Languages",
+            "description": "Supported languages."
+          },
+          "clinician_gender": {
+            "type": "string",
+            "title": "Clinician Gender",
+            "description": "Clinician gender."
+          },
+          "tele": {
+            "type": "boolean",
+            "title": "Tele",
+            "description": "Whether teleconsult is offered."
+          },
+          "home_sampling": {
+            "type": "boolean",
+            "title": "Home Sampling",
+            "description": "Whether home sampling is offered."
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "description": "Notes."
+          },
+          "mock": {
+            "type": "boolean",
+            "title": "Mock",
+            "description": "Whether this is a mock provider."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "languages",
+          "clinician_gender",
+          "tele",
+          "home_sampling",
+          "notes",
+          "mock"
+        ],
+        "title": "ProviderOut",
+        "description": "One provider directory entry."
+      },
+      "QueueEntry": {
+        "properties": {
+          "referral_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referral Id",
+            "description": "Referral id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "user_handle": {
+            "type": "string",
+            "title": "User Handle",
+            "description": "User handle."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Current status."
+          },
+          "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "Assessment route."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Referral creation time (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "referral_id",
+          "assessment_id",
+          "user_handle",
+          "type",
+          "status",
+          "route",
+          "created_at"
+        ],
+        "title": "QueueEntry",
+        "description": "One clinician queue entry."
+      },
+      "ReferralCreate": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Chosen provider id."
+          },
+          "preferred_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Time",
+            "description": "Preferred time."
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContactIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Contact details."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "type"
+        ],
+        "title": "ReferralCreate",
+        "description": "Referral creation request."
+      },
+      "ReferralEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Event id."
+          },
+          "from_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferralStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Previous status."
+          },
+          "to_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "New status."
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id",
+            "description": "Acting user id (None for system)."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At",
+            "description": "Transition time (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "from_status",
+          "to_status",
+          "actor_id",
+          "at"
+        ],
+        "title": "ReferralEventOut",
+        "description": "One referral transition event."
+      },
+      "ReferralOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Referral id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "Owning user id."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Chosen provider id."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Current status."
+          },
+          "preferred_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Time",
+            "description": "Preferred time."
+          },
+          "appointment_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Time",
+            "description": "Appointment time."
+          },
+          "outcome_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Note",
+            "description": "Decrypted outcome note."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation time (UTC)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "Update time (UTC)."
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ReferralEventOut"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Transitions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assessment_id",
+          "user_id",
+          "type",
+          "provider_id",
+          "status",
+          "preferred_time",
+          "appointment_time",
+          "outcome_note",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ReferralOut",
+        "description": "One referral with its transition history."
+      },
+      "ReferralStatus": {
+        "type": "string",
+        "enum": [
+          "proposed",
+          "clinician_review",
+          "confirmed",
+          "booked",
+          "attended",
+          "result_explained",
+          "closed",
+          "cancelled",
+          "no_show"
+        ],
+        "title": "ReferralStatus",
+        "description": "Referral lifecycle status."
+      },
+      "ReferralType": {
+        "type": "string",
+        "enum": [
+          "teleconsult",
+          "blood_test",
+          "sample_collection",
+          "in_person"
+        ],
+        "title": "ReferralType",
+        "description": "Referral and provider service type."
+      },
+      "ReviewDecision": {
+        "type": "string",
+        "enum": [
+          "approved",
+          "rejected"
+        ],
+        "title": "ReviewDecision",
+        "description": "Clinician review decision."
+      },
+      "ReviewRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Review decision."
+          },
+          "edits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edits",
+            "description": "Structured edits."
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Review notes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "decision"
+        ],
+        "title": "ReviewRequest",
+        "description": "Clinician review request."
+      },
+      "ReviewResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Review id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "reviewer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewer Id",
+            "description": "Reviewing clinician id."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Decision."
+          },
+          "signed_off_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signed Off At",
+            "description": "Sign-off time (UTC)."
+          },
+          "referral_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referral Id",
+            "description": "Affected referral id."
+          },
+          "referral_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Referral status after review."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assessment_id",
+          "reviewer_id",
+          "decision",
+          "signed_off_at",
+          "referral_id",
+          "referral_status"
+        ],
+        "title": "ReviewResponse",
+        "description": "Submitted review with referral outcome."
       },
       "Role": {
         "type": "string",
@@ -1681,6 +2675,46 @@
         ],
         "title": "StaticSafetyMessage",
         "description": "Static urgent safety message."
+      },
+      "StatusUpdate": {
+        "properties": {
+          "to_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Target status."
+          },
+          "appointment_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Time",
+            "description": "Appointment time."
+          },
+          "outcome_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Note",
+            "description": "Outcome note."
+          }
+        },
+        "type": "object",
+        "required": [
+          "to_status"
+        ],
+        "title": "StatusUpdate",
+        "description": "Referral status transition request."
       },
       "TraceResponse": {
         "properties": {

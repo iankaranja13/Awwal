@@ -133,3 +133,17 @@ so allowing them keeps summaries honest; briefs stay out of the
 explanations table so assessment reads never mistake a brief for the
 shown explanation.
 
+## DR-013: Referral semantics
+
+What: referrals are allowed only for andrology/urology, fertility services
+and primary care (never self-care or urgent); one active referral per
+assessment and type; outcome notes and review notes are encrypted at rest;
+reminders are created only with reminders consent; event pairs share a
+timestamp a microsecond apart to keep order deterministic.
+
+Why: self-care needs no booking and urgent needs emergency care, not the
+booking flow; the per-type cap stops duplicate submissions without blocking
+multi-service journeys; encrypted free text follows the privacy rules;
+consent-gated reminders follow the consent rules; distinct stamps keep the
+event history ordered even on second-precision clocks.
+
