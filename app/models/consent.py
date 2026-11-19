@@ -27,7 +27,13 @@ class Consent(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
     scope: Mapped[ConsentScope] = mapped_column(
-        SAEnum(ConsentScope, native_enum=False, validate_strings=True, length=32),
+        SAEnum(
+            ConsentScope,
+            native_enum=False,
+            validate_strings=True,
+            length=32,
+            values_callable=lambda enum: [member.value for member in enum],
+        ),
         nullable=False,
     )
     granted: Mapped[bool] = mapped_column(nullable=False)

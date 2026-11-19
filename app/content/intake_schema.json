@@ -1,0 +1,552 @@
+{
+  "schema_version": "0.1",
+  "items": [
+    {
+      "id": "age_band",
+      "domain": "context",
+      "type": "single_choice",
+      "required_for_flags": [],
+      "label": {"en": "Age band", "ar": "الفئة العمرية"},
+      "why_we_ask": {
+        "en": "Age helps interpret screening results in context.",
+        "ar": "تساعد الفئة العمرية على تفسير نتائج الفحص في سياقها."
+      },
+      "options": [
+        {"value": "18_24", "label": {"en": "18-24", "ar": "18-24"}},
+        {"value": "25_29", "label": {"en": "25-29", "ar": "25-29"}},
+        {"value": "30_34", "label": {"en": "30-34", "ar": "30-34"}},
+        {"value": "35_39", "label": {"en": "35-39", "ar": "35-39"}},
+        {"value": "40_44", "label": {"en": "40-44", "ar": "40-44"}},
+        {"value": "45_plus", "label": {"en": "45 or over", "ar": "45 فأكثر"}}
+      ],
+      "sensitive": false,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "trying_to_conceive",
+      "domain": "context",
+      "type": "single_choice",
+      "required_for_flags": ["LS_TTC_STANDARD", "LS_TTC_EARLIER"],
+      "label": {"en": "Are you currently trying to conceive?", "ar": "هل تحاول الإنجاب حالياً؟"},
+      "why_we_ask": {
+        "en": "Trying to conceive changes which follow-up matters most.",
+        "ar": "محاولة الإنجاب تغير نوع المتابعة الأكثر أهمية."
+      },
+      "options": [
+        {"value": "yes", "label": {"en": "Yes", "ar": "نعم"}},
+        {"value": "no", "label": {"en": "No", "ar": "لا"}},
+        {"value": "not_applicable", "label": {"en": "Not applicable", "ar": "لا ينطبق"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "months_trying",
+      "domain": "context",
+      "type": "number",
+      "required_for_flags": ["LS_TTC_STANDARD", "LS_TTC_EARLIER"],
+      "label": {"en": "How many months have you been trying to conceive?", "ar": "منذ كم شهراً تحاول الإنجاب؟"},
+      "why_we_ask": {
+        "en": "The number of months trying determines whether follow-up is suggested.",
+        "ar": "عدد أشهر المحاولة يحدد الحاجة إلى المتابعة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true,
+      "min_value": 0,
+      "max_value": 600
+    },
+    {
+      "id": "partner_age_band",
+      "domain": "context",
+      "type": "single_choice",
+      "required_for_flags": ["LS_TTC_EARLIER"],
+      "label": {"en": "Partner age band (only if applicable)", "ar": "الفئة العمرية للشريك (إن وجد)"},
+      "why_we_ask": {
+        "en": "If you are trying to conceive with a partner, their age band can adjust timing.",
+        "ar": "إذا كنت تحاول الإنجاب مع شريك، فقد تؤثر فئته العمرية على توقيت المتابعة."
+      },
+      "options": [
+        {"value": "under_30", "label": {"en": "Under 30", "ar": "أقل من 30"}},
+        {"value": "30_34", "label": {"en": "30-34", "ar": "30-34"}},
+        {"value": "35_plus", "label": {"en": "35 or over", "ar": "35 فأكثر"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": true,
+      "needs_native_review": true
+    },
+    {
+      "id": "undescended_testis",
+      "domain": "anatomical_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_UNDESCENDED_TESTIS"],
+      "label": {"en": "Were you born with an undescended testis?", "ar": "هل ولدت بخصية معلقة؟"},
+      "why_we_ask": {
+        "en": "Undescended testis is linked to later fertility assessment needs.",
+        "ar": "الخصية المعلقة مرتبطة بالحاجة إلى تقييم الخصوبة لاحقاً."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "testicular_torsion",
+      "domain": "anatomical_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_TORSION_INJURY_SURGERY"],
+      "label": {"en": "Have you had testicular torsion (twisting)?", "ar": "هل أصبت بالتواء الخصية؟"},
+      "why_we_ask": {
+        "en": "Torsion can affect testicular health and needs review.",
+        "ar": "التواء الخصية قد يؤثر على صحة الخصية ويحتاج إلى مراجعة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "testicular_injury_or_surgery",
+      "domain": "anatomical_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_TORSION_INJURY_SURGERY"],
+      "label": {"en": "Have you had testicular injury or surgery?", "ar": "هل تعرضت لإصابة أو جراحة في الخصية؟"},
+      "why_we_ask": {
+        "en": "Past injury or surgery can affect current assessment.",
+        "ar": "الإصابة أو الجراحة السابقة قد تؤثر على التقييم الحالي."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "hernia_or_genital_surgery",
+      "domain": "anatomical_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_HERNIA_GENITAL_SURGERY"],
+      "label": {"en": "Have you had hernia or genital surgery?", "ar": "هل أجريت جراحة فتق أو جراحة تناسلية؟"},
+      "why_we_ask": {
+        "en": "Some surgeries can affect fertility pathways.",
+        "ar": "بعض الجراحات قد تؤثر على مسارات الخصوبة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "known_varicocele",
+      "domain": "anatomical_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_VARICOCELE"],
+      "label": {"en": "Have you been told you have a varicocele?", "ar": "هل قيل لك إن لديك دوالي في الخصية؟"},
+      "why_we_ask": {
+        "en": "Varicocele is a common and assessable finding.",
+        "ar": "دوالي الخصية من الحالات الشائعة القابلة للتقييم."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "genital_infection_or_inflammation",
+      "domain": "infection_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_GENITAL_INFECTION"],
+      "label": {"en": "Have you had a genital infection or inflammation?", "ar": "هل أصبت بعدوى أو التهاب تناسلي؟"},
+      "why_we_ask": {
+        "en": "Past infections can affect fertility and need review.",
+        "ar": "العدوى السابقة قد تؤثر على الخصوبة وتحتاج إلى مراجعة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "sti_history",
+      "domain": "infection_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_STI"],
+      "label": {"en": "Have you had a sexually transmitted infection?", "ar": "هل أصبت بعدوى منقولة جنسياً؟"},
+      "why_we_ask": {
+        "en": "Some infections benefit from follow-up screening.",
+        "ar": "بعض أنواع العدوى تستفيد من فحص المتابعة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "mumps_testicular_inflammation",
+      "domain": "infection_history",
+      "type": "boolean",
+      "required_for_flags": ["HX_MUMPS"],
+      "label": {"en": "Have you had mumps with testicular swelling?", "ar": "هل أصبت بالنكاف مع تورم في الخصية؟"},
+      "why_we_ask": {
+        "en": "Mumps-related swelling can affect later assessment.",
+        "ar": "التورم المرتبط بالنكاف قد يؤثر على التقييم اللاحق."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "height_cm",
+      "domain": "metabolic",
+      "type": "number",
+      "required_for_flags": ["MB_BMI"],
+      "label": {"en": "Height in centimetres", "ar": "الطول بالسنتيمتر"},
+      "why_we_ask": {
+        "en": "Height and weight are used to compute BMI for screening.",
+        "ar": "يُستخدم الطول والوزن لحساب مؤشر كتلة الجسم لأغراض الفحص."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true,
+      "min_value": 50,
+      "max_value": 300
+    },
+    {
+      "id": "weight_kg",
+      "domain": "metabolic",
+      "type": "number",
+      "required_for_flags": ["MB_BMI"],
+      "label": {"en": "Weight in kilograms", "ar": "الوزن بالكيلوغرام"},
+      "why_we_ask": {
+        "en": "Height and weight are used to compute BMI for screening.",
+        "ar": "يُستخدم الطول والوزن لحساب مؤشر كتلة الجسم لأغراض الفحص."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true,
+      "min_value": 20,
+      "max_value": 500
+    },
+    {
+      "id": "diabetes",
+      "domain": "metabolic",
+      "type": "boolean",
+      "required_for_flags": ["MB_DIABETES"],
+      "label": {"en": "Do you have diabetes?", "ar": "هل لديك داء السكري؟"},
+      "why_we_ask": {
+        "en": "Diabetes can affect reproductive health and needs care.",
+        "ar": "السكري قد يؤثر على الصحة الإنجابية ويحتاج إلى رعاية."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "high_blood_pressure",
+      "domain": "metabolic",
+      "type": "boolean",
+      "required_for_flags": ["MB_HYPERTENSION"],
+      "label": {"en": "Do you have high blood pressure?", "ar": "هل لديك ارتفاع في ضغط الدم؟"},
+      "why_we_ask": {
+        "en": "Blood pressure is part of general health review.",
+        "ar": "ضغط الدم جزء من مراجعة الصحة العامة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "high_cholesterol",
+      "domain": "metabolic",
+      "type": "boolean",
+      "required_for_flags": ["MB_CHOLESTEROL"],
+      "label": {"en": "Do you have high cholesterol?", "ar": "هل لديك ارتفاع في الكوليسترول؟"},
+      "why_we_ask": {
+        "en": "Cholesterol is part of general health review.",
+        "ar": "الكوليسترول جزء من مراجعة الصحة العامة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "tobacco_vaping_shisha",
+      "domain": "lifestyle_exposures",
+      "type": "single_choice",
+      "required_for_flags": ["LS_TOBACCO"],
+      "label": {"en": "Do you use tobacco, vaping or shisha?", "ar": "هل تتعاطى التبغ أو السجائر الإلكترونية أو الشيشة؟"},
+      "why_we_ask": {
+        "en": "Tobacco and nicotine use can affect fertility and can be changed.",
+        "ar": "تعاطي التبغ والنيكوتين قد يؤثر على الخصوبة ويمكن تغييره."
+      },
+      "options": [
+        {"value": "never", "label": {"en": "Never", "ar": "أبداً"}},
+        {"value": "former", "label": {"en": "Formerly", "ar": "سابقاً"}},
+        {"value": "current", "label": {"en": "Currently", "ar": "حالياً"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "alcohol_use",
+      "domain": "lifestyle_exposures",
+      "type": "single_choice",
+      "required_for_flags": ["LS_ALCOHOL"],
+      "label": {"en": "Do you drink alcohol?", "ar": "هل تشرب الكحول؟"},
+      "why_we_ask": {
+        "en": "Regular alcohol use can affect fertility.",
+        "ar": "تعاطي الكحول بانتظام قد يؤثر على الخصوبة."
+      },
+      "options": [
+        {"value": "never", "label": {"en": "Never", "ar": "أبداً"}},
+        {"value": "occasional", "label": {"en": "Occasionally", "ar": "أحياناً"}},
+        {"value": "regular", "label": {"en": "Regularly", "ar": "بانتظام"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "anabolic_steroids_or_testosterone",
+      "domain": "lifestyle_exposures",
+      "type": "single_choice",
+      "required_for_flags": ["LS_ANABOLIC_STEROIDS"],
+      "label": {"en": "Have you used anabolic steroids or testosterone products?", "ar": "هل تعاطيت الستيرويدات البنائية أو منتجات التستوستيرون؟"},
+      "why_we_ask": {
+        "en": "These products can strongly affect fertility.",
+        "ar": "هذه المنتجات قد تؤثر بقوة على الخصوبة."
+      },
+      "options": [
+        {"value": "never", "label": {"en": "Never", "ar": "أبداً"}},
+        {"value": "former", "label": {"en": "Formerly", "ar": "سابقاً"}},
+        {"value": "current", "label": {"en": "Currently", "ar": "حالياً"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "other_substances",
+      "domain": "lifestyle_exposures",
+      "type": "single_choice",
+      "required_for_flags": ["LS_SUBSTANCES"],
+      "label": {"en": "Do you use other recreational substances?", "ar": "هل تتعاطى مواد ترفيهية أخرى؟"},
+      "why_we_ask": {
+        "en": "Some substances can affect fertility and support is available.",
+        "ar": "بعض المواد قد تؤثر على الخصوبة والدعم متاح."
+      },
+      "options": [
+        {"value": "never", "label": {"en": "Never", "ar": "أبداً"}},
+        {"value": "former", "label": {"en": "Formerly", "ar": "سابقاً"}},
+        {"value": "current", "label": {"en": "Currently", "ar": "حالياً"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "occupational_heat_or_chemicals",
+      "domain": "lifestyle_exposures",
+      "type": "boolean",
+      "required_for_flags": ["LS_OCCUPATIONAL"],
+      "label": {"en": "Are you exposed to high heat or chemicals at work?", "ar": "هل تتعرض لحرارة شديدة أو مواد كيميائية في العمل؟"},
+      "why_we_ask": {
+        "en": "Workplace exposures can affect fertility and can be reduced.",
+        "ar": "التعرض المهني قد يؤثر على الخصوبة ويمكن تقليله."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "chemotherapy_or_radiation",
+      "domain": "medical",
+      "type": "boolean",
+      "required_for_flags": ["MX_CHEMO_RADIATION"],
+      "label": {"en": "Have you had chemotherapy or radiation treatment?", "ar": "هل تلقيت علاجاً كيميائياً أو إشعاعياً؟"},
+      "why_we_ask": {
+        "en": "These treatments can affect fertility and need specialist review.",
+        "ar": "هذه العلاجات قد تؤثر على الخصوبة وتحتاج إلى مراجعة مختص."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "regular_medications_text",
+      "domain": "medical",
+      "type": "text",
+      "required_for_flags": [],
+      "label": {"en": "List regular medications (optional)", "ar": "اذكر الأدوية المنتظمة (اختياري)"},
+      "why_we_ask": {
+        "en": "Some medications matter for assessment; details stay private.",
+        "ar": "بعض الأدوية مهمة للتقييم وتبقى التفاصيل سرية."
+      },
+      "sensitive": true,
+      "optional_by_design": true,
+      "needs_native_review": true,
+      "max_length": 2000
+    },
+    {
+      "id": "chronic_conditions",
+      "domain": "medical",
+      "type": "boolean",
+      "required_for_flags": ["MX_CHRONIC"],
+      "label": {"en": "Do you have any chronic health conditions?", "ar": "هل لديك أي أمراض مزمنة؟"},
+      "why_we_ask": {
+        "en": "Chronic conditions help complete the health picture.",
+        "ar": "الأمراض المزمنة تساعد على اكتمال الصورة الصحية."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "low_desire_or_sexual_function_change",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["SX_SEXUAL_FUNCTION"],
+      "label": {"en": "Have you noticed low desire or sexual function changes?", "ar": "هل لاحظت انخفاض الرغبة أو تغيراً في الوظيفة الجنسية؟"},
+      "why_we_ask": {
+        "en": "These changes can signal issues worth assessing.",
+        "ar": "هذه التغيرات قد تشير إلى أمور تستحق التقييم."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "erectile_or_ejaculation_difficulty",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["SX_SEXUAL_FUNCTION"],
+      "label": {"en": "Do you have erection or ejaculation difficulty?", "ar": "هل لديك صعوبة في الانتصاب أو القذف؟"},
+      "why_we_ask": {
+        "en": "These difficulties are common, treatable topics to raise.",
+        "ar": "هذه الصعوبات شائعة وقابلة للعلاج ومن المهم ذكرها."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "testicular_lump",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["RF_TESTICULAR_LUMP"],
+      "label": {"en": "Have you noticed a new lump in a testis?", "ar": "هل لاحظت كتلة جديدة في الخصية؟"},
+      "why_we_ask": {
+        "en": "A new lump needs prompt in-person assessment.",
+        "ar": "الكتلة الجديدة تحتاج إلى تقييم حضوري عاجل."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "testicular_swelling",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["RF_RAPID_SWELLING"],
+      "label": {"en": "Do you have testicular swelling?", "ar": "هل لديك تورم في الخصية؟"},
+      "why_we_ask": {
+        "en": "Swelling can need prompt assessment.",
+        "ar": "التورم قد يحتاج إلى تقييم عاجل."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "testicular_pain_sudden_severe",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["RF_SUDDEN_SEVERE_TESTICULAR_PAIN"],
+      "label": {"en": "Do you have sudden severe testicular pain?", "ar": "هل لديك ألم شديد مفاجئ في الخصية؟"},
+      "why_we_ask": {
+        "en": "Sudden severe pain needs emergency care right away.",
+        "ar": "الألم الشديد المفاجئ يحتاج إلى رعاية طارئة فوراً."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "fever_with_testicular_pain",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["RF_FEVER_WITH_PAIN"],
+      "label": {"en": "Do you have fever with testicular pain?", "ar": "هل لديك حمى مع ألم في الخصية؟"},
+      "why_we_ask": {
+        "en": "Fever with pain can signal infection needing prompt care.",
+        "ar": "الحمى مع الألم قد تشير إلى عدوى تحتاج إلى رعاية عاجلة."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "blood_in_semen",
+      "domain": "symptoms",
+      "type": "boolean",
+      "required_for_flags": ["RF_BLOOD_IN_SEMEN"],
+      "label": {"en": "Have you noticed blood in your semen?", "ar": "هل لاحظت دماً في السائل المنوي؟"},
+      "why_we_ask": {
+        "en": "Blood in semen needs in-person assessment.",
+        "ar": "الدم في السائل المنوي يحتاج إلى تقييم حضوري."
+      },
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "prior_semen_analysis_result",
+      "domain": "prior_tests",
+      "type": "single_choice",
+      "required_for_flags": ["PX_ABNORMAL_SEMEN"],
+      "label": {"en": "What was your last semen analysis result?", "ar": "ما نتيجة آخر تحليل للسائل المنوي؟"},
+      "why_we_ask": {
+        "en": "A past result helps avoid repeating tests.",
+        "ar": "النتيجة السابقة تساعد على تجنب تكرار الفحوصات."
+      },
+      "options": [
+        {"value": "normal", "label": {"en": "Normal", "ar": "طبيعية"}},
+        {"value": "abnormal", "label": {"en": "Abnormal", "ar": "غير طبيعية"}},
+        {"value": "not_done", "label": {"en": "Not done", "ar": "لم يُجرَ"}},
+        {"value": "unsure", "label": {"en": "Unsure", "ar": "غير متأكد"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": false,
+      "needs_native_review": true
+    },
+    {
+      "id": "prior_hormone_result",
+      "domain": "prior_tests",
+      "type": "single_choice",
+      "required_for_flags": ["PX_ABNORMAL_HORMONE"],
+      "label": {"en": "What was your last hormone result? (optional)", "ar": "ما نتيجة آخر تحليل للهرمونات؟ (اختياري)"},
+      "why_we_ask": {
+        "en": "Past hormone results add context when available.",
+        "ar": "نتائج الهرمونات السابقة تضيف سياقاً عند توفرها."
+      },
+      "options": [
+        {"value": "normal", "label": {"en": "Normal", "ar": "طبيعية"}},
+        {"value": "abnormal", "label": {"en": "Abnormal", "ar": "غير طبيعية"}},
+        {"value": "not_done", "label": {"en": "Not done", "ar": "لم يُجرَ"}},
+        {"value": "unsure", "label": {"en": "Unsure", "ar": "غير متأكد"}}
+      ],
+      "sensitive": true,
+      "optional_by_design": true,
+      "needs_native_review": true
+    },
+    {
+      "id": "family_history_infertility_or_genetic",
+      "domain": "family_genetic",
+      "type": "boolean",
+      "required_for_flags": ["FH_FAMILY_HISTORY"],
+      "label": {"en": "Is there infertility or genetic conditions in your family? (optional)", "ar": "هل يوجد عقم أو أمراض وراثية في عائلتك؟ (اختياري)"},
+      "why_we_ask": {
+        "en": "Family patterns can guide specialist referral.",
+        "ar": "الأنماط العائلية قد توجه الإحالة إلى المختص."
+      },
+      "sensitive": true,
+      "optional_by_design": true,
+      "needs_native_review": true
+    }
+  ]
+}

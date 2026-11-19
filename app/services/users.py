@@ -60,7 +60,9 @@ def create_anonymous_user(session: Session, language: Language) -> User:
                 )
                 session.add(user)
                 session.flush()
-        except IntegrityError:
+        except IntegrityError as exc:
+            if "pseudonymous_handle" not in str(exc.orig or exc):
+                raise
             continue
         return user
     raise ConflictError("Could not allocate a user handle.")

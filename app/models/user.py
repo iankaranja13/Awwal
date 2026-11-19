@@ -25,10 +25,24 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     pseudonymous_handle: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     role: Mapped[Role] = mapped_column(
-        SAEnum(Role, native_enum=False, validate_strings=True, length=16), nullable=False
+        SAEnum(
+            Role,
+            native_enum=False,
+            validate_strings=True,
+            length=16,
+            values_callable=lambda enum: [member.value for member in enum],
+        ),
+        nullable=False,
     )
     language: Mapped[Language] = mapped_column(
-        SAEnum(Language, native_enum=False, validate_strings=True, length=8), nullable=False
+        SAEnum(
+            Language,
+            native_enum=False,
+            validate_strings=True,
+            length=8,
+            values_callable=lambda enum: [member.value for member in enum],
+        ),
+        nullable=False,
     )
     contact_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
     password_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
