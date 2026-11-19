@@ -14,6 +14,8 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.core.config import Settings, get_settings  # noqa: E402
 from app.main import create_app  # noqa: E402
+from app.rules_engine import RuleSet, load_rules  # noqa: E402
+from tests.unit.rule_helpers import REAL_RULES_DIR  # noqa: E402
 
 
 @pytest.fixture()
@@ -38,3 +40,9 @@ def client(test_settings: Settings) -> TestClient:
     app = create_app(test_settings)
     app.dependency_overrides[get_settings] = lambda: test_settings
     return TestClient(app)
+
+
+@pytest.fixture(scope="session")
+def ruleset() -> RuleSet:
+    """Load the real v0.1 rule set once per session."""
+    return load_rules(REAL_RULES_DIR, "0.1")
