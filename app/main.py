@@ -9,7 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.assess import router as assess_router
+from app.api.auth import router as auth_router
+from app.api.clinician import router as clinician_router
 from app.api.consent import router as consent_router
+from app.api.providers import router as providers_router
+from app.api.referrals import router as referrals_router
 from app.api.explain import router as explain_router
 from app.api.health import build_health_response, router as health_router
 from app.api.intake import router as intake_router
@@ -110,6 +114,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     register_error_handlers(app)
     app.include_router(health_router, prefix="/api/v1")
+    app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(providers_router, prefix="/api/v1")
+    app.include_router(referrals_router, prefix="/api/v1")
+    app.include_router(clinician_router, prefix="/api/v1")
     app.include_router(sessions_router, prefix="/api/v1")
     app.include_router(consent_router, prefix="/api/v1")
     app.include_router(explain_router, prefix="/api/v1")

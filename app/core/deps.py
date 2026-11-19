@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
-from app.core.enums import ConsentScope, Language
-from app.core.errors import AuthError, ConsentRequiredError
+from app.core.enums import ConsentScope, Language, Role
+from app.core.errors import AuthError, ConsentRequiredError, ForbiddenError
 from app.core.security import decode_access_token
 from app.llm.client import LLMClient, create_client
 from app.models import User
@@ -92,6 +92,35 @@ def require_consent(scope: ConsentScope) -> Callable[[User, Session], User]:
 
 
 ConsentedIntakeUser = Annotated[User, Depends(require_consent(ConsentScope.INTAKE))]
+
+
+def require_role(*roles: Role) -> Callable[[User], User]:
+    """Build a dependency enforcing caller roles.
+
+    Args:
+        roles: Allowed roles.
+
+    Returns:
+        Dependency returning the user when the role matches.
+    """
+
+    def _check_role(user: CurrentUserDep) -> User:
+        """Enforce the allowed roles for the current user.
+
+        Args:
+            user: Authenticated user.
+
+        Returns:
+            The user when the role matches.
+
+        Raises:
+            ForbiddenError: When the role is not allowed.
+        """
+        if user.role not in roles:
+            raise ForbiddenError("Role cannot perform this action.")
+        return user
+
+    return _check_role
 
 
 def get_language(
