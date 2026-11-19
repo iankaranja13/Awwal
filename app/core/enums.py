@@ -29,3 +29,37 @@ class Route(str, Enum):
     PRIMARY_CARE = "PRIMARY_CARE"
     SELF_CARE = "SELF_CARE"
     SELF_CARE_PROVISIONAL = "SELF_CARE_PROVISIONAL"
+
+
+class Role(str, Enum):
+    """Caller role."""
+
+    USER = "user"
+    NAVIGATOR = "navigator"
+    CLINICIAN = "clinician"
+
+
+class Language(str, Enum):
+    """Supported interface language."""
+
+    EN = "en"
+    AR = "ar"
+
+
+class ConsentScope(str, Enum):
+    """Consent scope for data use."""
+
+    INTAKE = "intake"
+    SHARE_WITH_CLINICIAN = "share_with_clinician"
+    REMINDERS = "reminders"
+    AGGREGATE_ANALYTICS = "aggregate_analytics"
+
+
+class ItemType(str, Enum):
+    """Intake schema item type."""
+
+    BOOLEAN = "boolean"
+    SINGLE_CHOICE = "single_choice"
+    MULTI_CHOICE = "multi_choice"
+    NUMBER = "number"
+    TEXT = "text"

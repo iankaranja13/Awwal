@@ -1,18 +1,9 @@
 """SQLAlchemy models and declarative base."""
 
-from sqlalchemy import MetaData
-from sqlalchemy.orm import DeclarativeBase
+from app.models.audit import AuditLog
+from app.models.base import Base
+from app.models.consent import Consent
+from app.models.intake import IntakeAnswers
+from app.models.user import User
 
-
-class Base(DeclarativeBase):
-    """Declarative base for all ORM models."""
-
-    metadata = MetaData(
-        naming_convention={
-            "ix": "ix_%(column_0_label)s",
-            "uq": "uq_%(table_name)s_%(column_0_name)s",
-            "ck": "ck_%(table_name)s_%(constraint_name)s",
-            "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-            "pk": "pk_%(table_name)s",
-        }
-    )
+__all__ = ["AuditLog", "Base", "Consent", "IntakeAnswers", "User"]

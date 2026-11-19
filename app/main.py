@@ -1,11 +1,15 @@
 """FastAPI application factory and router wiring."""
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.health import build_health_response, router as health_router
 from app.core.config import Settings, get_settings
+from app.core.database import create_engine_for, create_session_factory
 from app.core.deps import SettingsDep
 from app.core.errors import register_error_handlers
 from app.core.logging import RequestIdMiddleware, configure_logging
@@ -23,13 +27,31 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     """
     resolved = settings if settings is not None else get_settings()
     configure_logging(resolved.log_level)
+    engine = create_engine_for(resolved.database_url)
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        """Dispose the database engine on shutdown.
+
+        Args:
+            _app: Application instance (unused).
+
+        Yields:
+            Control to the running application.
+        """
+        yield
+        engine.dispose()
+
     app = FastAPI(
         title="Awwal API",
         version=__version__,
         docs_url="/api/docs",
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
+        lifespan=lifespan,
     )
+    app.state.session_factory = create_session_factory(engine)
+    app.state.rate_limit_buckets = {}
     app.add_middleware(RequestIdMiddleware)
     app.add_middleware(
         CORSMiddleware,
