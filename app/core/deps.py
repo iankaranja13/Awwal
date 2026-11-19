@@ -1,5 +1,6 @@
 """Shared FastAPI dependencies."""
 
+from collections.abc import Callable
 from typing import Annotated
 from uuid import UUID
 
@@ -9,9 +10,11 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
-from app.core.errors import AuthError
+from app.core.enums import ConsentScope
+from app.core.errors import AuthError, ConsentRequiredError
 from app.core.security import decode_access_token
 from app.models import User
+from app.services.consent import has_consent
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 SessionDep = Annotated[Session, Depends(get_db)]
@@ -55,3 +58,33 @@ def get_current_user(
 
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
+
+
+def require_consent(scope: ConsentScope) -> Callable[[User, Session], User]:
+    """Build a dependency enforcing one consent scope.
+
+    Args:
+        scope: Required consent scope.
+
+    Returns:
+        Dependency returning the user when consent holds.
+    """
+
+    def _check_consent(user: CurrentUserDep, session: SessionDep) -> User:
+        """Enforce the consent scope for the current user.
+
+        Args:
+            user: Authenticated user.
+            session: Request database session.
+
+        Returns:
+            The user when consent holds.
+
+        Raises:
+            ConsentRequiredError: When the scope was not granted.
+        """
+        if not has_consent(session, user.id, scope):
+            raise ConsentRequiredError(details={"scope": scope.value})
+        return user
+
+    return _check_consent
