@@ -117,6 +117,14 @@ class RateLimitedError(AwwalError):
     status_code = 429
 
 
+class ConflictError(AwwalError):
+    """The request conflicts with current state."""
+
+    code = "CONFLICT"
+    message = "Request conflicts with current state."
+    status_code = 409
+
+
 class CryptoError(AwwalError):
     """Stored data could not be decrypted."""
 

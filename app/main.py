@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.health import build_health_response, router as health_router
+from app.api.sessions import router as sessions_router
 from app.core.config import Settings, get_settings
 from app.core.database import create_engine_for, create_session_factory
 from app.core.deps import SettingsDep
@@ -62,6 +63,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     register_error_handlers(app)
     app.include_router(health_router, prefix="/api/v1")
+    app.include_router(sessions_router, prefix="/api/v1")
 
     @app.get("/health", response_model=HealthResponse, include_in_schema=False)
     def health_alias(settings_dep: SettingsDep) -> HealthResponse:

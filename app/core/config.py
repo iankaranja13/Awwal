@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     enable_dev_admin: bool = Field(
         default=True, description="Enable dev-only reset/seed endpoints."
     )
+    rate_limit_per_minute: int = Field(
+        default=20, gt=0, description="Rate limit for guarded endpoints."
+    )
+    rate_limit_window_seconds: float = Field(
+        default=60.0, gt=0, description="Rate limit window in seconds."
+    )
 
     @field_validator("field_encryption_key")
     @classmethod
