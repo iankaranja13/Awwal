@@ -1,0 +1,11 @@
+{
+  "needs_native_review": true,
+  "steps": {
+    "URGENT": "Seek care now as described in the safety message above.",
+    "ANDROLOGY_UROLOGY": "Book an andrology or urology review; a clinician will confirm the referral first.",
+    "FERTILITY_SERVICES": "Book a fertility services consultation; a clinician will confirm the referral first.",
+    "PRIMARY_CARE": "Book a primary-care appointment to review these results; a clinician will confirm the referral first.",
+    "SELF_CARE_PROVISIONAL": "Answer the missing questions so the screening can be completed; this is not a clinical clearance.",
+    "SELF_CARE": "No signal from what you provided; this is not a clinical clearance. Retake the screening if anything changes."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "needs_native_review": true,
+  "messages": {
+    "SAFETY_URGENT_PAIN": {
+      "title": "Seek emergency care now",
+      "body": "Sudden severe testicular pain can be an emergency (for example torsion). Go to an emergency department or call emergency services immediately. Do not wait to see if it improves."
+    },
+    "SAFETY_URGENT_LUMP": {
+      "title": "See a doctor promptly",
+      "body": "A new testicular lump needs prompt in-person assessment. Book an urgent appointment with your doctor or visit urgent care within days, sooner if it changes quickly."
+    },
+    "SAFETY_URGENT_SWELLING": {
+      "title": "Seek urgent care",
+      "body": "Rapidly increasing swelling needs urgent in-person assessment. Visit urgent care or an emergency department promptly."
+    },
+    "SAFETY_URGENT_FEVER_PAIN": {
+      "title": "Seek urgent care",
+      "body": "Fever with testicular pain can signal an infection needing prompt treatment. Visit urgent care or your doctor promptly."
+    },
+    "SAFETY_URGENT_BLOOD": {
+      "title": "See a doctor promptly",
+      "body": "Blood in semen needs in-person assessment. Book an appointment with your doctor; seek urgent care if bleeding is heavy or you have severe pain or fever."
+    }
+  }
+}

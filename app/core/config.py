@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     rate_limit_window_seconds: float = Field(
         default=60.0, gt=0, description="Rate limit window in seconds."
     )
+    rules_version: str = Field(default="0.1", description="Rule version to load.")
 
     @field_validator("field_encryption_key")
     @classmethod

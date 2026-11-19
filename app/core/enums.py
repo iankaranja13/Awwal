@@ -63,3 +63,11 @@ class ItemType(str, Enum):
     MULTI_CHOICE = "multi_choice"
     NUMBER = "number"
     TEXT = "text"
+
+
+class ExplanationSource(str, Enum):
+    """Explanation origin."""
+
+    LLM = "llm"
+    TEMPLATE = "template"
+    STATIC = "static"

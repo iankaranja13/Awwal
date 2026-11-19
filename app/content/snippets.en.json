@@ -1,0 +1,29 @@
+{
+  "needs_native_review": true,
+  "snippets": {
+    "SNP_TTC_STANDARD": "You have been trying to conceive long enough that a fertility assessment is usually discussed at this point.",
+    "SNP_TTC_EARLIER": "With the timing you shared, earlier follow-up is usually discussed.",
+    "SNP_UNDESCENDED_TESTIS": "A history of undescended testis is one reason doctors suggest a fertility review.",
+    "SNP_TORSION_INJURY_SURGERY": "Past torsion, injury or surgery can affect testicular health, so review is suggested.",
+    "SNP_HERNIA_SURGERY": "Hernia or genital surgery history is worth mentioning at a review.",
+    "SNP_VARICOCELE": "A known varicocele is a common finding that can be assessed further.",
+    "SNP_GENITAL_INFECTION": "Past genital infection or inflammation is relevant background for review.",
+    "SNP_STI": "A past sexually transmitted infection is worth follow-up screening.",
+    "SNP_MUMPS": "Mumps with testicular swelling is relevant background for review.",
+    "SNP_BMI": "Your BMI is at a level where weight is usually discussed as part of health review.",
+    "SNP_DIABETES": "Diabetes is managed together with general and reproductive health.",
+    "SNP_HYPERTENSION": "Blood pressure is reviewed as part of general health.",
+    "SNP_CHOLESTEROL": "Cholesterol is reviewed as part of general health.",
+    "SNP_TOBACCO": "Tobacco, vaping or shisha use can affect fertility, and cutting down helps.",
+    "SNP_ALCOHOL": "Regular alcohol use can affect fertility, and cutting down helps.",
+    "SNP_ANABOLIC": "Steroid or testosterone products can strongly affect fertility; never stop prescribed treatment without medical advice.",
+    "SNP_SUBSTANCES": "Some substances can affect fertility; support services can help.",
+    "SNP_OCCUPATIONAL": "Workplace heat or chemical exposure can matter; protection and review help.",
+    "SNP_CHEMO_RADIATION": "Past chemotherapy or radiation is important background for specialist review.",
+    "SNP_CHRONIC": "Chronic conditions are part of the overall health picture.",
+    "SNP_SEXUAL_FUNCTION": "Changes in desire or sexual function are common reasons to seek review.",
+    "SNP_ABNORMAL_SEMEN": "A past abnormal semen result is usually reviewed with a specialist.",
+    "SNP_ABNORMAL_HORMONE": "A past abnormal hormone result adds context for review.",
+    "SNP_FAMILY_HISTORY": "Family patterns are useful background for review."
+  }
+}
