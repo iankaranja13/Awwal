@@ -61,6 +61,9 @@ class ExplainerFile(BaseModel):
     summary_provisional: str = Field(description="Summary for incomplete screening.")
     summary_clear: str = Field(description="Summary for no signals.")
     modifiable_note: str = Field(min_length=1, description="Modifiable factor note.")
+    brief_scope_owner: str = Field(min_length=1, description="Owner-view scope note.")
+    brief_rationale_prefix: str = Field(min_length=1, description="Route rationale prefix.")
+    brief_rationale_none: str = Field(min_length=1, description="Rationale when undriven.")
 
 
 def _load_json(content_dir: str, name: str) -> Any:
