@@ -1,0 +1,22 @@
+name: backend-ci
+
+on:
+  push:
+    branches: ["main", "master", "feature/awwal-backend"]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Phase 0 tests need no database; add a postgres service in Phase 2.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        run: pip install uv
+      - name: Install dependencies
+        run: make dev
+      - name: Quality gate
+        run: make check
