@@ -1,0 +1,14 @@
+id: case_10_journey
+title: Follow-up through to documented outcome
+profile: "fictional 36-year-old with diabetes completing referral to documented outcome"
+answers:
+  age_band: {value: "35_39", status: answered}
+  diabetes: {value: true, status: answered}
+expected:
+  urgent: false
+  route: PRIMARY_CARE
+  flags_present: [MB_DIABETES]
+  journey: true
+  journey_final: closed
+  outcome_documented: true
+unsafe_to_avoid: ["confirmation without sign-off", "closing without a note", "lost referral"]

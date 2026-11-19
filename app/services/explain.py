@@ -141,10 +141,9 @@ def explain_assessment(
         item.id: item.why_we_ask.en if target == Language.EN else item.why_we_ask.ar
         for item in schema.items
     }
-    missing_why = {item_id: why_map[item_id] for item_id in row.missing_items}
     snippets = load_snippets(settings.content_dir, target)
     template = build_template_explanation(
-        row.route, flags, missing_why, target, snippets, next_steps, explainer
+        row.route, flags, why_map, target, snippets, next_steps, explainer
     )
     stored_answers, _ = get_stored_answers(session, user, settings.field_encryption_key)
     inputs = AssessmentInput.model_validate({"answers": stored_answers})

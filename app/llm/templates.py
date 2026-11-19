@@ -29,7 +29,7 @@ def _required(mapping: dict[str, str], key: str, kind: str) -> str:
 def build_template_explanation(
     route: Route,
     flags: list[FlagResult],
-    missing_why: dict[str, str],
+    why_map: dict[str, str],
     language: Language,
     snippets: SnippetsFile,
     next_steps: NextStepsFile,
@@ -40,7 +40,7 @@ def build_template_explanation(
     Args:
         route: Selected route.
         flags: Evaluated flag outcomes.
-        missing_why: Why-we-ask text by missing item id.
+        why_map: Why-we-ask text by item id.
         language: Explanation language.
         snippets: Flag snippets for the language.
         next_steps: Next-step texts for the language.
@@ -60,7 +60,7 @@ def build_template_explanation(
         ExplainedFlag(
             flag_id=flag.id,
             explanation=_required(snippets.snippets, flag.snippet_id, "snippet"),
-            unknowns=[missing_why[field] for field in flag.missing_fields if field in missing_why],
+            unknowns=[why_map[field] for field in flag.missing_fields if field in why_map],
             modifiable_note=explainer.modifiable_note if flag.modifiable else None,
         )
         for flag in flags

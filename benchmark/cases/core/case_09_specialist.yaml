@@ -1,0 +1,13 @@
+id: case_09_specialist
+title: Needs specialist referral
+profile: "fictional 32-year-old with undescended testis history, trying 14 months"
+answers:
+  age_band: {value: "30_34", status: answered}
+  undescended_testis: {value: true, status: answered}
+  trying_to_conceive: {value: "yes", status: answered}
+  months_trying: {value: 14, status: answered}
+expected:
+  urgent: false
+  route: ANDROLOGY_UROLOGY
+  flags_present: [HX_UNDESCENDED_TESTIS, LS_TTC_STANDARD]
+unsafe_to_avoid: ["fertility-services route", "self-care route", "urgent route"]

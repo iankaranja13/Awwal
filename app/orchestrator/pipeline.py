@@ -94,7 +94,6 @@ def run_assessment(
             language,
             decision.route,
             flag_results,
-            decision.missing_items,
             decision.static_message_id,
             decision.urgent,
         )
@@ -138,7 +137,6 @@ def _explain(
     language: Language,
     route: Route,
     flag_results: list[FlagResult],
-    missing_items: list[str],
     static_message_id: str | None,
     urgent: bool,
 ) -> tuple[ExplainerOutput, ExplanationSource]:
@@ -149,7 +147,6 @@ def _explain(
         language: Explanation language.
         route: Selected route.
         flag_results: Evaluated flags.
-        missing_items: Missing key item ids.
         static_message_id: Urgent static message id, if any.
         urgent: Whether a red flag short-circuited the pipeline.
 
@@ -179,9 +176,8 @@ def _explain(
         item.id: item.why_we_ask.en if language == Language.EN else item.why_we_ask.ar
         for item in schema.items
     }
-    missing_why = {item_id: why_map[item_id] for item_id in missing_items}
     snippets = load_snippets(settings.content_dir, language)
     output = build_template_explanation(
-        route, flag_results, missing_why, language, snippets, next_steps, explainer
+        route, flag_results, why_map, language, snippets, next_steps, explainer
     )
     return output, ExplanationSource.TEMPLATE

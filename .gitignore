@@ -32,10 +32,7 @@ pgdata/
 # Alembic smoke-test artefacts
 *.db-journal
 
-# Benchmark reports are generated locally
-benchmark/reports/*.json
-benchmark/reports/*.md
-!benchmark/reports/.gitkeep
+# Benchmark reports are committed deliverables (regenerate with make benchmark).
 
 # IDE and editor folders
 .idea/

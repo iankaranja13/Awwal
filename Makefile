@@ -39,8 +39,8 @@ seed:  ## Seed demo data.
 reset:  ## Reset demo user data (keeps staff and providers).
 	$(PYTHON) -c "from app.services.seed import run_reset; print(run_reset())"
 
-benchmark:  ## Run the evaluation harness (lands in Phase 7).
-	echo "Benchmark lands in Phase 7 (not implemented yet)." && exit 1
+benchmark:  ## Run the evaluation harness and write reports.
+	$(PYTHON) benchmark/run_benchmark.py --quiet --variants 100
 
 openapi:  ## Regenerate docs/openapi.json from the app.
 	$(PYTHON) -c "import os; from cryptography.fernet import Fernet; os.environ.setdefault('JWT_SECRET', 'openapi-export-only'); os.environ.setdefault('FIELD_ENCRYPTION_KEY', Fernet.generate_key().decode()); import json; from app.main import app; json.dump(app.openapi(), open('docs/openapi.json', 'w', encoding='utf-8'), indent=2)"
