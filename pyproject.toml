@@ -1,0 +1,87 @@
+[project]
+name = "awwal-backend"
+version = "0.1.0"
+description = "Awwal backend: discreet bilingual triage prototype for men's reproductive health."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "alembic>=1.16",
+  # Pinned: passlib 1.7.4 cannot detect bcrypt>=4.1 (it removed __about__).
+  "bcrypt==4.0.1",
+  "cryptography>=45",
+  "fastapi>=0.116",
+  "httpx>=0.28",
+  "passlib[bcrypt]>=1.7.4",
+  "psycopg[binary]>=3.3",
+  "pydantic>=2.11",
+  "pydantic-settings>=2.10",
+  "pyjwt>=2.10",
+  "pyyaml>=6.0",
+  "sqlalchemy>=2.0",
+  "uvicorn>=0.24",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.13",
+  "pytest>=9",
+  "pytest-cov>=6",
+  "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["B", "D", "DTZ", "E", "F", "I", "S", "UP", "W"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use descriptive names instead of docstrings and fake credentials by design.
+"tests/**/*.py" = ["D", "S101", "S105"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_configs = true
+show_error_codes = true
+exclude = ["alembic/versions/"]
+
+[[tool.mypy.overrides]]
+module = "passlib.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+  # passlib imports the deprecated stdlib crypt module; the bcrypt backend is unaffected.
+  "ignore:'crypt' is deprecated:DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 75
+exclude_lines = ["raise AssertionError", "if TYPE_CHECKING:"]
