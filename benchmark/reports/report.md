@@ -1,6 +1,6 @@
 # Awwal benchmark report
 
-Generated: 2026-11-19T12:21:26.113106+00:00 (rules 0.1, provider mock, seed 20261119)
+Generated: 2026-11-19T12:25:50.855961+00:00 (rules 0.1, provider mock, seed 20261119)
 
 ## Core cases
 
