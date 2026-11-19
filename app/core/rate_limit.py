@@ -2,7 +2,22 @@
 
 from datetime import datetime
 
+from fastapi import Request
+
 from app.core.errors import RateLimitedError
+
+
+def bucket_key(request: Request) -> str:
+    """Build the rate limit bucket key for one request.
+
+    Args:
+        request: Incoming request.
+
+    Returns:
+        Bucket key combining path and client host.
+    """
+    host = request.client.host if request.client is not None else "unknown"
+    return f"{request.url.path}:{host}"
 
 
 def check_rate_limit(

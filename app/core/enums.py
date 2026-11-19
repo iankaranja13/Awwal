@@ -71,3 +71,33 @@ class ExplanationSource(str, Enum):
     LLM = "llm"
     TEMPLATE = "template"
     STATIC = "static"
+
+
+class ReferralType(str, Enum):
+    """Referral and provider service type."""
+
+    TELECONSULT = "teleconsult"
+    BLOOD_TEST = "blood_test"
+    SAMPLE_COLLECTION = "sample_collection"
+    IN_PERSON = "in_person"
+
+
+class ReferralStatus(str, Enum):
+    """Referral lifecycle status."""
+
+    PROPOSED = "proposed"
+    CLINICIAN_REVIEW = "clinician_review"
+    CONFIRMED = "confirmed"
+    BOOKED = "booked"
+    ATTENDED = "attended"
+    RESULT_EXPLAINED = "result_explained"
+    CLOSED = "closed"
+    CANCELLED = "cancelled"
+    NO_SHOW = "no_show"
+
+
+class ReviewDecision(str, Enum):
+    """Clinician review decision."""
+
+    APPROVED = "approved"
+    REJECTED = "rejected"
