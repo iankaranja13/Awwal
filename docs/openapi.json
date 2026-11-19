@@ -148,6 +148,100 @@
         ]
       }
     },
+    "/api/v1/explain": {
+      "post": {
+        "tags": [
+          "explain"
+        ],
+        "summary": "Post Explain",
+        "description": "Regenerate an explanation in a language.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    llm: Configured LLM client.\n    body: Assessment id with optional language.\n\nReturns:\n    Stored explanation with fallback metadata.",
+        "operationId": "post_explain_api_v1_explain_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/brief": {
+      "post": {
+        "tags": [
+          "explain"
+        ],
+        "summary": "Post Brief",
+        "description": "Generate a clinician brief for the caller's own assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    llm: Configured LLM client.\n    body: Assessment id with optional language.\n\nReturns:\n    Generated brief with fallback metadata.",
+        "operationId": "post_brief_api_v1_brief_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/intake/schema": {
       "get": {
         "tags": [
@@ -616,6 +710,178 @@
         "title": "AssessResponse",
         "description": "Full assessment response."
       },
+      "BriefFlag": {
+        "properties": {
+          "flag_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Flag Id",
+            "description": "Flag id."
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState",
+            "description": "Three-state outcome."
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display label."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Guideline source hint (unvalidated)."
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Short note, if any."
+          }
+        },
+        "type": "object",
+        "required": [
+          "flag_id",
+          "state",
+          "label",
+          "source"
+        ],
+        "title": "BriefFlag",
+        "description": "One flag entry in a clinician brief."
+      },
+      "BriefOutput": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Brief language."
+          },
+          "reason_for_contact": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Reason For Contact",
+            "description": "Reason for contact."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/BriefFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Flag entries."
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Information",
+            "description": "Missing items."
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route",
+            "description": "Selected route."
+          },
+          "route_rationale": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Route Rationale",
+            "description": "Route rationale."
+          },
+          "scope_note": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Scope Note",
+            "description": "Record scope note."
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "reason_for_contact",
+          "flags",
+          "route",
+          "route_rationale",
+          "scope_note"
+        ],
+        "title": "BriefOutput",
+        "description": "Validated clinician brief document."
+      },
+      "BriefRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Requested language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id"
+        ],
+        "title": "BriefRequest",
+        "description": "Clinician brief request."
+      },
+      "BriefResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Brief language."
+          },
+          "brief": {
+            "$ref": "#/components/schemas/BriefOutput",
+            "description": "Brief document."
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExplanationSource",
+            "description": "Brief origin."
+          },
+          "used_fallback": {
+            "type": "boolean",
+            "title": "Used Fallback",
+            "description": "Whether templates were used."
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "Model name attempted."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "language",
+          "brief",
+          "source",
+          "used_fallback",
+          "model"
+        ],
+        "title": "BriefResponse",
+        "description": "Generated clinician brief."
+      },
       "ConsentHistoryResponse": {
         "properties": {
           "state": {
@@ -742,6 +1008,179 @@
         ],
         "title": "ConsentStateResponse",
         "description": "Current consent state for all scopes."
+      },
+      "ExplainRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Requested language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id"
+        ],
+        "title": "ExplainRequest",
+        "description": "Explanation regeneration request."
+      },
+      "ExplainResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Explanation language."
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/ExplainerOutput",
+            "description": "Explanation document."
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExplanationSource"
+          },
+          "used_fallback": {
+            "type": "boolean",
+            "title": "Used Fallback",
+            "description": "Whether templates were used."
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Model name, if any."
+          },
+          "validator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValidatorReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Validator outcome."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "language",
+          "explanation",
+          "source",
+          "used_fallback"
+        ],
+        "title": "ExplainResponse",
+        "description": "Regenerated explanation."
+      },
+      "ExplainedFlag": {
+        "properties": {
+          "flag_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Flag Id",
+            "description": "Explained flag id."
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Explanation",
+            "description": "Plain-language explanation."
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns",
+            "description": "Open unknowns."
+          },
+          "modifiable_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifiable Note",
+            "description": "Modifiable note, if any."
+          }
+        },
+        "type": "object",
+        "required": [
+          "flag_id",
+          "explanation"
+        ],
+        "title": "ExplainedFlag",
+        "description": "Plain-language explanation for one flag."
+      },
+      "ExplainerOutput": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Explanation language."
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Summary",
+            "description": "Overall summary."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/ExplainedFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Per-flag explanations."
+          },
+          "next_step_text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Next Step Text",
+            "description": "Next step consistent with the route."
+          },
+          "disclaimer": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Disclaimer",
+            "description": "Screening disclaimer."
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "summary",
+          "flags",
+          "next_step_text",
+          "disclaimer"
+        ],
+        "title": "ExplainerOutput",
+        "description": "Validated explanation document."
       },
       "ExplanationSource": {
         "type": "string",
@@ -1359,6 +1798,29 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ValidatorReport": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "description": "Whether validation passed."
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "description": "Rejection reasons."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "title": "ValidatorReport",
+        "description": "Validator outcome."
       }
     },
     "securitySchemes": {

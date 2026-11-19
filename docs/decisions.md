@@ -120,3 +120,16 @@ Why: empty intake is just maximal missingness, so provisional is the honest
 answer; latest-explanation keeps one stable record per assessment; codes in
 code keep content files to human-readable strings only.
 
+## DR-012: Validator design (tight patterns, content must stay clean)
+
+What: banned patterns stay narrow (personal verdict phrasing, not bare
+condition nouns); allowed numbers cover answer data, derived values, used
+params and structural counts; every content string is tested to scan clean;
+briefs generate on demand and are audited but never stored.
+
+Why: broad patterns would reject good output (including our own templates,
+as a failing test proved); counts are meta-information, not clinical data,
+so allowing them keeps summaries honest; briefs stay out of the
+explanations table so assessment reads never mistake a brief for the
+shown explanation.
+
