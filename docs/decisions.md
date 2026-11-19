@@ -46,3 +46,42 @@ Why: expiry behaviour becomes deterministic in tests without monkeypatching
 library internals. Production callers use the default real clock. The library
 issued-at check is disabled so the injected clock stays authoritative; tokens
 remain short-lived through the enforced expiry check.
+
+## DR-006: LLM provider choice (mock default, openai_compatible real target)
+
+What: tests and offline demos use the deterministic mock provider; the real
+provider target is `openai_compatible` pointed at a local server, with the
+`anthropic` provider implemented as a swappable alternative. The model name
+always comes from `LLM_MODEL`, never from code.
+
+Why: a local OpenAI-compatible server keeps sensitive data on premises and
+costs nothing per call during the pilot, while the provider interface keeps
+Anthropic one environment variable away for quality comparison. Alternatives
+(hosted-first) were rejected on privacy-by-design grounds for a prototype
+handling reproductive-health answers.
+
+## DR-007: Monotonicity holds for added uncertainty, not removed evidence
+
+What: the tested invariant is weak monotonicity: turning non-trigger answers
+into missing ones never lowers the route and never un-presents a flag.
+
+Why: literal monotonicity (any newly missing item never lowers the route) is
+unsatisfiable under the spec's own three-state rules: removing the decisive
+true value of the only present flag must drop the route, since nothing
+remains to route on. The engine guarantees the weak form: present conditions
+evaluate only on answered values, so missing non-decisive data only adds
+unknowns, which can only raise SELF_CARE to SELF_CARE_PROVISIONAL.
+
+## DR-008: Key flags and red-flag missingness force provisional routes
+
+What: each flag carries `key` (default true); only key-flag unknowns and
+red-flag unknowns feed `missing_items` and force SELF_CARE_PROVISIONAL.
+Non-key flags cover optional items (family history, prior hormones, partner
+age band). Unassessed red-flag symptoms also force provisional, never plain
+self-care.
+
+Why: optional items must not block a self-care route, or nothing optional
+stays optional; but an unanswered red-flag symptom is never a clean bill of
+health, so uncertainty escalates. The per-flag marker keeps the choice
+versioned and clinician-reviewable instead of hard-coded.
+
