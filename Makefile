@@ -2,7 +2,7 @@ UV ?= uv
 VENV ?= .venv
 PYTHON := $(VENV)/bin/python
 
-.PHONY: help dev check format format-check lint typecheck test migrate seed reset benchmark openapi
+.PHONY: help dev serve check format format-check lint typecheck test migrate seed reset benchmark openapi
 
 help:  ## Show available targets.
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS=":.*?## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -12,6 +12,9 @@ $(VENV)/bin/python:
 
 dev: $(VENV)/bin/python  ## Create the project environment and install dependencies.
 	$(UV) pip install --python $(PYTHON) -e ".[dev]" || $(UV) pip install --offline --python $(PYTHON) pytest alembic pyjwt "passlib[bcrypt]" "bcrypt==4.0.1"
+
+serve:  ## Run the API locally on :8000 (needs .env with secrets).
+	$(PYTHON) -m uvicorn app.main:app --port 8000
 
 check: format-check lint typecheck test  ## Run the full quality gate.
 
