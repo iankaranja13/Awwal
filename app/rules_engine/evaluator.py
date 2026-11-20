@@ -96,9 +96,7 @@ def _apply_operator(op: Operator, field: str, actual: object, expected: object) 
     if op == Operator.NEQ:
         return not _values_equal(actual, expected)
     if op == Operator.IN:
-        return isinstance(expected, list) and any(
-            _values_equal(actual, item) for item in expected
-        )
+        return isinstance(expected, list) and any(_values_equal(actual, item) for item in expected)
     if op == Operator.NOT_IN:
         return isinstance(expected, list) and not any(
             _values_equal(actual, item) for item in expected
@@ -273,9 +271,7 @@ def compute_bmi(answers: Mapping[str, ItemAnswer]) -> float | None:
     return round(weight / ((height / 100.0) ** 2), 1)
 
 
-DERIVED_FIELDS: dict[str, Callable[[Mapping[str, ItemAnswer]], float | None]] = {
-    "bmi": compute_bmi
-}
+DERIVED_FIELDS: dict[str, Callable[[Mapping[str, ItemAnswer]], float | None]] = {"bmi": compute_bmi}
 
 
 def compute_derived(answers: Mapping[str, ItemAnswer]) -> dict[str, float | None]:

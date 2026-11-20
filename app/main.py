@@ -14,7 +14,8 @@ from app.api.clinician import router as clinician_router
 from app.api.consent import router as consent_router
 from app.api.dev import router as dev_router
 from app.api.explain import router as explain_router
-from app.api.health import build_health_response, router as health_router
+from app.api.health import build_health_response
+from app.api.health import router as health_router
 from app.api.intake import router as intake_router
 from app.api.privacy import router as privacy_router
 from app.api.providers import router as providers_router

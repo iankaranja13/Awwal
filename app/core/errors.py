@@ -185,8 +185,7 @@ def register_error_handlers(app: FastAPI) -> None:
             JSON response with locations and messages but no raw inputs.
         """
         errors = [
-            {"loc": item["loc"], "msg": item["msg"], "type": item["type"]}
-            for item in exc.errors()
+            {"loc": item["loc"], "msg": item["msg"], "type": item["type"]} for item in exc.errors()
         ]
         detail = ErrorDetail(
             code="VALIDATION_ERROR",

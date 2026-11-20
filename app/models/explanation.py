@@ -20,9 +20,7 @@ class Explanation(Base):
     __tablename__ = "explanations"
     __table_args__ = (
         CheckConstraint("language IN ('en', 'ar')", name="ck_explanations_language"),
-        CheckConstraint(
-            "source IN ('llm', 'template', 'static')", name="ck_explanations_source"
-        ),
+        CheckConstraint("source IN ('llm', 'template', 'static')", name="ck_explanations_source"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)

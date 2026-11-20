@@ -48,17 +48,12 @@ def test_filters_combine(
     arabic = db_client.get("/api/v1/providers?language=ar", headers=auth_headers)
     assert len(arabic.json()) == 1
     assert (
-        len(
-            db_client.get(
-                "/api/v1/providers?clinician_gender=female", headers=auth_headers
-            ).json()
-        )
+        len(db_client.get("/api/v1/providers?clinician_gender=female", headers=auth_headers).json())
         == 1
     )
     assert len(db_client.get("/api/v1/providers?tele=true", headers=auth_headers).json()) == 1
     assert (
-        len(db_client.get("/api/v1/providers?home_sampling=true", headers=auth_headers).json())
-        == 1
+        len(db_client.get("/api/v1/providers?home_sampling=true", headers=auth_headers).json()) == 1
     )
     combined = db_client.get(
         "/api/v1/providers?type=teleconsult&language=ar", headers=auth_headers

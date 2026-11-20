@@ -137,9 +137,7 @@ def build_brief(
     context = ValidationContext(
         language=target,
         route=row.route,
-        present_flag_ids=frozenset(
-            flag.id for flag in flags if flag.state == FlagState.PRESENT
-        ),
+        present_flag_ids=frozenset(flag.id for flag in flags if flag.state == FlagState.PRESENT),
         all_flag_ids=frozenset(flag.id for flag in flags),
         not_assessable_ids=frozenset(),
         allowed_numbers=build_allowed_numbers(rules, flags, len(row.missing_items), inputs),

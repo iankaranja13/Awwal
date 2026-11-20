@@ -16,9 +16,7 @@ class AwareDateTime(TypeDecorator[datetime]):
     impl = DateTime(timezone=True)
     cache_ok = True
 
-    def process_bind_param(
-        self, value: datetime | None, dialect: Dialect
-    ) -> datetime | None:
+    def process_bind_param(self, value: datetime | None, dialect: Dialect) -> datetime | None:
         """Attach UTC to naive values before storage.
 
         Args:
@@ -32,9 +30,7 @@ class AwareDateTime(TypeDecorator[datetime]):
             return value.replace(tzinfo=UTC)
         return value
 
-    def process_result_value(
-        self, value: datetime | None, dialect: Dialect
-    ) -> datetime | None:
+    def process_result_value(self, value: datetime | None, dialect: Dialect) -> datetime | None:
         """Attach UTC to naive values after loading.
 
         Args:

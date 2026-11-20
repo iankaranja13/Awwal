@@ -160,9 +160,7 @@ def get_intake_row(session: Session, user: User) -> IntakeAnswers | None:
     ).one_or_none()
 
 
-def get_stored_answers(
-    session: Session, user: User, key: str
-) -> tuple[dict[str, Any], str | None]:
+def get_stored_answers(session: Session, user: User, key: str) -> tuple[dict[str, Any], str | None]:
     """Load and decrypt one user's stored answers.
 
     Args:

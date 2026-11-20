@@ -189,7 +189,8 @@ def test_unknown_items_are_ignored(ruleset: RuleSet) -> None:
 def test_missing_non_decisive_items_never_lowers_route(ruleset: RuleSet) -> None:
     """Keep routes monotone when non-trigger answers go missing."""
     precedence = {route.id: route.precedence for route in ruleset.routes}
-    rng = random.Random(20261119)
+    # Deterministic seed for reproducible property cases (non-cryptographic).
+    rng = random.Random(20261119)  # noqa: S311
     for _ in range(200):
         base = clean_answers(ruleset)
         flipped = set()
@@ -203,8 +204,6 @@ def test_missing_non_decisive_items_never_lowers_route(ruleset: RuleSet) -> None
                 del base[item]
         after = run_triage(ruleset, AssessmentInput(answers=base))
         assert precedence[after.route] >= precedence[before.route]
-        before_present = {
-            flag.id for flag in before.flags if flag.state == FlagState.PRESENT
-        }
+        before_present = {flag.id for flag in before.flags if flag.state == FlagState.PRESENT}
         after_present = {flag.id for flag in after.flags if flag.state == FlagState.PRESENT}
         assert before_present <= after_present

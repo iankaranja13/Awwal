@@ -108,9 +108,7 @@ def create_anonymous_user(session: Session, language: Language) -> User:
     raise ConflictError("Could not allocate a user handle.")
 
 
-def create_session(
-    session: Session, settings: Settings, language: Language
-) -> tuple[User, str]:
+def create_session(session: Session, settings: Settings, language: Language) -> tuple[User, str]:
     """Create an anonymous user and mint its access token.
 
     Args:

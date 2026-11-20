@@ -12,16 +12,16 @@ from cryptography.fernet import Fernet
 os.environ.setdefault("JWT_SECRET", "test-secret-for-pytest")
 os.environ.setdefault("FIELD_ENCRYPTION_KEY", Fernet.generate_key().decode("utf-8"))
 
-from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
+from alembic import command  # noqa: E402
 from app.core.config import Settings, get_settings  # noqa: E402
 from app.core.database import create_engine_for, create_session_factory, get_db  # noqa: E402
 from app.main import create_app  # noqa: E402
 from app.rules_engine import RuleSet, load_rules  # noqa: E402
-from tests.unit.rule_helpers import REAL_RULES_DIR  # noqa: E402
+from tests.unit.rule_helpers import REAL_RULES_DIR, fastapi_app  # noqa: E402
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
@@ -86,7 +86,7 @@ def db_client(client: TestClient, db_factory: sessionmaker[Session]) -> TestClie
         finally:
             session.close()
 
-    client.app.dependency_overrides[get_db] = _override
+    fastapi_app(client).dependency_overrides[get_db] = _override
     return client
 
 

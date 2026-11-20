@@ -14,10 +14,10 @@ from app.core.database import create_engine_for, create_session_factory
 from app.core.enums import ConsentScope, Language, ReferralType, Role
 from app.core.security import hash_password
 from app.models import IntakeAnswers, Provider, User
+from app.schemas.intake import AnswerIn
 from app.services.consent import grant_consent
 from app.services.intake import load_intake_schema, validate_answers
 from app.services.privacy import erase_user_data
-from app.schemas.intake import AnswerIn
 
 
 class SeedError(Exception):
@@ -121,24 +121,23 @@ def seed_data(session: Session, key: str, content_dir: str) -> dict[str, int]:
     session.flush()
     schema = load_intake_schema(content_dir)
     for entry in _read_json("prior_results.json"):
-        user = session.scalars(
+        target = session.scalars(
             select(User).where(User.pseudonymous_handle == entry["user_handle"])
         ).one_or_none()
-        if user is None:
+        if target is None:
             continue
         existing = session.scalars(
-            select(IntakeAnswers.id).where(IntakeAnswers.user_id == user.id)
+            select(IntakeAnswers.id).where(IntakeAnswers.user_id == target.id)
         ).first()
         if existing is not None:
             continue
         answers = {
-            item_id: AnswerIn.model_validate(answer)
-            for item_id, answer in entry["answers"].items()
+            item_id: AnswerIn.model_validate(answer) for item_id, answer in entry["answers"].items()
         }
         normalised = validate_answers(schema, answers)
         session.add(
             IntakeAnswers(
-                user_id=user.id,
+                user_id=target.id,
                 answers_encrypted=encrypt_json(normalised, key),
                 schema_version=schema.schema_version,
             )

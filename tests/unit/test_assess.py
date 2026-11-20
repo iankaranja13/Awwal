@@ -1,5 +1,7 @@
 """Assessment endpoint behaviour."""
 
+from typing import Any
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -10,8 +12,9 @@ from app.schemas.explain import ExplainerOutput
 from app.services.content import ExplainerFile, NextStepsFile, SnippetsFile
 
 
-def _assess(db_client: TestClient, headers: dict[str, str], **params: str) -> dict[str, object]:
-    return db_client.post("/api/v1/assess", headers=headers, params=params).json()
+def _assess(db_client: TestClient, headers: dict[str, str], **params: str) -> dict[str, Any]:
+    body: dict[str, Any] = db_client.post("/api/v1/assess", headers=headers, params=params).json()
+    return body
 
 
 def test_assess_requires_consent(db_client: TestClient, auth_headers: dict[str, str]) -> None:
@@ -90,9 +93,7 @@ def test_urgent_assessment_is_static(
     db_client.put(
         "/api/v1/intake",
         headers=consented_headers,
-        json={
-            "answers": {"testicular_pain_sudden_severe": {"value": True, "status": "answered"}}
-        },
+        json={"answers": {"testicular_pain_sudden_severe": {"value": True, "status": "answered"}}},
     )
     body = _assess(db_client, consented_headers)
     assert body["urgent"] is True
@@ -170,9 +171,7 @@ def test_urgent_trace_skips_flag_evaluation(
     db_client.put(
         "/api/v1/intake",
         headers=consented_headers,
-        json={
-            "answers": {"testicular_pain_sudden_severe": {"value": True, "status": "answered"}}
-        },
+        json={"answers": {"testicular_pain_sudden_severe": {"value": True, "status": "answered"}}},
     )
     created = _assess(db_client, consented_headers)
     body = db_client.get(

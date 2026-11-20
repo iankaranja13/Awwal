@@ -26,9 +26,7 @@ def get_own_audit(user: CurrentUserDep, session: SessionDep) -> list[AuditEntryO
 
 
 @router.get("/export", response_model=ExportResponse)
-def get_export(
-    user: CurrentUserDep, session: SessionDep, settings: SettingsDep
-) -> ExportResponse:
+def get_export(user: CurrentUserDep, session: SessionDep, settings: SettingsDep) -> ExportResponse:
     """Export the caller's full data.
 
     Args:

@@ -1,9 +1,9 @@
 """Shared domain enums (fixed value sets used across layers)."""
 
-from enum import Enum
+from enum import StrEnum
 
 
-class ItemStatus(str, Enum):
+class ItemStatus(StrEnum):
     """Answer status for one intake item."""
 
     ANSWERED = "answered"
@@ -12,7 +12,7 @@ class ItemStatus(str, Enum):
     PREFER_NOT_TO_SAY = "prefer_not_to_say"
 
 
-class FlagState(str, Enum):
+class FlagState(StrEnum):
     """Three-state screening flag outcome."""
 
     PRESENT = "PRESENT"
@@ -20,7 +20,7 @@ class FlagState(str, Enum):
     NOT_ASSESSABLE = "NOT_ASSESSABLE"
 
 
-class Route(str, Enum):
+class Route(StrEnum):
     """Triage route outcome."""
 
     URGENT = "URGENT"
@@ -31,7 +31,7 @@ class Route(str, Enum):
     SELF_CARE_PROVISIONAL = "SELF_CARE_PROVISIONAL"
 
 
-class Role(str, Enum):
+class Role(StrEnum):
     """Caller role."""
 
     USER = "user"
@@ -39,14 +39,14 @@ class Role(str, Enum):
     CLINICIAN = "clinician"
 
 
-class Language(str, Enum):
+class Language(StrEnum):
     """Supported interface language."""
 
     EN = "en"
     AR = "ar"
 
 
-class ConsentScope(str, Enum):
+class ConsentScope(StrEnum):
     """Consent scope for data use."""
 
     INTAKE = "intake"
@@ -55,7 +55,7 @@ class ConsentScope(str, Enum):
     AGGREGATE_ANALYTICS = "aggregate_analytics"
 
 
-class ItemType(str, Enum):
+class ItemType(StrEnum):
     """Intake schema item type."""
 
     BOOLEAN = "boolean"
@@ -65,7 +65,7 @@ class ItemType(str, Enum):
     TEXT = "text"
 
 
-class ExplanationSource(str, Enum):
+class ExplanationSource(StrEnum):
     """Explanation origin."""
 
     LLM = "llm"
@@ -73,7 +73,7 @@ class ExplanationSource(str, Enum):
     STATIC = "static"
 
 
-class ReferralType(str, Enum):
+class ReferralType(StrEnum):
     """Referral and provider service type."""
 
     TELECONSULT = "teleconsult"
@@ -82,7 +82,7 @@ class ReferralType(str, Enum):
     IN_PERSON = "in_person"
 
 
-class ReferralStatus(str, Enum):
+class ReferralStatus(StrEnum):
     """Referral lifecycle status."""
 
     PROPOSED = "proposed"
@@ -96,7 +96,7 @@ class ReferralStatus(str, Enum):
     NO_SHOW = "no_show"
 
 
-class ReviewDecision(str, Enum):
+class ReviewDecision(StrEnum):
     """Clinician review decision."""
 
     APPROVED = "approved"

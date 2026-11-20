@@ -17,6 +17,7 @@ from app.models import (
     WorkflowTrace,
 )
 from app.models.base import Base
+from tests.unit.rule_helpers import fastapi_app
 from tests.unit.staff_helpers import assess_with, refer
 
 DIABETES = {"diabetes": {"value": True, "status": "answered"}}
@@ -136,16 +137,14 @@ def test_reset_drops_users_and_keeps_seeds(
     assert {user.role.value for user in staff} == {"navigator", "clinician"}
 
 
-def test_dev_endpoints_hide_when_disabled(
-    db_client: TestClient, test_settings: Settings
-) -> None:
+def test_dev_endpoints_hide_when_disabled(db_client: TestClient, test_settings: Settings) -> None:
     """Hide dev endpoints when the admin flag is off."""
     from app.core.database import get_db
     from app.main import create_app
 
     settings = test_settings.model_copy(update={"enable_dev_admin": False})
     app = create_app(settings)
-    app.dependency_overrides[get_db] = db_client.app.dependency_overrides[get_db]
+    app.dependency_overrides[get_db] = fastapi_app(db_client).dependency_overrides[get_db]
     app.dependency_overrides[get_settings] = lambda: settings
     client = TestClient(app)
     assert client.post("/api/v1/dev/seed").status_code == 404

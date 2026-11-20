@@ -9,9 +9,7 @@ router = APIRouter(tags=["dev"])
 
 
 @router.post("/dev/seed")
-def post_seed(
-    _admin: DevAdminDep, session: SessionDep, settings: SettingsDep
-) -> dict[str, int]:
+def post_seed(_admin: DevAdminDep, session: SessionDep, settings: SettingsDep) -> dict[str, int]:
     """Seed demo accounts, providers, consents and intakes.
 
     Args:

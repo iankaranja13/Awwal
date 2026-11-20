@@ -12,7 +12,8 @@ CASE_FILES = sorted(CASE_DIR.glob("*.yaml"))
 
 
 def _load_case(path: Path) -> dict[str, Any]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    loaded: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return loaded
 
 
 @pytest.mark.parametrize("case_path", CASE_FILES, ids=[path.stem for path in CASE_FILES])
@@ -27,9 +28,7 @@ def test_core_case_end_to_end(db_client: TestClient, case_path: Path) -> None:
     body = db_client.post("/api/v1/assess", headers=headers).json()
     assert body["urgent"] is expected["urgent"], case["id"]
     assert body["route"] == expected["route"], case["id"]
-    present = sorted(
-        flag["id"] for flag in body["flags"] if flag["state"] == "PRESENT"
-    )
+    present = sorted(flag["id"] for flag in body["flags"] if flag["state"] == "PRESENT")
     assert present == sorted(expected["flags_present"]), case["id"]
     if expected["urgent"]:
         assert body["explanation_source"] == "static", case["id"]

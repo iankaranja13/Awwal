@@ -112,9 +112,7 @@ def _check_numbers(texts: list[str], allowed: frozenset[str], errors: list[str])
                 errors.append(f"number {number!r} is not present in the input")
 
 
-def _check_banned(
-    texts: list[str], language: Language, brief: bool, errors: list[str]
-) -> None:
+def _check_banned(texts: list[str], language: Language, brief: bool, errors: list[str]) -> None:
     """Reject verdict, diagnosis and treatment language.
 
     Args:
@@ -189,9 +187,7 @@ def build_allowed_numbers(
     return frozenset(allowed)
 
 
-def validate_explanation(
-    output: dict[str, Any], context: ValidationContext
-) -> ValidatorResult:
+def validate_explanation(output: dict[str, Any], context: ValidationContext) -> ValidatorResult:
     """Validate an explanation document against ground truth.
 
     Args:

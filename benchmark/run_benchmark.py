@@ -13,7 +13,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "benchmark"))
 
 # Bootstrap throwaway secrets before app imports: importing app.main builds
 # the default app, which requires secrets at import time.
@@ -39,8 +38,8 @@ from app.main import create_app  # noqa: E402
 from app.rules_engine.loader import load_rules  # noqa: E402
 from app.rules_engine.models import AssessmentInput, FlagResult, RuleSet  # noqa: E402
 from app.rules_engine.triage import run_triage  # noqa: E402
-from generate_variants import generate_variants  # noqa: E402
-from invariants import (  # noqa: E402
+from benchmark.generate_variants import generate_variants  # noqa: E402
+from benchmark.invariants import (  # noqa: E402
     check_language_parity,
     check_monotonic,
     check_no_clear_with_missing,
@@ -119,7 +118,8 @@ def _assess(
     assert put.status_code == 200, put.text
     response = client.post("/api/v1/assess", headers=headers, params={"lang": lang})
     assert response.status_code == 201, response.text
-    return response.json()
+    body: dict[str, Any] = response.json()
+    return body
 
 
 def _completeness(answers: dict[str, Any]) -> str:
@@ -202,8 +202,10 @@ def _stored_text(engine: Any, assessment_id: str) -> dict[str, Any]:
             {"id": uuid.UUID(assessment_id).hex},
         ).scalar_one()
     if isinstance(row, str):
-        return json.loads(row)
-    return dict(row)
+        parsed: dict[str, Any] = json.loads(row)
+        return parsed
+    converted: dict[str, Any] = dict(row)
+    return converted
 
 
 def _run_pipeline_case(

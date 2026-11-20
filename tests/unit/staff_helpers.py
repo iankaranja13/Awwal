@@ -53,13 +53,12 @@ def make_provider(db_session: Session, **overrides: Any) -> Provider:
     return provider
 
 
-def assess_with(
-    db_client: TestClient, headers: dict[str, str], answers: dict[str, Any]
-) -> str:
+def assess_with(db_client: TestClient, headers: dict[str, str], answers: dict[str, Any]) -> str:
     """Save intake and assess, returning the assessment id."""
     db_client.put("/api/v1/intake", headers=headers, json={"answers": answers})
     created = db_client.post("/api/v1/assess", headers=headers).json()
-    return created["assessment_id"]
+    assessment_id: str = created["assessment_id"]
+    return assessment_id
 
 
 def refer(
@@ -70,7 +69,8 @@ def refer(
     body.update(overrides)
     response = db_client.post("/api/v1/referrals", headers=headers, json=body)
     assert response.status_code == 201, response.text
-    return response.json()
+    created: dict[str, Any] = response.json()
+    return created
 
 
 def future_iso(days: float = 2.0) -> str:

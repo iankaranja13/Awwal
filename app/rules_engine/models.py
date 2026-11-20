@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.core.enums import FlagState, ItemStatus, Route
 
 
-class Operator(str, Enum):
+class Operator(StrEnum):
     """Comparison operators allowed in rule conditions."""
 
     EQ = "eq"
@@ -79,9 +79,7 @@ class LogicGroup(BaseModel):
 
     model_config = ConfigDict(frozen=True, populate_by_name=True)
 
-    all: list[Criterion] | None = Field(
-        default=None, description="Criteria that must all hold."
-    )
+    all: list[Criterion] | None = Field(default=None, description="Criteria that must all hold.")
     any: list[Criterion] | None = Field(
         default=None, description="Criteria of which one must hold."
     )

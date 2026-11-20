@@ -63,9 +63,7 @@ class MockProvider:
                     flag.get("snippet_id", ""), flag.get("label", "")
                 ),
                 "unknowns": list(flag.get("unknowns", [])),
-                "modifiable_note": (
-                    explainer.modifiable_note if flag.get("modifiable") else None
-                ),
+                "modifiable_note": (explainer.modifiable_note if flag.get("modifiable") else None),
             }
             for flag in flags
         ]

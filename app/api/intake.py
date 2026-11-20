@@ -90,9 +90,7 @@ def get_intake(
     return IntakeGetResponse(schema_version=version, answers=answers, updated_at=updated_at)
 
 
-def _resolve_intake_owner(
-    session: SessionDep, user: CurrentUserDep, user_id: UUID | None
-) -> User:
+def _resolve_intake_owner(session: SessionDep, user: CurrentUserDep, user_id: UUID | None) -> User:
     """Resolve the intake owner, enforcing shared access.
 
     Args:

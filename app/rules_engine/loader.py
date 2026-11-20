@@ -13,8 +13,8 @@ from app.rules_engine.evaluator import DERIVED_FIELDS
 from app.rules_engine.models import (
     Condition,
     Criterion,
-    FlagsFile,
     FlagRule,
+    FlagsFile,
     Operator,
     ParamDef,
     ParamsFile,

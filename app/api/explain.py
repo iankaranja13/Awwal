@@ -6,9 +6,9 @@ from app.core.deps import CurrentUserDep, LLMClientDep, SessionDep, SettingsDep
 from app.schemas.explain import (
     BriefRequest,
     BriefResponse,
+    ExplainerOutput,
     ExplainRequest,
     ExplainResponse,
-    ExplainerOutput,
     ValidatorReport,
 )
 from app.services.brief import build_brief

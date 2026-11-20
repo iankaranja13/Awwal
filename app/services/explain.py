@@ -76,9 +76,7 @@ def _explain_user_json(
                 "label": flag.label.en if language == Language.EN else flag.label.ar,
                 "snippet_id": flag.snippet_id,
                 "modifiable": flag.modifiable,
-                "unknowns": [
-                    why_map[field] for field in flag.missing_fields if field in why_map
-                ],
+                "unknowns": [why_map[field] for field in flag.missing_fields if field in why_map],
                 "reason_fields": list(flag.reason_fields),
             }
             for flag in flags
@@ -150,9 +148,7 @@ def explain_assessment(
     context = ValidationContext(
         language=target,
         route=row.route,
-        present_flag_ids=frozenset(
-            flag.id for flag in flags if flag.state == FlagState.PRESENT
-        ),
+        present_flag_ids=frozenset(flag.id for flag in flags if flag.state == FlagState.PRESENT),
         all_flag_ids=frozenset(flag.id for flag in flags),
         not_assessable_ids=frozenset(
             flag.id for flag in flags if flag.state == FlagState.NOT_ASSESSABLE

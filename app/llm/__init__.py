@@ -1,6 +1,6 @@
 """LLM clients, prompts, validation and deterministic templates."""
 
-from app.llm.client import LLMClient, PROMPT_VERSION, create_client, load_prompt
+from app.llm.client import PROMPT_VERSION, LLMClient, create_client, load_prompt
 from app.llm.errors import LLMError
 from app.llm.templates import build_template_explanation
 from app.llm.validator import (

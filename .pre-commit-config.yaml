@@ -17,7 +17,7 @@ repos:
         pass_filenames: false
       - id: mypy
         name: mypy strict
-        entry: .venv/bin/python -m mypy app alembic
+        entry: .venv/bin/python -m mypy app alembic tests
         language: system
         types: [python]
         pass_filenames: false

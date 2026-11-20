@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     """Application settings.
 
     Values come from environment variables (or a local ``.env`` file).
-    Required secrets have no defaults so misconfiguration fails fast at
-    startup instead of running silently insecure.
+    Secrets default to empty and are rejected by validators, so
+    misconfiguration still fails fast at startup.
     """
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
@@ -23,12 +23,14 @@ class Settings(BaseSettings):
         default="postgresql+psycopg://awwal:awwal@db:5432/awwal",
         description="SQLAlchemy database URL.",
     )
-    jwt_secret: str = Field(min_length=8, description="Secret key for signing JWT access tokens.")
+    jwt_secret: str = Field(
+        default="", min_length=8, description="Secret key for signing JWT access tokens."
+    )
     jwt_expire_minutes: int = Field(
         default=120, gt=0, description="Access-token lifetime in minutes."
     )
     field_encryption_key: str = Field(
-        description="Fernet key for application-level field encryption."
+        default="", description="Fernet key for application-level field encryption."
     )
     cors_origins: str = Field(
         default="http://localhost:3000", description="Comma-separated allowed CORS origins."

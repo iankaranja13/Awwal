@@ -3,11 +3,28 @@
 from pathlib import Path
 from typing import Any
 
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from app.core.enums import ItemStatus
 from app.rules_engine.models import AssessmentInput, ItemAnswer, RuleSet
 
 REAL_RULES_DIR = Path(__file__).resolve().parents[2] / "rules"
 APP_CONTENT_DIR = Path(__file__).resolve().parents[2] / "app" / "content"
+
+
+def fastapi_app(client: TestClient) -> FastAPI:
+    """Return the test client's app as a FastAPI instance.
+
+    Args:
+        client: Test client.
+
+    Returns:
+        FastAPI application.
+    """
+    assert isinstance(client.app, FastAPI)
+    return client.app
+
 
 _CLEAN_VALUES: dict[str, Any] = {
     "trying_to_conceive": "no",

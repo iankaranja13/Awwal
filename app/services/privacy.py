@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ColumnElement
 
@@ -23,12 +23,12 @@ from app.models import (
     WorkflowTrace,
 )
 from app.models.base import Base
-
-ModelT = TypeVar("ModelT", bound=Base)
 from app.schemas.intake import AnswerIn
 from app.schemas.privacy import AuditEntryOut, DeleteResponse, ExportResponse
 from app.services.consent import get_consent_history
 from app.services.intake import get_stored_answers
+
+ModelT = TypeVar("ModelT", bound=Base)
 
 
 def _audit_entries(session: Session, user_id: UUID) -> list[AuditEntryOut]:
@@ -46,14 +46,8 @@ def _audit_entries(session: Session, user_id: UUID) -> list[AuditEntryOut]:
         select(AuditLog)
         .where(
             (AuditLog.actor_id == user_id)
-            | (
-                (AuditLog.object_type == "assessment")
-                & (AuditLog.object_id.in_(own_assessments))
-            )
-            | (
-                (AuditLog.object_type == "intake_answers")
-                & (AuditLog.object_id == user_id)
-            )
+            | ((AuditLog.object_type == "assessment") & (AuditLog.object_id.in_(own_assessments)))
+            | ((AuditLog.object_type == "intake_answers") & (AuditLog.object_id == user_id))
         )
         .order_by(AuditLog.at.desc(), AuditLog.id.desc())
     ).all()
@@ -110,20 +104,21 @@ def build_export(session: Session, user: User, key: str) -> ExportResponse:
         for item_id, entry in stored.items()
     }
     assessments: list[dict[str, Any]] = []
-    for row in session.scalars(select(Assessment).where(Assessment.user_id == user.id)).all():
+    assessment_rows = session.scalars(select(Assessment).where(Assessment.user_id == user.id)).all()
+    for assessment_row in assessment_rows:
         explanations = session.scalars(
-            select(Explanation).where(Explanation.assessment_id == row.id)
+            select(Explanation).where(Explanation.assessment_id == assessment_row.id)
         ).all()
         assessments.append(
             {
-                "id": str(row.id),
-                "rules_version": row.rules_version,
-                "route": row.route.value,
-                "urgent": row.urgent,
-                "route_reason": list(row.route_reason),
-                "flags": list(row.flags),
-                "missing_items": list(row.missing_items),
-                "created_at": row.created_at.isoformat(),
+                "id": str(assessment_row.id),
+                "rules_version": assessment_row.rules_version,
+                "route": assessment_row.route.value,
+                "urgent": assessment_row.urgent,
+                "route_reason": list(assessment_row.route_reason),
+                "flags": list(assessment_row.flags),
+                "missing_items": list(assessment_row.missing_items),
+                "created_at": assessment_row.created_at.isoformat(),
                 "explanations": [
                     {
                         "language": item.language.value,
@@ -138,17 +133,18 @@ def build_export(session: Session, user: User, key: str) -> ExportResponse:
             }
         )
     referrals: list[dict[str, Any]] = []
-    for row in session.scalars(select(Referral).where(Referral.user_id == user.id)).all():
+    referral_rows = session.scalars(select(Referral).where(Referral.user_id == user.id)).all()
+    for referral_row in referral_rows:
         events = session.scalars(
-            select(ReferralEvent).where(ReferralEvent.referral_id == row.id)
+            select(ReferralEvent).where(ReferralEvent.referral_id == referral_row.id)
         ).all()
         referrals.append(
             {
-                "id": str(row.id),
-                "assessment_id": str(row.assessment_id),
-                "type": row.type.value,
-                "status": row.status.value,
-                "provider_id": str(row.provider_id) if row.provider_id else None,
+                "id": str(referral_row.id),
+                "assessment_id": str(referral_row.assessment_id),
+                "type": referral_row.type.value,
+                "status": referral_row.status.value,
+                "provider_id": str(referral_row.provider_id) if referral_row.provider_id else None,
                 "events": [
                     {
                         "from_status": event.from_status.value if event.from_status else None,
@@ -170,9 +166,7 @@ def build_export(session: Session, user: User, key: str) -> ExportResponse:
         }
         for row in session.scalars(
             select(Reminder).where(
-                Reminder.referral_id.in_(
-                    select(Referral.id).where(Referral.user_id == user.id)
-                )
+                Reminder.referral_id.in_(select(Referral.id).where(Referral.user_id == user.id))
             )
         ).all()
     ]
@@ -219,9 +213,7 @@ def erase_user_data(
     assessment_ids = session.scalars(
         select(Assessment.id).where(Assessment.user_id == user.id)
     ).all()
-    referral_ids = session.scalars(
-        select(Referral.id).where(Referral.user_id == user.id)
-    ).all()
+    referral_ids = session.scalars(select(Referral.id).where(Referral.user_id == user.id)).all()
     removed["reminders"] = _delete_where(session, Reminder, Reminder.referral_id.in_(referral_ids))
     removed["referral_events"] = _delete_where(
         session, ReferralEvent, ReferralEvent.referral_id.in_(referral_ids)
@@ -243,11 +235,13 @@ def erase_user_data(
         (Share.user_id == user.id) | (Share.recipient_id == user.id),
     )
     user.contact_encrypted = None
-    anonymized = session.execute(
-        AuditLog.__table__.update()
-        .where(AuditLog.actor_id == user.id)
-        .values(actor_id=None)
-    ).rowcount
+    anonymized = (
+        session.scalar(
+            select(func.count()).select_from(AuditLog).where(AuditLog.actor_id == user.id)
+        )
+        or 0
+    )
+    session.execute(update(AuditLog).where(AuditLog.actor_id == user.id).values(actor_id=None))
     consents_kept = session.scalar(
         select(func.count()).select_from(Consent).where(Consent.user_id == user.id)
     )
@@ -259,13 +253,11 @@ def erase_user_data(
         removed["users"] = 0
     session.flush()
     return DeleteResponse(
-        removed=removed, anonymized_audit_entries=anonymized or 0, consents_kept=consents_kept or 0
+        removed=removed, anonymized_audit_entries=anonymized, consents_kept=consents_kept or 0
     )
 
 
-def _delete_where(
-    session: Session, model: type[ModelT], criterion: ColumnElement[bool]
-) -> int:
+def _delete_where(session: Session, model: type[ModelT], criterion: ColumnElement[bool]) -> int:
     """Delete rows matching one criterion.
 
     Args:

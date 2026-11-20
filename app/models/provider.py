@@ -19,9 +19,7 @@ class Provider(Base):
             "type IN ('teleconsult', 'blood_test', 'sample_collection', 'in_person')",
             name="ck_providers_type",
         ),
-        CheckConstraint(
-            "clinician_gender IN ('male', 'female')", name="ck_providers_gender"
-        ),
+        CheckConstraint("clinician_gender IN ('male', 'female')", name="ck_providers_gender"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.enums import Role
-from tests.unit.staff_helpers import assess_with, make_staff, refer, refer
+from tests.unit.staff_helpers import assess_with, make_staff, refer
 
 DIABETES = {"diabetes": {"value": True, "status": "answered"}}
 

@@ -133,9 +133,7 @@ def _multi_schema() -> IntakeSchemaDocument:
 def test_multi_choice_validation() -> None:
     """Validate multi-choice answers against their options."""
     schema = _multi_schema()
-    ok = validate_answers(
-        schema, {"multi": AnswerIn(value=["a", "b"], status=ItemStatus.ANSWERED)}
-    )
+    ok = validate_answers(schema, {"multi": AnswerIn(value=["a", "b"], status=ItemStatus.ANSWERED)})
     assert ok["multi"]["value"] == ["a", "b"]
     for bad in (["zzz"], [], "a"):
         with pytest.raises(InvalidInputError):
@@ -147,9 +145,7 @@ def test_text_default_length_cap() -> None:
     schema = _multi_schema()
     validate_answers(schema, {"note": AnswerIn(value="x" * 5000, status=ItemStatus.ANSWERED)})
     with pytest.raises(InvalidInputError):
-        validate_answers(
-            schema, {"note": AnswerIn(value="x" * 5001, status=ItemStatus.ANSWERED)}
-        )
+        validate_answers(schema, {"note": AnswerIn(value="x" * 5001, status=ItemStatus.ANSWERED)})
 
 
 def _conditions(criterion: Criterion) -> list[Condition]:

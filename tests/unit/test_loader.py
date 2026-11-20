@@ -113,9 +113,7 @@ def test_uncovered_field_fails(tmp_path: Path) -> None:
 
 def test_unknown_param_fails(tmp_path: Path) -> None:
     """Fail fast on references to missing params."""
-    text = _real_text("flags.v0.1.yaml").replace(
-        "param: ttc_threshold_months}", "param: nope}", 1
-    )
+    text = _real_text("flags.v0.1.yaml").replace("param: ttc_threshold_months}", "param: nope}", 1)
     rules_dir = _rules_dir(tmp_path, **{"flags.v0.1.yaml": text})
     with pytest.raises(RulesLoadError, match="unknown param"):
         load_rules(rules_dir, "0.1")

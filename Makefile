@@ -24,8 +24,8 @@ format-check:  ## Check formatting with ruff.
 lint:  ## Lint with ruff.
 	$(PYTHON) -m ruff check app tests alembic
 
-typecheck:  ## Type-check with mypy (strict on app/).
-	$(PYTHON) -m mypy app alembic
+typecheck:  ## Type-check with mypy (strict on app, relaxed on tests).
+	$(PYTHON) -m mypy app alembic tests
 
 test:  ## Run tests (with coverage when pytest-cov is installed).
 	if $(PYTHON) -c "import pytest_cov" 2>/dev/null; then $(PYTHON) -m pytest --cov=app --cov-report=term-missing --cov-fail-under=75; else echo "pytest-cov not installed; running tests without coverage"; $(PYTHON) -m pytest; fi

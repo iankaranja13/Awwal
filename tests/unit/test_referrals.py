@@ -373,7 +373,7 @@ def test_booking_creates_reminders_with_consent(
     test_settings: Settings,
 ) -> None:
     """Create booking reminders only with reminders consent."""
-    from sqlalchemy import func, select
+    from sqlalchemy import select
 
     from app.models import Reminder
 

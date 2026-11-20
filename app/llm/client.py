@@ -56,9 +56,7 @@ def load_prompt(job: str) -> str:
         raise LLMError(f"Cannot read prompt file {path}: {exc.strerror}.") from exc
 
 
-def create_client(
-    settings: Settings, transport: httpx.BaseTransport | None = None
-) -> LLMClient:
+def create_client(settings: Settings, transport: httpx.BaseTransport | None = None) -> LLMClient:
     """Create the configured LLM client.
 
     Args:

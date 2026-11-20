@@ -24,9 +24,7 @@ from app.services.consent import has_consent
 from app.services.provider import get_provider
 
 TERMINAL_STATUSES = frozenset({ReferralStatus.CLOSED, ReferralStatus.CANCELLED})
-BOOKABLE_ROUTES = frozenset(
-    {Route.ANDROLOGY_UROLOGY, Route.FERTILITY_SERVICES, Route.PRIMARY_CARE}
-)
+BOOKABLE_ROUTES = frozenset({Route.ANDROLOGY_UROLOGY, Route.FERTILITY_SERVICES, Route.PRIMARY_CARE})
 
 TRANSITIONS: dict[tuple[ReferralStatus, ReferralStatus], frozenset[Role]] = {
     (ReferralStatus.CLINICIAN_REVIEW, ReferralStatus.CONFIRMED): frozenset({Role.CLINICIAN}),
@@ -34,9 +32,7 @@ TRANSITIONS: dict[tuple[ReferralStatus, ReferralStatus], frozenset[Role]] = {
         {Role.CLINICIAN, Role.USER}
     ),
     (ReferralStatus.CONFIRMED, ReferralStatus.BOOKED): frozenset({Role.USER, Role.NAVIGATOR}),
-    (ReferralStatus.BOOKED, ReferralStatus.ATTENDED): frozenset(
-        {Role.NAVIGATOR, Role.CLINICIAN}
-    ),
+    (ReferralStatus.BOOKED, ReferralStatus.ATTENDED): frozenset({Role.NAVIGATOR, Role.CLINICIAN}),
     (ReferralStatus.BOOKED, ReferralStatus.NO_SHOW): frozenset({Role.NAVIGATOR}),
     (ReferralStatus.BOOKED, ReferralStatus.CANCELLED): frozenset({Role.USER, Role.NAVIGATOR}),
     (ReferralStatus.ATTENDED, ReferralStatus.RESULT_EXPLAINED): frozenset({Role.CLINICIAN}),

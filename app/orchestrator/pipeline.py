@@ -79,9 +79,7 @@ def run_assessment(
     else:
         with recorder.timed("flag_evaluation") as detail:
             flag_results = evaluate_flag_stage(rules, inputs, derived)
-            detail["present"] = sum(
-                1 for flag in flag_results if flag.state == FlagState.PRESENT
-            )
+            detail["present"] = sum(1 for flag in flag_results if flag.state == FlagState.PRESENT)
             detail["not_assessable"] = sum(
                 1 for flag in flag_results if flag.state == FlagState.NOT_ASSESSABLE
             )

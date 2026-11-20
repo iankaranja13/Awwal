@@ -8,8 +8,6 @@ from sqlalchemy.orm import Session
 from app.core.enums import Language, Role, Route
 from app.core.errors import ForbiddenError, NotFoundError
 from app.models import Assessment, Explanation, User, WorkflowTrace
-from app.services.audit import record as record_audit
-from app.services.share import has_active_share
 from app.rules_engine.models import FlagResult, RuleSet
 from app.schemas.assess import (
     AssessFlag,
@@ -22,7 +20,9 @@ from app.schemas.assess import (
 )
 from app.schemas.explain import ExplainedFlag, ExplainerOutput
 from app.schemas.intake import IntakeSchemaDocument
+from app.services.audit import record as record_audit
 from app.services.content import ContentError, SnippetsFile, StaticSafetyFile
+from app.services.share import has_active_share
 
 ROUTE_ACTIONS: dict[Route, list[str]] = {
     Route.URGENT: ["seek_urgent_care"],

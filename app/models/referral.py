@@ -43,9 +43,7 @@ class Referral(Base):
         ),
         nullable=False,
     )
-    provider_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("providers.id"), nullable=True
-    )
+    provider_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("providers.id"), nullable=True)
     status: Mapped[ReferralStatus] = mapped_column(
         SAEnum(
             ReferralStatus,

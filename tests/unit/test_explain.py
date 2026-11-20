@@ -12,7 +12,7 @@ from app.core.deps import get_llm_client
 from app.llm.errors import LLMError
 from app.llm.providers.mock import MockProvider
 from app.models import Explanation
-from tests.unit.rule_helpers import APP_CONTENT_DIR
+from tests.unit.rule_helpers import APP_CONTENT_DIR, fastapi_app
 
 
 class _FailingClient:
@@ -83,7 +83,9 @@ class _SpyClient:
 
 def _assess_id(db_client: TestClient, headers: dict[str, str], answers: dict[str, Any]) -> str:
     db_client.put("/api/v1/intake", headers=headers, json={"answers": answers})
-    return db_client.post("/api/v1/assess", headers=headers).json()["assessment_id"]
+    created = db_client.post("/api/v1/assess", headers=headers).json()
+    assessment_id: str = created["assessment_id"]
+    return assessment_id
 
 
 def test_explain_uses_llm_by_default(
@@ -134,13 +136,13 @@ def test_explain_falls_back_on_provider_error(
         consented_headers,
         {"diabetes": {"value": True, "status": "answered"}},
     )
-    db_client.app.dependency_overrides[get_llm_client] = _FailingClient
+    fastapi_app(db_client).dependency_overrides[get_llm_client] = _FailingClient
     try:
         body = db_client.post(
             "/api/v1/explain", headers=consented_headers, json={"assessment_id": assessment_id}
         ).json()
     finally:
-        del db_client.app.dependency_overrides[get_llm_client]
+        del fastapi_app(db_client).dependency_overrides[get_llm_client]
     assert body["source"] == "template"
     assert body["used_fallback"] is True
     assert body["validator"]["ok"] is False
@@ -155,13 +157,13 @@ def test_explain_falls_back_on_invalid_output(
         consented_headers,
         {"diabetes": {"value": True, "status": "answered"}},
     )
-    db_client.app.dependency_overrides[get_llm_client] = _GarbageClient
+    fastapi_app(db_client).dependency_overrides[get_llm_client] = _GarbageClient
     try:
         body = db_client.post(
             "/api/v1/explain", headers=consented_headers, json={"assessment_id": assessment_id}
         ).json()
     finally:
-        del db_client.app.dependency_overrides[get_llm_client]
+        del fastapi_app(db_client).dependency_overrides[get_llm_client]
     assert body["source"] == "template"
     assert body["used_fallback"] is True
 
@@ -176,13 +178,13 @@ def test_explain_urgent_never_calls_llm(
         {"testicular_pain_sudden_severe": {"value": True, "status": "answered"}},
     )
     spy = _SpyClient()
-    db_client.app.dependency_overrides[get_llm_client] = lambda: spy
+    fastapi_app(db_client).dependency_overrides[get_llm_client] = lambda: spy
     try:
         body = db_client.post(
             "/api/v1/explain", headers=consented_headers, json={"assessment_id": assessment_id}
         ).json()
     finally:
-        del db_client.app.dependency_overrides[get_llm_client]
+        del fastapi_app(db_client).dependency_overrides[get_llm_client]
     assert body["source"] == "static"
     assert spy.seen == []
 
@@ -217,13 +219,11 @@ def test_llm_input_holds_no_personal_data(
         db_client, headers, {"months_trying": {"value": 14, "status": "answered"}}
     )
     spy = _SpyClient()
-    db_client.app.dependency_overrides[get_llm_client] = lambda: spy
+    fastapi_app(db_client).dependency_overrides[get_llm_client] = lambda: spy
     try:
-        db_client.post(
-            "/api/v1/explain", headers=headers, json={"assessment_id": assessment_id}
-        )
+        db_client.post("/api/v1/explain", headers=headers, json={"assessment_id": assessment_id})
     finally:
-        del db_client.app.dependency_overrides[get_llm_client]
+        del fastapi_app(db_client).dependency_overrides[get_llm_client]
     assert len(spy.seen) == 1
     dumped = json.dumps(spy.seen[0])
     assert handle not in dumped
@@ -245,9 +245,9 @@ def test_explain_persists_new_row(
         "/api/v1/explain", headers=consented_headers, json={"assessment_id": assessment_id}
     )
     count = db_session.scalar(
-        select(func.count()).select_from(Explanation).where(
-            Explanation.assessment_id == UUID(assessment_id)
-        )
+        select(func.count())
+        .select_from(Explanation)
+        .where(Explanation.assessment_id == UUID(assessment_id))
     )
     assert count == 2
 
@@ -295,13 +295,13 @@ def test_brief_falls_back_on_provider_error(
         consented_headers,
         {"diabetes": {"value": True, "status": "answered"}},
     )
-    db_client.app.dependency_overrides[get_llm_client] = _FailingClient
+    fastapi_app(db_client).dependency_overrides[get_llm_client] = _FailingClient
     try:
         body = db_client.post(
             "/api/v1/brief", headers=consented_headers, json={"assessment_id": assessment_id}
         ).json()
     finally:
-        del db_client.app.dependency_overrides[get_llm_client]
+        del fastapi_app(db_client).dependency_overrides[get_llm_client]
     assert body["source"] == "template"
     assert body["used_fallback"] is True
     assert body["brief"]["route"] == "PRIMARY_CARE"
@@ -321,9 +321,7 @@ def test_brief_audits_generation(
     db_client.post(
         "/api/v1/brief", headers=consented_headers, json={"assessment_id": assessment_id}
     )
-    actions = [
-        row[0] for row in db_session.execute(text("SELECT action FROM audit_log")).all()
-    ]
+    actions = [row[0] for row in db_session.execute(text("SELECT action FROM audit_log")).all()]
     assert "brief.generated" in actions
 
 
