@@ -63,3 +63,12 @@ is clinical guidance. The advisor confirms or replaces each draft value.
 - The UI covers every key flag and red flag but never asks partner age,
   prior hormone result or family history (all non-key by design). Is that
   coverage the right trade-off for a short intake?
+
+## Citation corpus (`app/content/excerpts.*.json`)
+
+- The seed excerpts reuse draft snippet texts and are not verbatim
+  guideline quotes. Which verbatim excerpts (document + section + exact
+  wording) should replace them, one per flag?
+- Until replacement, is it acceptable for explanations to cite these
+  draft pointers, given every entry is flagged
+  `requires_clinical_validation`?

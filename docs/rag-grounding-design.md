@@ -1,8 +1,12 @@
 # RAG grounding design (draft for clinician review)
 
-Status: **design only — not approved for build.** Nothing here is
-implemented. The clinical advisor reviews the corpus and the safety
-argument before any code is written.
+Status: **machinery implemented; corpus is draft.** The retrieval loop,
+citation schema, validator checks, template/mock citations and benchmark
+metrics are built and tested. The seed corpus reuses existing draft
+snippet texts (no new clinical content, `verbatim: false`,
+`requires_clinical_validation: true` on every entry) and must be
+replaced with advisor-approved verbatim quotes before any pilot. The
+clinical advisor reviews the corpus and the safety argument.
 
 ## 1. Goal and non-goals
 
@@ -31,22 +35,23 @@ document today.
 
 ### 3.1 Excerpt corpus
 
-A versioned file set, e.g. `content/excerpts.v0.1.en/ar.json`, holding
-short verbatim quotes (1–3 sentences each) from the verified references
-in `docs/research-grounding.md` only: WHO infertility guideline (2025),
-AUA/ASRM male infertility update (Brannigan et al., 2024), WHO AI ethics
-(2021, for governance wording), and NIST AI 600-1 (for evaluation
-wording). Each excerpt carries:
+A versioned file set, `app/content/excerpts.en/ar.json`, holding short
+excerpts for citation. The target state is verbatim quotes (1–3
+sentences each) from the verified references in
+`docs/research-grounding.md`, each approved verbatim by the clinical
+advisor. The current seed instead reuses the existing draft snippet
+texts (one excerpt per flag: `EXC_<flag id>`), generated reproducibly
+by `scripts/build_excerpt_seed.py`, so the seed invents no clinical
+text. Each excerpt carries:
 
 ```json
 {
-  "id": "EXC_TTC_12MO",
-  "source_doc": "brannigan-2024",
-  "section": "guideline statement 2",
-  "text": {"en": "...", "ar": "..."},
+  "id": "EXC_LS_TTC_STANDARD",
+  "text": "<draft snippet text, en or ar>",
   "applies_to_flags": ["LS_TTC_STANDARD"],
-  "reviewed_by": "clinical advisor name + date",
-  "needs_native_review": true
+  "source_hint": "<believed provenance, unvalidated>",
+  "verbatim": false,
+  "requires_clinical_validation": true
 }
 ```
 
@@ -72,12 +77,12 @@ states, snippet texts). The output schema gains one field per flag:
 {"flag_id": "...", "explanation": "...", "sources": ["EXC_TTC_12MO"]}
 ```
 
-The validator gains two checks alongside the existing ones: every cited
-id must have been provided in the input (no invented citations), and
-every provided excerpt for a `PRESENT` flag should be cited or
-explicitly marked unused. Groundedness beyond citation-existence (does
-the sentence faithfully reflect the excerpt?) is measured in evaluation
-(§5), not enforced inline — the validator stays a deterministic checker.
+The validator gains one check alongside the existing ones: every cited
+id must have been provided in the input (no invented citations).
+Coverage (provided excerpts cited per present flag) is measured in
+evaluation (§5), not enforced inline, and groundedness beyond
+citation-existence (does the sentence faithfully reflect the excerpt?)
+is advisor spot-check — the validator stays a deterministic checker.
 
 Fallbacks are unchanged: rejected or timed-out outputs fall back to
 templates, and templates cite excerpt ids statically.
@@ -129,12 +134,14 @@ against the quoted excerpts before any pilot.
 5. Should templates (the fallback path) carry citations at all, or stay
    citation-free by design?
 
-## 7. Implementation sketch (after approval only)
+## 7. Implementation (done; corpus still draft)
 
-- `content/excerpts.v0.1.en/ar.json` + loader with fail-fast
-  validation, following `app/services/intake.py`.
-- Retrieval helper in `app/llm/` (pure, tested truth table per flag).
-- `sources` field on `ExplainedFlag`/`BriefFlag` plus validator checks.
-- Benchmark citation metrics in `benchmark/invariants.py` + report.
-- Tests: mapping truth table, invented-citation rejection, fallback
-  citation behaviour, parity of cited ids across languages.
+- `app/content/excerpts.en/ar.json` + fail-fast loader
+  (`app/services/content.py`), startup cross-check in `_warm_caches`.
+- Pure retrieval in `app/llm/retrieval.py` with truth-table tests.
+- `sources` on `ExplainedFlag`/`BriefFlag`/`AssessFlag`, populated by
+  templates, mock and pipeline; validator rejects invented citations.
+- Benchmark citation precision, present-flag coverage and cited-set
+  parity in `benchmark/run_benchmark.py` + report.
+- Tests: loader failures, retrieval mapping, invented-citation
+  rejection, template/mock/service sources, contract `sources` key.

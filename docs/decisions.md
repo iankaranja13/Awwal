@@ -203,3 +203,17 @@ a derivation trail the rules do not have; the grounding doc states that
 boundary explicitly so no reviewer mistakes approach-alignment for
 clinical validation.
 
+## DR-017: RAG over a draft corpus
+
+What: citation-annotated explanations with deterministic per-flag
+retrieval, validator rejection of invented citations, and benchmark
+citation metrics. The seed corpus reuses existing draft snippet texts
+(`scripts/build_excerpt_seed.py`), marked `verbatim: false` and
+`requires_clinical_validation: true`, and must be replaced with
+advisor-approved verbatim quotes before any pilot.
+
+Why: building the loop on existing drafts demonstrates citations end to
+end without inventing clinical text or fabricating guideline quotes the
+project does not hold. Retrieval stays out of the decision path by
+construction: flags and routes never see the corpus.
+
