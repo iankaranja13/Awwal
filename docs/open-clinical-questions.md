@@ -47,3 +47,19 @@ is clinical guidance. The advisor confirms or replaces each draft value.
   result and partner age band are non-key?
 - Is the route precedence (urgent, andrology/urology, fertility services,
   primary care, provisional, self-care) correct?
+
+## Frontend intake mapping (`lib/intake.ts`, `lib/mapping.ts`)
+
+- The UI asks combined screening questions: one for torsion/injury/surgery
+  (mapped to `testicular_torsion` on "yes") and one for erection/desire
+  changes (mapped to `low_desire_or_sexual_function_change` on "yes").
+  Should these stay combined or split into separate questions?
+- "Not currently trying" derives `months_trying = 0`, and duration bands
+  map to representative months (under 6 -> 3, 6-12 -> 9, over 12 -> 18).
+  Are these derivations acceptable for the time-to-conceive flag?
+- A UI "yes" on tobacco maps to `current` (never/former/current), on
+  alcohol to `regular` (never/occasional/regular), on steroids or other
+  substances to `current`. Should the UI offer the middle options instead?
+- The UI covers every key flag and red flag but never asks partner age,
+  prior hormone result or family history (all non-key by design). Is that
+  coverage the right trade-off for a short intake?

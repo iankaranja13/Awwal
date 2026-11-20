@@ -161,3 +161,24 @@ need shares; intake answers span every assessment, so only all-scope
 shares unlock them; referral events are meaningless without their
 referral, while the access trail must survive erasure for accountability.
 
+## DR-015: Frontend answer mapping
+
+What: the UI keeps its own short intake (`lib/intake.ts`) and converts
+answers to backend item ids in a pure contract layer (`lib/mapping.ts`).
+Combined screening questions pin the first backend field on "yes" and
+leave the rest unanswered ("no" clears all); "not currently trying"
+derives `months_trying = 0`; duration bands map to representative months
+(3/9/18) that preserve the 12-month threshold; unknown ids are dropped
+because the API rejects them. The UI assesses twice (English and Arabic)
+so results toggle instantly, and reads route-gating (`BOOKABLE_ROUTES`),
+event authorship and slot datetimes from the same layer. A golden fixture
+generated from the real mapper pins the contract
+(`tests/unit/test_frontend_contract.py`).
+
+Why: the UI wording is the teammate's reviewed surface, while the backend
+schema is the rules' input contract; a documented, tested mapping keeps
+both stable instead of rebuilding the intake from the schema. Dual
+assessment is two cheap rows and keeps the bilingual toggle instant.
+Approximations are explicit in code and in the clinical questions file,
+never silent.
+

@@ -99,18 +99,39 @@ rates, language parity and subgroup tables.
 A private first step for men's reproductive health. Prototype with synthetic
 data. Not a diagnosis.
 
-### Run
+### Run (full stack)
+
+The frontend calls the live API; run both. In one terminal start the
+backend (needs `.env` from `.env.example` with real secrets, plus Postgres
+via `docker compose up -d db`, or point `DATABASE_URL` at SQLite for a
+quick local run):
+
+```sh
+make migrate
+make seed        # demo clinician/navigator accounts + mock providers
+make dev         # API on http://localhost:8000
+```
+
+In another terminal:
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
 ```
 
+Frontend checks: `npm run typecheck` (`tsc --noEmit`) and `npm run build`.
+Optional env (all have working defaults): `NEXT_PUBLIC_API_URL`
+(default `http://localhost:8000/api/v1`), `NEXT_PUBLIC_DEMO_CLINICIAN_HANDLE`
+/ `NEXT_PUBLIC_DEMO_CLINICIAN_PASSWORD` and the navigator equivalents
+(defaults match the documented seed values in `.env.example`). The demo
+staff controls and clinician sign-off log in with those seeded accounts.
+
 English only, built as a desktop web app. Pages use a split layout: the
 heading and main action sit on the left and stay in place, and the content
 is on the right. Narrow windows stack the two columns. Arabic strings are
 still in `lib/strings.ts` and `lib/intake.ts` but aren't shown; the
-language is fixed in `lib/store.tsx`.
+language is fixed in `lib/store.tsx`. The session lives in memory only, so
+reloading the page starts a fresh anonymous session.
 
 ### Screens
 
@@ -121,8 +142,8 @@ language is fixed in `lib/store.tsx`.
 | `/intake` | Seven short topics; every question has "Not sure" and "Rather not say"; blanks become `skipped` |
 | `/results` | Flags in three states (filled, dashed, hollow marker plus text) and the workflow trace sheet |
 | `/next` | One route on the care-path line; urgent gets a static full-screen message |
-| `/booking` | Video call, blood test or sample; language and clinician filters; phone asked only here |
-| `/status` | Referral stages, simulated reminders, outcome; demo button stands in for the navigator |
+| `/booking` | Video call, blood test, sample or in person; language and clinician filters; phone asked only here |
+| `/status` | Referral stages, simulated reminders, outcome; demo buttons stand in for staff (navigator/clinician per stage); outcome note closes the referral |
 | `/privacy` | Permissions, shares with expiry and revoke, activity log, download, delete |
 | `/clinician` | Review queue, brief, change route, sign off |
 
@@ -133,14 +154,27 @@ screen. Click "Notes" or press Esc to return.
 
 - **Urgent:** answer Yes to any question in "Right now". You skip results and land on the static urgent screen.
 - **Incomplete:** leave "Told you have a varicocele" or "Semen analysis" blank. You get "A few answers are missing" with the list.
-- **Specialist through sign-off:** answer Yes to testicular surgery, book, then open the clinician view from the status page and sign off. The status moves to Confirmed and then Booked.
+- **Specialist through sign-off:** answer Yes to "Testicular twist, injury or surgery", book a teleconsult, then open the clinician view from the status page and sign off. The status moves to Confirmed; the demo button then advances it through Booked, Attended and Results explained, and an outcome note closes it.
 
-### For Person A (engine/API)
+### API wiring
 
-`lib/types.ts` is the contract. `lib/engine.ts` is a **mock** that returns
-the same `Assessment` shape using three-valued logic (true / false /
-unknown → `NOT_ASSESSABLE`). Swap `assess()` and the store actions in
-`lib/store.tsx` for API calls when endpoints are live.
+`lib/types.ts` is the UI contract. `lib/api.ts` is the thin fetch client
+for `/api/v1` (anonymous session plus seeded demo-role logins), and
+`lib/mapping.ts` is the pure contract layer: UI answers to backend intake
+ids/values and backend responses back to UI shapes. Every approximation
+(combined screening questions, not-trying derives zero months, duration
+bands to representative months) is documented in `mapping.ts` and covered
+by `tests/unit/test_frontend_contract.py`, which runs the real mapper
+output through the live API. The golden fixture
+`tests/fixtures/frontend_mapping_golden.json` is generated from
+`lib/mapping.ts`; regenerate it after mapping changes with:
+
+```sh
+node scripts/regen_frontend_golden.mjs
+```
+
+The contract suite also fails when the fixture is stale (skipped where
+`node_modules` is absent, e.g. backend-only CI).
 
 ### Design notes
 
@@ -161,3 +195,5 @@ unknown → `NOT_ASSESSABLE`). Swap `assess()` and the store actions in
   no real messaging (reminders are simulated records).
 - Privacy integrations (Malaffi/Sahhatna) and regulatory alignment
   (DoH AI standard, ADHICS, licensing, data residency) are roadmap only.
+- The browser session is in-memory only (reload starts over), and the demo
+  staff controls use the documented seeded demo credentials.
