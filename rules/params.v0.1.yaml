@@ -1,0 +1,24 @@
+# Draft v0.1 numeric and categorical parameters. All thresholds live here so
+# rule files never hard-code numbers. Every value is an unvalidated draft.
+version: "0.1"
+params:
+  ttc_threshold_months:
+    value: 12
+    description: "Months trying to conceive meeting the standard threshold (draft)."
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+  ttc_threshold_months_older_partner:
+    value: 6
+    description: "Months trying with an older partner meeting the earlier threshold (draft)."
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+  older_partner_band:
+    value: "35_plus"
+    description: "Partner age band treated as older for the earlier threshold (draft)."
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+  bmi_flag_at_or_above:
+    value: 25.0
+    description: "BMI at or above which the metabolic flag fires (draft)."
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true

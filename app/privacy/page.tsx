@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useStore, useT } from "@/lib/store";
 import type { ConsentScope } from "@/lib/types";
@@ -17,19 +17,35 @@ const SCOPES: [ConsentScope, StringKey][] = [
 ];
 
 export default function PrivacyPage() {
-  const { consent, setConsent, shares, createShare, revokeShare, audit, exportData, deleteAll } = useStore();
+  const {
+    consent, setConsent, shares, createShare, revokeShare, refreshShares, audit, refreshAudit,
+    exportData, deleteAll, busy, error,
+  } = useStore();
   const { t, L, date } = useT();
   const router = useRouter();
   const [confirm, setConfirm] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  useEffect(() => {
+    void refreshAudit();
+    void refreshShares();
+  }, [refreshAudit, refreshShares]);
 
-  const download = () => {
-    const blob = new Blob([exportData()], { type: "application/json" });
+  const download = async () => {
+    const data = await exportData();
+    if (data === null) return;
+    const blob = new Blob([data], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "awwal-my-data.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+
+  const remove = async () => {
+    const ok = await deleteAll();
+    if (!ok) return;
+    setConfirm(false);
+    router.push("/");
   };
 
   const activity = showAll ? audit : audit.slice(0, 5);
@@ -55,6 +71,12 @@ export default function PrivacyPage() {
         </>
       }
     >
+      {error && (
+        <p role="alert" className="mb-8 text-sm text-alarm">
+          {t("serverError")} {error}
+        </p>
+      )}
+
       <Section title={t("consentH")}>
         <div className="divide-y divide-line">
           {SCOPES.map(([s, k]) => (
@@ -127,15 +149,8 @@ export default function PrivacyPage() {
       <Sheet open={confirm} onClose={() => setConfirm(false)} title={t("deleteConfirmTitle")} closeLabel={t("close")}>
         <p className="text-base text-ink">{t("deleteConfirmBody")}</p>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Button
-            variant="alarm"
-            onClick={() => {
-              deleteAll();
-              setConfirm(false);
-              router.push("/");
-            }}
-          >
-            {t("deleteConfirm")}
+          <Button variant="alarm" disabled={busy} onClick={remove}>
+            {busy ? t("working") : t("deleteConfirm")}
           </Button>
           <Button variant="quiet" onClick={() => setConfirm(false)}>
             {t("keep")}

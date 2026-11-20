@@ -1,0 +1,290 @@
+{
+  "generated_at": "2026-11-20T11:39:26.713207+00:00",
+  "median_triage_ms": 2.0,
+  "referral_completed": true,
+  "rules_version": "0.1",
+  "provider": "mock",
+  "model": "mock",
+  "seed": 20261119,
+  "variants": 100,
+  "core": [
+    {
+      "id": "case_01_clean",
+      "expected_route": "SELF_CARE",
+      "actual_route": "SELF_CARE",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_02_lifestyle",
+      "expected_route": "PRIMARY_CARE",
+      "actual_route": "PRIMARY_CARE",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_03_metabolic",
+      "expected_route": "PRIMARY_CARE",
+      "actual_route": "PRIMARY_CARE",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_04_symptoms",
+      "expected_route": "ANDROLOGY_UROLOGY",
+      "actual_route": "ANDROLOGY_UROLOGY",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_05_incomplete",
+      "expected_route": "SELF_CARE_PROVISIONAL",
+      "actual_route": "SELF_CARE_PROVISIONAL",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_06_urgent",
+      "expected_route": "URGENT",
+      "actual_route": "URGENT",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_07_prior_result",
+      "expected_route": "ANDROLOGY_UROLOGY",
+      "actual_route": "ANDROLOGY_UROLOGY",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_08_private",
+      "expected_route": "SELF_CARE_PROVISIONAL",
+      "actual_route": "SELF_CARE_PROVISIONAL",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_09_specialist",
+      "expected_route": "ANDROLOGY_UROLOGY",
+      "actual_route": "ANDROLOGY_UROLOGY",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true
+    },
+    {
+      "id": "case_10_journey",
+      "expected_route": "PRIMARY_CARE",
+      "actual_route": "PRIMARY_CARE",
+      "route_match": true,
+      "flags_match": true,
+      "static_match": true,
+      "parity_match": true,
+      "journey": {
+        "id": "case_10_journey",
+        "final_status": "closed",
+        "journey_match": true
+      }
+    }
+  ],
+  "core_total": 10,
+  "core_matched": 10,
+  "core_agreement": "10/10",
+  "under_triage": 0,
+  "clear_violations": 0,
+  "mono_violations": 0,
+  "parity_checked": 109,
+  "parity_passed": 109,
+  "validator_checked": 18,
+  "validator_passed": 18,
+  "citation_checked": 18,
+  "citation_precise": 18,
+  "citation_covered": 16,
+  "citation_cover_total": 16,
+  "citation_parity": "9/9",
+  "llm_calls": 109,
+  "llm_fallbacks": 0,
+  "llm_rejected": 0,
+  "subgroup_rows": [
+    {
+      "age": "18_24",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 7,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "25_29",
+      "language": "ar",
+      "completeness": "sparse",
+      "count": 2,
+      "routes": [
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "25_29",
+      "language": "en",
+      "completeness": "partial",
+      "count": 1,
+      "routes": [
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "25_29",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 24,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "30_34",
+      "language": "ar",
+      "completeness": "full",
+      "count": 1,
+      "routes": [
+        "SELF_CARE"
+      ]
+    },
+    {
+      "age": "30_34",
+      "language": "ar",
+      "completeness": "sparse",
+      "count": 5,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "SELF_CARE_PROVISIONAL",
+        "URGENT"
+      ]
+    },
+    {
+      "age": "30_34",
+      "language": "en",
+      "completeness": "full",
+      "count": 1,
+      "routes": [
+        "SELF_CARE"
+      ]
+    },
+    {
+      "age": "30_34",
+      "language": "en",
+      "completeness": "partial",
+      "count": 5,
+      "routes": [
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "30_34",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 31,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "SELF_CARE_PROVISIONAL",
+        "URGENT"
+      ]
+    },
+    {
+      "age": "35_39",
+      "language": "ar",
+      "completeness": "sparse",
+      "count": 1,
+      "routes": [
+        "PRIMARY_CARE"
+      ]
+    },
+    {
+      "age": "35_39",
+      "language": "en",
+      "completeness": "partial",
+      "count": 4,
+      "routes": [
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "35_39",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 18,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL",
+        "URGENT"
+      ]
+    },
+    {
+      "age": "40_44",
+      "language": "en",
+      "completeness": "partial",
+      "count": 1,
+      "routes": [
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "40_44",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 11,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "PRIMARY_CARE",
+        "SELF_CARE_PROVISIONAL",
+        "URGENT"
+      ]
+    },
+    {
+      "age": "45_plus",
+      "language": "en",
+      "completeness": "partial",
+      "count": 1,
+      "routes": [
+        "SELF_CARE_PROVISIONAL"
+      ]
+    },
+    {
+      "age": "45_plus",
+      "language": "en",
+      "completeness": "sparse",
+      "count": 5,
+      "routes": [
+        "ANDROLOGY_UROLOGY",
+        "SELF_CARE_PROVISIONAL",
+        "URGENT"
+      ]
+    }
+  ],
+  "failures": []
+}

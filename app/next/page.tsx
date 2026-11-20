@@ -39,7 +39,9 @@ export default function NextStepPage() {
               transition={{ duration: 1.6, repeat: 2 }}
             />
             <h1 className="display text-2xl font-normal text-alarm md:text-3xl">{L(ROUTE_TEXT.URGENT.title)}</h1>
-            <p className="mt-6 max-w-lg text-lg font-light text-ink">{t("urgentBody")}</p>
+            <p className="mt-6 max-w-lg text-lg font-light text-ink">
+              {assessment.safety ? L(assessment.safety.body) : t("urgentBody")}
+            </p>
           </div>
 
           <div className="lg:col-span-5">
@@ -78,20 +80,18 @@ export default function NextStepPage() {
     router.push("/intake");
   };
 
+  // Self-care routes need no booking, so they offer none.
   const actions = provisional ? (
     <>
       <Button onClick={answerMissing}>{t("answerMissing")}</Button>
-      <LinkButton href="/booking" variant="quiet">
-        {t("bookAnyway")}
+      <LinkButton href="/results" variant="quiet">
+        {t("seeResults")}
       </LinkButton>
     </>
   ) : selfCare ? (
-    <>
-      <LinkButton href="/booking">{t("bookAnyway")}</LinkButton>
-      <Button variant="quiet" onClick={() => setTrace(true)}>
-        {t("howDecided")}
-      </Button>
-    </>
+    <Button variant="quiet" onClick={() => setTrace(true)}>
+      {t("howDecided")}
+    </Button>
   ) : (
     <>
       <LinkButton href="/booking">{t("book")}</LinkButton>

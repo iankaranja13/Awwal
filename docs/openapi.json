@@ -1,0 +1,3532 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Awwal API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness probe.",
+        "description": "Return service liveness and version.\n\nArgs:\n    settings: Injected application settings.\n\nReturns:\n    The health response payload.",
+        "operationId": "get_health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dev/seed": {
+      "post": {
+        "tags": [
+          "dev"
+        ],
+        "summary": "Post Seed",
+        "description": "Seed demo accounts, providers, consents and intakes.\n\nArgs:\n    _admin: Dev-admin gate (unused beyond gating).\n    session: Request database session.\n    settings: Application settings.\n\nReturns:\n    Created row counts by section.",
+        "operationId": "post_seed_api_v1_dev_seed_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "type": "object",
+                  "title": "Response Post Seed Api V1 Dev Seed Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dev/reset": {
+      "post": {
+        "tags": [
+          "dev"
+        ],
+        "summary": "Post Reset",
+        "description": "Delete every end-user account with its data.\n\nArgs:\n    _admin: Dev-admin gate (unused beyond gating).\n    session: Request database session.\n\nReturns:\n    Removed user count.",
+        "operationId": "post_reset_api_v1_dev_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "type": "object",
+                  "title": "Response Post Reset Api V1 Dev Reset Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/audit": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Get Own Audit",
+        "description": "List the caller's own audit entries.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n\nReturns:\n    Audit entries newest first.",
+        "operationId": "get_own_audit_api_v1_privacy_audit_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntryOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Own Audit Api V1 Privacy Audit Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/export": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Get Export",
+        "description": "Export the caller's full data.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n\nReturns:\n    Complete export document.",
+        "operationId": "get_export_api_v1_export_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "delete": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Delete Me",
+        "description": "Delete the caller's personal data.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n\nReturns:\n    Deletion summary.",
+        "operationId": "delete_me_api_v1_me_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/content/privacy": {
+      "get": {
+        "tags": [
+          "privacy"
+        ],
+        "summary": "Get Privacy Copy",
+        "description": "Return bilingual privacy and data-use copy.\n\nArgs:\n    settings: Application settings.\n\nReturns:\n    Privacy copy by language.",
+        "operationId": "get_privacy_copy_api_v1_content_privacy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/PrivacyCopy"
+                  },
+                  "type": "object",
+                  "title": "Response Get Privacy Copy Api V1 Content Privacy Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shares": {
+      "get": {
+        "tags": [
+          "shares"
+        ],
+        "summary": "Get Shares",
+        "description": "List the caller's share grants.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n\nReturns:\n    Share grants newest first.",
+        "operationId": "get_shares_api_v1_shares_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ShareOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Shares Api V1 Shares Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "shares"
+        ],
+        "summary": "Post Share",
+        "description": "Grant one clinician record access.\n\nArgs:\n    user: Authenticated user with sharing consent.\n    session: Request database session.\n    body: Creation request.\n\nReturns:\n    Created share.",
+        "operationId": "post_share_api_v1_shares_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShareCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/shares/{share_id}": {
+      "delete": {
+        "tags": [
+          "shares"
+        ],
+        "summary": "Delete Share",
+        "description": "Revoke one of the caller's shares.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    share_id: Share id.\n\nReturns:\n    Revoked share.",
+        "operationId": "delete_share_api_v1_shares__share_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "share_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Share Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Post Login",
+        "description": "Log in a seeded role account and return its token.\n\nArgs:\n    request: Incoming request (for rate limiting).\n    session: Request database session.\n    settings: Application settings.\n    body: Handle with password.\n\nReturns:\n    Session with access token.",
+        "operationId": "post_login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/providers": {
+      "get": {
+        "tags": [
+          "providers"
+        ],
+        "summary": "Get Providers",
+        "description": "List providers with optional filters.\n\nArgs:\n    _user: Authenticated user (unused beyond authentication).\n    session: Request database session.\n    type: Service type filter.\n    language: Language filter.\n    clinician_gender: Clinician gender filter.\n    tele: Teleconsult filter.\n    home_sampling: Home sampling filter.\n\nReturns:\n    Matching providers ordered by name.",
+        "operationId": "get_providers_api_v1_providers_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReferralType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Language"
+            }
+          },
+          {
+            "name": "clinician_gender",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "male",
+                    "female"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Clinician Gender"
+            }
+          },
+          {
+            "name": "tele",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tele"
+            }
+          },
+          {
+            "name": "home_sampling",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Home Sampling"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProviderOut"
+                  },
+                  "title": "Response Get Providers Api V1 Providers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/referrals": {
+      "get": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Get Referrals",
+        "description": "List referrals visible to the caller.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n\nReturns:\n    Own referrals for users, all referrals for staff roles.",
+        "operationId": "get_referrals_api_v1_referrals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReferralOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Referrals Api V1 Referrals Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Post Referral",
+        "description": "Create one referral for the caller's own assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    body: Creation request.\n\nReturns:\n    Created referral in clinician review.",
+        "operationId": "post_referral_api_v1_referrals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/referrals/{referral_id}": {
+      "get": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Get Referral",
+        "description": "Return one visible referral.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    referral_id: Referral id.\n\nReturns:\n    Referral with transition history.",
+        "operationId": "get_referral_api_v1_referrals__referral_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/referrals/{referral_id}/status": {
+      "patch": {
+        "tags": [
+          "referrals"
+        ],
+        "summary": "Patch Referral Status",
+        "description": "Move one referral to a new status.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    referral_id: Referral id.\n    body: Transition request.\n\nReturns:\n    Updated referral.",
+        "operationId": "patch_referral_status_api_v1_referrals__referral_id__status_patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "referral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Referral Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/clinician/queue": {
+      "get": {
+        "tags": [
+          "clinician"
+        ],
+        "summary": "Get Queue",
+        "description": "List referrals awaiting clinician review.\n\nArgs:\n    user: Authenticated clinician (unused beyond authorisation).\n    session: Request database session.\n\nReturns:\n    Queue entries oldest first.",
+        "operationId": "get_queue_api_v1_clinician_queue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/QueueEntry"
+                  },
+                  "type": "array",
+                  "title": "Response Get Queue Api V1 Clinician Queue Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/clinician/review": {
+      "post": {
+        "tags": [
+          "clinician"
+        ],
+        "summary": "Post Review",
+        "description": "Record one clinician review and move its referral.\n\nArgs:\n    user: Authenticated clinician.\n    session: Request database session.\n    settings: Application settings.\n    body: Review request.\n\nReturns:\n    Stored review with referral outcome.",
+        "operationId": "post_review_api_v1_clinician_review_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/sessions": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "summary": "Post Session",
+        "description": "Create an anonymous session and return its token.\n\nArgs:\n    request: Incoming request (for rate limiting).\n    session: Request database session.\n    settings: Application settings.\n    body: Optional session creation request.\n\nReturns:\n    Created session with access token.",
+        "operationId": "post_session_api_v1_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/SessionRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/consent": {
+      "get": {
+        "tags": [
+          "consent"
+        ],
+        "summary": "Get Consent",
+        "description": "Return the current consent state with full history.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n\nReturns:\n    State and ledger entries oldest first.",
+        "operationId": "get_consent_api_v1_consent_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentHistoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "consent"
+        ],
+        "summary": "Post Consent",
+        "description": "Grant or revoke one consent scope.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    body: Scope and grant flag.\n\nReturns:\n    Current consent state for all scopes.",
+        "operationId": "post_consent_api_v1_consent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentStateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/explain": {
+      "post": {
+        "tags": [
+          "explain"
+        ],
+        "summary": "Post Explain",
+        "description": "Regenerate an explanation in a language.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    llm: Configured LLM client.\n    body: Assessment id with optional language.\n\nReturns:\n    Stored explanation with fallback metadata.",
+        "operationId": "post_explain_api_v1_explain_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/brief": {
+      "post": {
+        "tags": [
+          "explain"
+        ],
+        "summary": "Post Brief",
+        "description": "Generate a clinician brief for the caller's own assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    llm: Configured LLM client.\n    body: Assessment id with optional language.\n\nReturns:\n    Generated brief with fallback metadata.",
+        "operationId": "post_brief_api_v1_brief_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BriefResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/intake/schema": {
+      "get": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Get Schema",
+        "description": "Return the bilingual intake schema.\n\nArgs:\n    _user: Authenticated user (unused beyond authentication).\n    settings: Application settings.\n\nReturns:\n    Versioned schema document.",
+        "operationId": "get_schema_api_v1_intake_schema_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeSchemaDocument"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/intake": {
+      "put": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Put Intake",
+        "description": "Save intake answers (partial updates allowed).\n\nArgs:\n    user: Authenticated user with intake consent.\n    session: Request database session.\n    settings: Application settings.\n    body: Answers by item id.\n\nReturns:\n    Save receipt with stored ids.",
+        "operationId": "put_intake_api_v1_intake_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "intake"
+        ],
+        "summary": "Get Intake",
+        "description": "Return decrypted intake answers for the caller or a shared user.\n\nClinicians need an all-scope share to read another user's answers.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    user_id: Other user id (defaults to the caller).\n\nReturns:\n    Stored answers (empty when never saved).",
+        "operationId": "get_intake_api_v1_intake_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assess": {
+      "post": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Post Assess",
+        "description": "Run the assessment pipeline for the caller.\n\nArgs:\n    user: Authenticated user with intake consent.\n    session: Request database session.\n    settings: Application settings.\n    language: Response language.\n\nReturns:\n    Full assessment response.",
+        "operationId": "post_assess_api_v1_assess_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lang"
+            }
+          },
+          {
+            "name": "accept-language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{assessment_id}": {
+      "get": {
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Get Assessment",
+        "description": "Return one stored assessment with its latest explanation.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    settings: Application settings.\n    assessment_id: Assessment id.\n\nReturns:\n    Full assessment response.",
+        "operationId": "get_assessment_api_v1_assessments__assessment_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trace/{assessment_id}": {
+      "get": {
+        "tags": [
+          "trace"
+        ],
+        "summary": "Get Assessment Trace",
+        "description": "Return the workflow trace for one assessment.\n\nArgs:\n    user: Authenticated user.\n    session: Request database session.\n    assessment_id: Assessment id.\n\nReturns:\n    Trace response with ordered steps.",
+        "operationId": "get_assessment_trace_api_v1_trace__assessment_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assessment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Assessment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerIn": {
+        "properties": {
+          "value": {
+            "title": "Value",
+            "description": "Provided answer value."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ItemStatus",
+            "description": "Answer status."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "AnswerIn",
+        "description": "One submitted answer."
+      },
+      "AssessFlag": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Flag id."
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState",
+            "description": "Three-state outcome."
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Clinical domain."
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display label in the response language."
+          },
+          "reason_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Fields",
+            "description": "Decisive fields."
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields",
+            "description": "Missing required fields."
+          },
+          "modifiable": {
+            "type": "boolean",
+            "title": "Modifiable",
+            "description": "Whether the user can act on this factor."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Guideline source hint (unvalidated)."
+          },
+          "requires_clinical_validation": {
+            "type": "boolean",
+            "title": "Requires Clinical Validation",
+            "description": "True until a validation flow exists."
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation",
+            "description": "Plain-language explanation."
+          },
+          "why_we_ask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Why We Ask",
+            "description": "Why text for missing fields."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "state",
+          "domain",
+          "label",
+          "modifiable",
+          "source",
+          "requires_clinical_validation",
+          "explanation"
+        ],
+        "title": "AssessFlag",
+        "description": "One flag as served in assessment responses."
+      },
+      "AssessResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version",
+            "description": "Combined rule version string."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Response language."
+          },
+          "urgent": {
+            "type": "boolean",
+            "title": "Urgent",
+            "description": "Whether a red flag short-circuited the pipeline."
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route",
+            "description": "Selected route."
+          },
+          "route_reason": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Route Reason",
+            "description": "Driver rule ids."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/AssessFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Flag outcomes."
+          },
+          "missing_items": {
+            "items": {
+              "$ref": "#/components/schemas/MissingItem"
+            },
+            "type": "array",
+            "title": "Missing Items",
+            "description": "Missing key items."
+          },
+          "next_step": {
+            "$ref": "#/components/schemas/NextStep",
+            "description": "Next step."
+          },
+          "static_safety_message": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StaticSafetyMessage"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Urgent static message."
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "description": "Screening disclaimer."
+          },
+          "explanation_source": {
+            "$ref": "#/components/schemas/ExplanationSource"
+          },
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trace Id",
+            "description": "Workflow trace id."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "rules_version",
+          "language",
+          "urgent",
+          "route",
+          "next_step",
+          "disclaimer",
+          "explanation_source",
+          "trace_id"
+        ],
+        "title": "AssessResponse",
+        "description": "Full assessment response."
+      },
+      "AuditEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Entry id."
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role",
+            "description": "Acting role."
+          },
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Action name."
+          },
+          "object_type": {
+            "type": "string",
+            "title": "Object Type",
+            "description": "Object type."
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Object Id",
+            "description": "Object id."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At",
+            "description": "Entry time (UTC)."
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail",
+            "description": "Non-sensitive context."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "actor_role",
+          "action",
+          "object_type",
+          "object_id",
+          "at",
+          "detail"
+        ],
+        "title": "AuditEntryOut",
+        "description": "One audit entry."
+      },
+      "BriefFlag": {
+        "properties": {
+          "flag_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Flag Id",
+            "description": "Flag id."
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlagState",
+            "description": "Three-state outcome."
+          },
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Display label."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Guideline source hint (unvalidated)."
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Short note, if any."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
+          }
+        },
+        "type": "object",
+        "required": [
+          "flag_id",
+          "state",
+          "label",
+          "source"
+        ],
+        "title": "BriefFlag",
+        "description": "One flag entry in a clinician brief."
+      },
+      "BriefOutput": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Brief language."
+          },
+          "reason_for_contact": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Reason For Contact",
+            "description": "Reason for contact."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/BriefFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Flag entries."
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Information",
+            "description": "Missing items."
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route",
+            "description": "Selected route."
+          },
+          "route_rationale": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Route Rationale",
+            "description": "Route rationale."
+          },
+          "scope_note": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Scope Note",
+            "description": "Record scope note."
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "reason_for_contact",
+          "flags",
+          "route",
+          "route_rationale",
+          "scope_note"
+        ],
+        "title": "BriefOutput",
+        "description": "Validated clinician brief document."
+      },
+      "BriefRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Requested language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id"
+        ],
+        "title": "BriefRequest",
+        "description": "Clinician brief request."
+      },
+      "BriefResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Brief language."
+          },
+          "brief": {
+            "$ref": "#/components/schemas/BriefOutput",
+            "description": "Brief document."
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExplanationSource",
+            "description": "Brief origin."
+          },
+          "used_fallback": {
+            "type": "boolean",
+            "title": "Used Fallback",
+            "description": "Whether templates were used."
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "Model name attempted."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "language",
+          "brief",
+          "source",
+          "used_fallback",
+          "model"
+        ],
+        "title": "BriefResponse",
+        "description": "Generated clinician brief."
+      },
+      "ConsentHistoryResponse": {
+        "properties": {
+          "state": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ConsentScope"
+            },
+            "type": "object",
+            "title": "State",
+            "description": "Granted flag per scope."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Current policy version."
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/ConsentRecord"
+            },
+            "type": "array",
+            "title": "History",
+            "description": "Ledger entries oldest first."
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "policy_version",
+          "history"
+        ],
+        "title": "ConsentHistoryResponse",
+        "description": "Current consent state with full history."
+      },
+      "ConsentRecord": {
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/ConsentScope",
+            "description": "Consent scope."
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted",
+            "description": "True grants, False revokes."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Policy version in force."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Entry timestamp (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "granted",
+          "policy_version",
+          "created_at"
+        ],
+        "title": "ConsentRecord",
+        "description": "One ledger entry."
+      },
+      "ConsentRequest": {
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/ConsentScope",
+            "description": "Consent scope."
+          },
+          "granted": {
+            "type": "boolean",
+            "title": "Granted",
+            "description": "True grants, False revokes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "granted"
+        ],
+        "title": "ConsentRequest",
+        "description": "Consent grant or revocation request."
+      },
+      "ConsentScope": {
+        "type": "string",
+        "enum": [
+          "intake",
+          "share_with_clinician",
+          "reminders",
+          "aggregate_analytics"
+        ],
+        "title": "ConsentScope",
+        "description": "Consent scope for data use."
+      },
+      "ConsentStateResponse": {
+        "properties": {
+          "state": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ConsentScope"
+            },
+            "type": "object",
+            "title": "State",
+            "description": "Granted flag per scope."
+          },
+          "policy_version": {
+            "type": "string",
+            "title": "Policy Version",
+            "description": "Current policy version."
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "policy_version"
+        ],
+        "title": "ConsentStateResponse",
+        "description": "Current consent state for all scopes."
+      },
+      "ContactIn": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Contact name."
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone",
+            "description": "Contact phone."
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 320
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "Contact email."
+          }
+        },
+        "type": "object",
+        "title": "ContactIn",
+        "description": "Contact details collected at booking."
+      },
+      "DeleteResponse": {
+        "properties": {
+          "removed": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Removed",
+            "description": "Removed row counts by table."
+          },
+          "anonymized_audit_entries": {
+            "type": "integer",
+            "title": "Anonymized Audit Entries",
+            "description": "Anonymised audit entries."
+          },
+          "consents_kept": {
+            "type": "integer",
+            "title": "Consents Kept",
+            "description": "Retained consent receipts."
+          }
+        },
+        "type": "object",
+        "required": [
+          "removed",
+          "anonymized_audit_entries",
+          "consents_kept"
+        ],
+        "title": "DeleteResponse",
+        "description": "User data deletion summary."
+      },
+      "ExplainRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Language"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Requested language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id"
+        ],
+        "title": "ExplainRequest",
+        "description": "Explanation regeneration request."
+      },
+      "ExplainResponse": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Explanation language."
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/ExplainerOutput",
+            "description": "Explanation document."
+          },
+          "source": {
+            "$ref": "#/components/schemas/ExplanationSource"
+          },
+          "used_fallback": {
+            "type": "boolean",
+            "title": "Used Fallback",
+            "description": "Whether templates were used."
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Model name, if any."
+          },
+          "validator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ValidatorReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Validator outcome."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "language",
+          "explanation",
+          "source",
+          "used_fallback"
+        ],
+        "title": "ExplainResponse",
+        "description": "Regenerated explanation."
+      },
+      "ExplainedFlag": {
+        "properties": {
+          "flag_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Flag Id",
+            "description": "Explained flag id."
+          },
+          "explanation": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Explanation",
+            "description": "Plain-language explanation."
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknowns",
+            "description": "Open unknowns."
+          },
+          "modifiable_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modifiable Note",
+            "description": "Modifiable note, if any."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
+          }
+        },
+        "type": "object",
+        "required": [
+          "flag_id",
+          "explanation"
+        ],
+        "title": "ExplainedFlag",
+        "description": "Plain-language explanation for one flag."
+      },
+      "ExplainerOutput": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Explanation language."
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Summary",
+            "description": "Overall summary."
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/ExplainedFlag"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Per-flag explanations."
+          },
+          "next_step_text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Next Step Text",
+            "description": "Next step consistent with the route."
+          },
+          "disclaimer": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Disclaimer",
+            "description": "Screening disclaimer."
+          }
+        },
+        "type": "object",
+        "required": [
+          "language",
+          "summary",
+          "flags",
+          "next_step_text",
+          "disclaimer"
+        ],
+        "title": "ExplainerOutput",
+        "description": "Validated explanation document."
+      },
+      "ExplanationSource": {
+        "type": "string",
+        "enum": [
+          "llm",
+          "template",
+          "static"
+        ],
+        "title": "ExplanationSource",
+        "description": "Explanation origin."
+      },
+      "ExportResponse": {
+        "properties": {
+          "consents": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Consents",
+            "description": "Consent ledger entries."
+          },
+          "intake": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Intake",
+            "description": "Decrypted intake answers."
+          },
+          "assessments": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Assessments",
+            "description": "Assessments with explanations."
+          },
+          "referrals": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Referrals",
+            "description": "Referrals with events."
+          },
+          "reminders": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Reminders",
+            "description": "Reminders."
+          },
+          "shares": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Shares",
+            "description": "Share grants given."
+          },
+          "audit": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEntryOut"
+            },
+            "type": "array",
+            "title": "Audit",
+            "description": "Own audit entries."
+          }
+        },
+        "type": "object",
+        "required": [
+          "consents",
+          "intake",
+          "assessments",
+          "referrals",
+          "reminders",
+          "shares",
+          "audit"
+        ],
+        "title": "ExportResponse",
+        "description": "Full export of one user's data."
+      },
+      "FlagState": {
+        "type": "string",
+        "enum": [
+          "PRESENT",
+          "NOT_PRESENT_FROM_PROVIDED_DATA",
+          "NOT_ASSESSABLE"
+        ],
+        "title": "FlagState",
+        "description": "Three-state screening flag outcome."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Service status (``ok`` when healthy).",
+            "default": "ok"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Application version."
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment",
+            "description": "Deployment environment name."
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "environment"
+        ],
+        "title": "HealthResponse",
+        "description": "Liveness probe response."
+      },
+      "IntakeGetResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "description": "Schema version stored."
+          },
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnswerIn"
+            },
+            "type": "object",
+            "title": "Answers",
+            "description": "Answers by item id."
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "Storage timestamp (UTC), if ever saved."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "answers",
+          "updated_at"
+        ],
+        "title": "IntakeGetResponse",
+        "description": "Decrypted stored intake answers."
+      },
+      "IntakeItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id",
+            "description": "Stable item id."
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Domain",
+            "description": "Clinical domain."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ItemType",
+            "description": "Answer type."
+          },
+          "required_for_flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required For Flags",
+            "description": "Rules using this item."
+          },
+          "label": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual question text."
+          },
+          "why_we_ask": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual reason for asking."
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ItemOption"
+            },
+            "type": "array",
+            "title": "Options",
+            "description": "Choice options."
+          },
+          "sensitive": {
+            "type": "boolean",
+            "title": "Sensitive",
+            "description": "Whether the item holds sensitive content."
+          },
+          "optional_by_design": {
+            "type": "boolean",
+            "title": "Optional By Design",
+            "description": "Whether the item is optional by design."
+          },
+          "needs_native_review": {
+            "type": "boolean",
+            "title": "Needs Native Review",
+            "description": "True until Arabic review exists."
+          },
+          "min_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Value",
+            "description": "Minimum for number items."
+          },
+          "max_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Value",
+            "description": "Maximum for number items."
+          },
+          "max_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Length",
+            "description": "Maximum length for text items."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "domain",
+          "type",
+          "label",
+          "why_we_ask",
+          "sensitive",
+          "optional_by_design",
+          "needs_native_review"
+        ],
+        "title": "IntakeItem",
+        "description": "One intake schema item."
+      },
+      "IntakeResponse": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "description": "Schema version stored."
+          },
+          "saved_item_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Saved Item Ids",
+            "description": "Item ids saved from this request."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "Storage timestamp (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "saved_item_ids",
+          "updated_at"
+        ],
+        "title": "IntakeResponse",
+        "description": "Intake save receipt."
+      },
+      "IntakeSchemaDocument": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Schema Version",
+            "description": "Schema version."
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IntakeItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "Schema items."
+          }
+        },
+        "type": "object",
+        "required": [
+          "schema_version",
+          "items"
+        ],
+        "title": "IntakeSchemaDocument",
+        "description": "Versioned intake schema document."
+      },
+      "IntakeUpdateRequest": {
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AnswerIn"
+            },
+            "type": "object",
+            "title": "Answers",
+            "description": "Answers by item id."
+          }
+        },
+        "type": "object",
+        "required": [
+          "answers"
+        ],
+        "title": "IntakeUpdateRequest",
+        "description": "Partial or full intake answers update."
+      },
+      "ItemOption": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Value",
+            "description": "Stored option value."
+          },
+          "label": {
+            "$ref": "#/components/schemas/Label",
+            "description": "Bilingual display label."
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "ItemOption",
+        "description": "One selectable option for a choice item."
+      },
+      "ItemStatus": {
+        "type": "string",
+        "enum": [
+          "answered",
+          "skipped",
+          "unsure",
+          "prefer_not_to_say"
+        ],
+        "title": "ItemStatus",
+        "description": "Answer status for one intake item."
+      },
+      "ItemType": {
+        "type": "string",
+        "enum": [
+          "boolean",
+          "single_choice",
+          "multi_choice",
+          "number",
+          "text"
+        ],
+        "title": "ItemType",
+        "description": "Intake schema item type."
+      },
+      "Label": {
+        "properties": {
+          "en": {
+            "type": "string",
+            "minLength": 1,
+            "title": "En",
+            "description": "English text."
+          },
+          "ar": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Ar",
+            "description": "Arabic text."
+          }
+        },
+        "type": "object",
+        "required": [
+          "en",
+          "ar"
+        ],
+        "title": "Label",
+        "description": "Bilingual display text."
+      },
+      "Language": {
+        "type": "string",
+        "enum": [
+          "en",
+          "ar"
+        ],
+        "title": "Language",
+        "description": "Supported interface language."
+      },
+      "LoginRequest": {
+        "properties": {
+          "handle": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Handle",
+            "description": "Account handle."
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "description": "Account password."
+          }
+        },
+        "type": "object",
+        "required": [
+          "handle",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "description": "Role account login request."
+      },
+      "MissingItem": {
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "title": "Item Id",
+            "description": "Missing item id."
+          },
+          "why_we_ask": {
+            "type": "string",
+            "title": "Why We Ask",
+            "description": "Why text in the response language."
+          }
+        },
+        "type": "object",
+        "required": [
+          "item_id",
+          "why_we_ask"
+        ],
+        "title": "MissingItem",
+        "description": "One missing key item with its reason."
+      },
+      "NextStep": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Next-step text."
+          },
+          "requires_clinician_review": {
+            "type": "boolean",
+            "title": "Requires Clinician Review",
+            "description": "Whether sign-off gates confirmation."
+          },
+          "actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Actions",
+            "description": "Frontend action codes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "requires_clinician_review"
+        ],
+        "title": "NextStep",
+        "description": "Next step for the selected route."
+      },
+      "PrivacyCopy": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Page title."
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/PrivacySection"
+            },
+            "type": "array",
+            "title": "Sections",
+            "description": "Sections."
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "sections"
+        ],
+        "title": "PrivacyCopy",
+        "description": "Privacy and data-use copy in one language."
+      },
+      "PrivacySection": {
+        "properties": {
+          "heading": {
+            "type": "string",
+            "title": "Heading",
+            "description": "Section heading."
+          },
+          "body": {
+            "type": "string",
+            "title": "Body",
+            "description": "Section body."
+          }
+        },
+        "type": "object",
+        "required": [
+          "heading",
+          "body"
+        ],
+        "title": "PrivacySection",
+        "description": "One privacy copy section."
+      },
+      "ProviderOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Provider id."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider name."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Languages",
+            "description": "Supported languages."
+          },
+          "clinician_gender": {
+            "type": "string",
+            "title": "Clinician Gender",
+            "description": "Clinician gender."
+          },
+          "tele": {
+            "type": "boolean",
+            "title": "Tele",
+            "description": "Whether teleconsult is offered."
+          },
+          "home_sampling": {
+            "type": "boolean",
+            "title": "Home Sampling",
+            "description": "Whether home sampling is offered."
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "description": "Notes."
+          },
+          "mock": {
+            "type": "boolean",
+            "title": "Mock",
+            "description": "Whether this is a mock provider."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "languages",
+          "clinician_gender",
+          "tele",
+          "home_sampling",
+          "notes",
+          "mock"
+        ],
+        "title": "ProviderOut",
+        "description": "One provider directory entry."
+      },
+      "QueueEntry": {
+        "properties": {
+          "referral_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referral Id",
+            "description": "Referral id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "user_handle": {
+            "type": "string",
+            "title": "User Handle",
+            "description": "User handle."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Current status."
+          },
+          "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "Assessment route."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Referral creation time (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "referral_id",
+          "assessment_id",
+          "user_handle",
+          "type",
+          "status",
+          "route",
+          "created_at"
+        ],
+        "title": "QueueEntry",
+        "description": "One clinician queue entry."
+      },
+      "ReferralCreate": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Chosen provider id."
+          },
+          "preferred_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Time",
+            "description": "Preferred time."
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContactIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Contact details."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "type"
+        ],
+        "title": "ReferralCreate",
+        "description": "Referral creation request."
+      },
+      "ReferralEventOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Event id."
+          },
+          "from_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReferralStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Previous status."
+          },
+          "to_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "New status."
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id",
+            "description": "Acting user id (None for system)."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "At",
+            "description": "Transition time (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "from_status",
+          "to_status",
+          "actor_id",
+          "at"
+        ],
+        "title": "ReferralEventOut",
+        "description": "One referral transition event."
+      },
+      "ReferralOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Referral id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "assessment_route": {
+            "$ref": "#/components/schemas/Route",
+            "description": "Assessment route."
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "Owning user id."
+          },
+          "type": {
+            "$ref": "#/components/schemas/ReferralType",
+            "description": "Service type."
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Chosen provider id."
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Current status."
+          },
+          "preferred_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Time",
+            "description": "Preferred time."
+          },
+          "appointment_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Time",
+            "description": "Appointment time."
+          },
+          "outcome_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Note",
+            "description": "Decrypted outcome note."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation time (UTC)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "Update time (UTC)."
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ReferralEventOut"
+            },
+            "type": "array",
+            "title": "Events",
+            "description": "Transitions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assessment_id",
+          "assessment_route",
+          "user_id",
+          "type",
+          "provider_id",
+          "status",
+          "preferred_time",
+          "appointment_time",
+          "outcome_note",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ReferralOut",
+        "description": "One referral with its transition history."
+      },
+      "ReferralStatus": {
+        "type": "string",
+        "enum": [
+          "proposed",
+          "clinician_review",
+          "confirmed",
+          "booked",
+          "attended",
+          "result_explained",
+          "closed",
+          "cancelled",
+          "no_show"
+        ],
+        "title": "ReferralStatus",
+        "description": "Referral lifecycle status."
+      },
+      "ReferralType": {
+        "type": "string",
+        "enum": [
+          "teleconsult",
+          "blood_test",
+          "sample_collection",
+          "in_person"
+        ],
+        "title": "ReferralType",
+        "description": "Referral and provider service type."
+      },
+      "ReviewDecision": {
+        "type": "string",
+        "enum": [
+          "approved",
+          "rejected"
+        ],
+        "title": "ReviewDecision",
+        "description": "Clinician review decision."
+      },
+      "ReviewRequest": {
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Review decision."
+          },
+          "edits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edits",
+            "description": "Structured edits."
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Review notes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessment_id",
+          "decision"
+        ],
+        "title": "ReviewRequest",
+        "description": "Clinician review request."
+      },
+      "ReviewResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Review id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "reviewer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewer Id",
+            "description": "Reviewing clinician id."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Decision."
+          },
+          "signed_off_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signed Off At",
+            "description": "Sign-off time (UTC)."
+          },
+          "referral_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Referral Id",
+            "description": "Affected referral id."
+          },
+          "referral_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Referral status after review."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "assessment_id",
+          "reviewer_id",
+          "decision",
+          "signed_off_at",
+          "referral_id",
+          "referral_status"
+        ],
+        "title": "ReviewResponse",
+        "description": "Submitted review with referral outcome."
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "user",
+          "navigator",
+          "clinician"
+        ],
+        "title": "Role",
+        "description": "Caller role."
+      },
+      "Route": {
+        "type": "string",
+        "enum": [
+          "URGENT",
+          "ANDROLOGY_UROLOGY",
+          "FERTILITY_SERVICES",
+          "PRIMARY_CARE",
+          "SELF_CARE",
+          "SELF_CARE_PROVISIONAL"
+        ],
+        "title": "Route",
+        "description": "Triage route outcome."
+      },
+      "SessionRequest": {
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/Language",
+            "description": "Preferred interface language.",
+            "default": "en"
+          }
+        },
+        "type": "object",
+        "title": "SessionRequest",
+        "description": "Anonymous session creation request."
+      },
+      "SessionResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id",
+            "description": "User id."
+          },
+          "handle": {
+            "type": "string",
+            "title": "Handle",
+            "description": "Pseudonymous handle."
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "Bearer access token."
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "handle",
+          "role",
+          "token"
+        ],
+        "title": "SessionResponse",
+        "description": "Created session with access token."
+      },
+      "ShareCreate": {
+        "properties": {
+          "recipient_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recipient Id",
+            "description": "Clinician recipient id."
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ShareScope",
+            "description": "Share scope."
+          },
+          "expires_in_hours": {
+            "type": "integer",
+            "maximum": 720.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Expires In Hours",
+            "description": "Lifetime in hours (max 30 days)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient_id",
+          "scope",
+          "expires_in_hours"
+        ],
+        "title": "ShareCreate",
+        "description": "Share creation request."
+      },
+      "ShareOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Share id."
+          },
+          "recipient_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recipient Id",
+            "description": "Clinician recipient id."
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ShareScope",
+            "description": "Share scope."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At",
+            "description": "Expiry time (UTC)."
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At",
+            "description": "Revocation time (UTC)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation time (UTC)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "recipient_id",
+          "scope",
+          "expires_at",
+          "revoked_at",
+          "created_at"
+        ],
+        "title": "ShareOut",
+        "description": "One share grant."
+      },
+      "ShareScope": {
+        "properties": {
+          "all": {
+            "type": "boolean",
+            "title": "All",
+            "description": "Whether all assessments are shared.",
+            "default": false
+          },
+          "assessment_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Assessment Ids",
+            "description": "Shared assessment ids."
+          }
+        },
+        "type": "object",
+        "title": "ShareScope",
+        "description": "Share scope: everything or listed assessments."
+      },
+      "StaticSafetyMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Static message id."
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Message title."
+          },
+          "body": {
+            "type": "string",
+            "title": "Body",
+            "description": "Message body."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "body"
+        ],
+        "title": "StaticSafetyMessage",
+        "description": "Static urgent safety message."
+      },
+      "StatusUpdate": {
+        "properties": {
+          "to_status": {
+            "$ref": "#/components/schemas/ReferralStatus",
+            "description": "Target status."
+          },
+          "appointment_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Appointment Time",
+            "description": "Appointment time."
+          },
+          "outcome_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 5000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Note",
+            "description": "Outcome note."
+          }
+        },
+        "type": "object",
+        "required": [
+          "to_status"
+        ],
+        "title": "StatusUpdate",
+        "description": "Referral status transition request."
+      },
+      "TraceResponse": {
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trace Id",
+            "description": "Trace id."
+          },
+          "assessment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Assessment Id",
+            "description": "Assessment id."
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/TraceStep"
+            },
+            "type": "array",
+            "title": "Steps",
+            "description": "Recorded steps in order."
+          },
+          "duration_ms": {
+            "type": "number",
+            "title": "Duration Ms",
+            "description": "Total milliseconds across steps."
+          }
+        },
+        "type": "object",
+        "required": [
+          "trace_id",
+          "assessment_id",
+          "steps",
+          "duration_ms"
+        ],
+        "title": "TraceResponse",
+        "description": "Workflow trace response."
+      },
+      "TraceStep": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Step name."
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Step status."
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At",
+            "description": "Step start (UTC)."
+          },
+          "duration_ms": {
+            "type": "number",
+            "title": "Duration Ms",
+            "description": "Step duration in milliseconds."
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version",
+            "description": "Rule version in force."
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail",
+            "description": "Step detail."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "started_at",
+          "duration_ms",
+          "rules_version"
+        ],
+        "title": "TraceStep",
+        "description": "One workflow trace step."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidatorReport": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "description": "Whether validation passed."
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors",
+            "description": "Rejection reasons."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "title": "ValidatorReport",
+        "description": "Validator outcome."
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

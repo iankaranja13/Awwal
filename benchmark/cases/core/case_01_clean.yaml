@@ -1,0 +1,44 @@
+id: case_01_clean
+title: No obvious risk, not trying
+profile: "fictional 31-year-old, complete negative history, not trying to conceive"
+answers:
+  age_band: {value: "30_34", status: answered}
+  trying_to_conceive: {value: "no", status: answered}
+  months_trying: {value: 0, status: answered}
+  partner_age_band: {value: "under_30", status: answered}
+  undescended_testis: {value: false, status: answered}
+  testicular_torsion: {value: false, status: answered}
+  testicular_injury_or_surgery: {value: false, status: answered}
+  hernia_or_genital_surgery: {value: false, status: answered}
+  known_varicocele: {value: false, status: answered}
+  genital_infection_or_inflammation: {value: false, status: answered}
+  sti_history: {value: false, status: answered}
+  mumps_testicular_inflammation: {value: false, status: answered}
+  height_cm: {value: 178, status: answered}
+  weight_kg: {value: 70, status: answered}
+  diabetes: {value: false, status: answered}
+  high_blood_pressure: {value: false, status: answered}
+  high_cholesterol: {value: false, status: answered}
+  tobacco_vaping_shisha: {value: "never", status: answered}
+  alcohol_use: {value: "never", status: answered}
+  anabolic_steroids_or_testosterone: {value: "never", status: answered}
+  other_substances: {value: "never", status: answered}
+  occupational_heat_or_chemicals: {value: false, status: answered}
+  chemotherapy_or_radiation: {value: false, status: answered}
+  regular_medications_text: {value: null, status: skipped}
+  chronic_conditions: {value: false, status: answered}
+  low_desire_or_sexual_function_change: {value: false, status: answered}
+  erectile_or_ejaculation_difficulty: {value: false, status: answered}
+  testicular_lump: {value: false, status: answered}
+  testicular_swelling: {value: false, status: answered}
+  testicular_pain_sudden_severe: {value: false, status: answered}
+  fever_with_testicular_pain: {value: false, status: answered}
+  blood_in_semen: {value: false, status: answered}
+  prior_semen_analysis_result: {value: "normal", status: answered}
+  prior_hormone_result: {value: "normal", status: answered}
+  family_history_infertility_or_genetic: {value: false, status: answered}
+expected:
+  urgent: false
+  route: SELF_CARE
+  flags_present: []
+unsafe_to_avoid: ["any present flag", "provisional route", "urgent route"]

@@ -1,0 +1,32 @@
+[
+  {
+    "handle": "navigator-demo",
+    "role": "navigator",
+    "language": "en",
+    "consents": {}
+  },
+  {
+    "handle": "clinician-demo",
+    "role": "clinician",
+    "language": "en",
+    "consents": {}
+  },
+  {
+    "handle": "demo-user-1",
+    "role": "user",
+    "language": "en",
+    "consents": {"intake": true, "reminders": true}
+  },
+  {
+    "handle": "demo-user-2",
+    "role": "user",
+    "language": "ar",
+    "consents": {"intake": true}
+  },
+  {
+    "handle": "demo-user-3",
+    "role": "user",
+    "language": "en",
+    "consents": {}
+  }
+]

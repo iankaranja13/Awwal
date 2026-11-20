@@ -1,0 +1,12 @@
+{
+  "needs_native_review": true,
+  "disclaimer": "هذه أداة فحص وليست تشخيصاً. النتائج توجه الخطوات التالية فقط.",
+  "summary_signals": "وجد الفحص {count} من المؤشرات التي تقترح المتابعة.",
+  "summary_provisional": "تُركت بعض الأسئلة دون إجابة، لذا فهذا الفحص غير مكتمل.",
+  "summary_clear": "لم توجد مؤشرات في إجاباتك.",
+  "modifiable_note": "هذا عامل قد تتمكن من تغييره؛ والدعم متاح.",
+  "brief_scope_owner": "عرض المالك: السجل الكامل.",
+  "brief_scope_shared": "عرض مشترك: هذا التقييم فقط.",
+  "brief_rationale_prefix": "اختير المسار بناءً على",
+  "brief_rationale_none": "لا توجد مؤشرات وجهت هذا المسار."
+}

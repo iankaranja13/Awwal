@@ -1,0 +1,245 @@
+{
+  "needs_native_review": true,
+  "excerpts": [
+    {
+      "id": "EXC_LS_TTC_STANDARD",
+      "text": "You have been trying to conceive long enough that a fertility assessment is usually discussed at this point.",
+      "applies_to_flags": [
+        "LS_TTC_STANDARD"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_TTC_EARLIER",
+      "text": "With the timing you shared, earlier follow-up is usually discussed.",
+      "applies_to_flags": [
+        "LS_TTC_EARLIER"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_UNDESCENDED_TESTIS",
+      "text": "A history of undescended testis is one reason doctors suggest a fertility review.",
+      "applies_to_flags": [
+        "HX_UNDESCENDED_TESTIS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_TORSION_INJURY_SURGERY",
+      "text": "Past torsion, injury or surgery can affect testicular health, so review is suggested.",
+      "applies_to_flags": [
+        "HX_TORSION_INJURY_SURGERY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_HERNIA_GENITAL_SURGERY",
+      "text": "Hernia or genital surgery history is worth mentioning at a review.",
+      "applies_to_flags": [
+        "HX_HERNIA_GENITAL_SURGERY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_VARICOCELE",
+      "text": "A known varicocele is a common finding that can be assessed further.",
+      "applies_to_flags": [
+        "HX_VARICOCELE"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_GENITAL_INFECTION",
+      "text": "Past genital infection or inflammation is relevant background for review.",
+      "applies_to_flags": [
+        "HX_GENITAL_INFECTION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_STI",
+      "text": "A past sexually transmitted infection is worth follow-up screening.",
+      "applies_to_flags": [
+        "HX_STI"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_MUMPS",
+      "text": "Mumps with testicular swelling is relevant background for review.",
+      "applies_to_flags": [
+        "HX_MUMPS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_BMI",
+      "text": "Your BMI is at a level where weight is usually discussed as part of health review.",
+      "applies_to_flags": [
+        "MB_BMI"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_DIABETES",
+      "text": "Diabetes is managed together with general and reproductive health.",
+      "applies_to_flags": [
+        "MB_DIABETES"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_HYPERTENSION",
+      "text": "Blood pressure is reviewed as part of general health.",
+      "applies_to_flags": [
+        "MB_HYPERTENSION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_CHOLESTEROL",
+      "text": "Cholesterol is reviewed as part of general health.",
+      "applies_to_flags": [
+        "MB_CHOLESTEROL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_TOBACCO",
+      "text": "Tobacco, vaping or shisha use can affect fertility, and cutting down helps.",
+      "applies_to_flags": [
+        "LS_TOBACCO"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_ALCOHOL",
+      "text": "Regular alcohol use can affect fertility, and cutting down helps.",
+      "applies_to_flags": [
+        "LS_ALCOHOL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_ANABOLIC_STEROIDS",
+      "text": "Steroid or testosterone products can strongly affect fertility; discuss any use with a clinician.",
+      "applies_to_flags": [
+        "LS_ANABOLIC_STEROIDS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_SUBSTANCES",
+      "text": "Some substances can affect fertility; support services can help.",
+      "applies_to_flags": [
+        "LS_SUBSTANCES"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_OCCUPATIONAL",
+      "text": "Workplace heat or chemical exposure can matter; protection and review help.",
+      "applies_to_flags": [
+        "LS_OCCUPATIONAL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MX_CHEMO_RADIATION",
+      "text": "Past chemotherapy or radiation is important background for specialist review.",
+      "applies_to_flags": [
+        "MX_CHEMO_RADIATION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MX_CHRONIC",
+      "text": "Chronic conditions are part of the overall health picture.",
+      "applies_to_flags": [
+        "MX_CHRONIC"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_SX_SEXUAL_FUNCTION",
+      "text": "Changes in desire or sexual function are common reasons to seek review.",
+      "applies_to_flags": [
+        "SX_SEXUAL_FUNCTION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_PX_ABNORMAL_SEMEN",
+      "text": "A past abnormal semen result is usually reviewed with a specialist.",
+      "applies_to_flags": [
+        "PX_ABNORMAL_SEMEN"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_PX_ABNORMAL_HORMONE",
+      "text": "A past abnormal hormone result adds context for review.",
+      "applies_to_flags": [
+        "PX_ABNORMAL_HORMONE"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_FH_FAMILY_HISTORY",
+      "text": "Family patterns are useful background for review.",
+      "applies_to_flags": [
+        "FH_FAMILY_HISTORY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    }
+  ]
+}

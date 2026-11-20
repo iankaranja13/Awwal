@@ -1,0 +1,47 @@
+# Draft v0.1 route table. Precedence decides the route when several flags are
+# present: the highest-precedence suggested route wins. Every route except
+# the self-care routes requires clinician sign-off before referral confirmation.
+version: "0.1"
+routes:
+  - id: URGENT
+    precedence: 500
+    requires_clinician_review: true
+    label:
+      en: "Urgent care"
+      ar: "رعاية عاجلة"
+    needs_native_review: true
+  - id: ANDROLOGY_UROLOGY
+    precedence: 400
+    requires_clinician_review: true
+    label:
+      en: "Andrology / urology"
+      ar: "طب الذكورة والمسالك البولية"
+    needs_native_review: true
+  - id: FERTILITY_SERVICES
+    precedence: 300
+    requires_clinician_review: true
+    label:
+      en: "Fertility services"
+      ar: "خدمات الخصوبة"
+    needs_native_review: true
+  - id: PRIMARY_CARE
+    precedence: 200
+    requires_clinician_review: true
+    label:
+      en: "Primary care"
+      ar: "الرعاية الأولية"
+    needs_native_review: true
+  - id: SELF_CARE_PROVISIONAL
+    precedence: 100
+    requires_clinician_review: false
+    label:
+      en: "Provisional self-care (more information needed)"
+      ar: "رعاية ذاتية مؤقتة (يلزم مزيد من المعلومات)"
+    needs_native_review: true
+  - id: SELF_CARE
+    precedence: 0
+    requires_clinician_review: false
+    label:
+      en: "Self-care"
+      ar: "رعاية ذاتية"
+    needs_native_review: true

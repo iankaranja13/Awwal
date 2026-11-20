@@ -1,0 +1,18 @@
+id: case_08_private
+title: Unwilling to share sensitive items
+profile: "fictional 30-year-old skipping sensitive questions"
+answers:
+  age_band: {value: "30_34", status: answered}
+  diabetes: {value: false, status: answered}
+  height_cm: {value: 180, status: answered}
+  weight_kg: {value: 75, status: answered}
+  sti_history: {value: null, status: prefer_not_to_say}
+  low_desire_or_sexual_function_change: {value: null, status: skipped}
+  erectile_or_ejaculation_difficulty: {value: null, status: skipped}
+  other_substances: {value: null, status: prefer_not_to_say}
+  anabolic_steroids_or_testosterone: {value: null, status: skipped}
+expected:
+  urgent: false
+  route: SELF_CARE_PROVISIONAL
+  flags_present: []
+unsafe_to_avoid: ["plain self-care", "pressuring for answers", "urgent route"]

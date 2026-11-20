@@ -1,0 +1,381 @@
+# Draft v0.1 screening flags. Every rule is unvalidated and must be confirmed
+# by the clinical advisor before any pilot use. Do not treat thresholds,
+# routes or option values as clinical guidance.
+version: "0.1"
+flags:
+  - id: LS_TTC_STANDARD
+    domain: context
+    label:
+      en: "Trying to conceive for at least the standard threshold"
+      ar: "بلوغ مدة محاولة الحمل الحد المعتمد"
+    required_fields: [trying_to_conceive, months_trying]
+    present_when:
+      all:
+        - {field: trying_to_conceive, op: eq, value: "yes"}
+        - {field: months_trying, op: gte, param: ttc_threshold_months}
+    modifiable: false
+    suggests_route: FERTILITY_SERVICES
+    is_ttc_criterion: true
+    key: true
+    snippet_id: SNP_TTC_STANDARD
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_TTC_EARLIER
+    domain: context
+    label:
+      en: "Trying to conceive for at least the earlier threshold with an older partner"
+      ar: "بلوغ مدة محاولة الحمل الحد المبكر المعتمد"
+    required_fields: [trying_to_conceive, months_trying, partner_age_band]
+    present_when:
+      all:
+        - {field: trying_to_conceive, op: eq, value: "yes"}
+        - {field: months_trying, op: gte, param: ttc_threshold_months_older_partner}
+        - {field: partner_age_band, op: eq, param: older_partner_band}
+    modifiable: false
+    suggests_route: FERTILITY_SERVICES
+    is_ttc_criterion: true
+    key: false
+    snippet_id: SNP_TTC_EARLIER
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_UNDESCENDED_TESTIS
+    domain: anatomical_history
+    label:
+      en: "History of undescended testis"
+      ar: "تاريخ الخصية المعلقة"
+    required_fields: [undescended_testis]
+    present_when: {field: undescended_testis, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_UNDESCENDED_TESTIS
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_TORSION_INJURY_SURGERY
+    domain: anatomical_history
+    label:
+      en: "History of testicular torsion, injury or surgery"
+      ar: "سابقة التواء الخصية أو إصابتها أو جراحتها"
+    required_fields: [testicular_torsion, testicular_injury_or_surgery]
+    present_when:
+      any:
+        - {field: testicular_torsion, op: eq, value: true}
+        - {field: testicular_injury_or_surgery, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_TORSION_INJURY_SURGERY
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_HERNIA_GENITAL_SURGERY
+    domain: anatomical_history
+    label:
+      en: "History of hernia or genital surgery"
+      ar: "سابقة جراحة الفتق أو جراحة تناسلية"
+    required_fields: [hernia_or_genital_surgery]
+    present_when: {field: hernia_or_genital_surgery, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_HERNIA_SURGERY
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_VARICOCELE
+    domain: anatomical_history
+    label:
+      en: "Known varicocele"
+      ar: "دوالي الخصية المعروفة"
+    required_fields: [known_varicocele]
+    present_when: {field: known_varicocele, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_VARICOCELE
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_GENITAL_INFECTION
+    domain: infection_history
+    label:
+      en: "History of genital infection or inflammation"
+      ar: "سابقة عدوى أو التهاب تناسلي"
+    required_fields: [genital_infection_or_inflammation]
+    present_when: {field: genital_infection_or_inflammation, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_GENITAL_INFECTION
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_STI
+    domain: infection_history
+    label:
+      en: "History of sexually transmitted infection"
+      ar: "سابقة عدوى منقولة جنسياً"
+    required_fields: [sti_history]
+    present_when: {field: sti_history, op: eq, value: true}
+    modifiable: false
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_STI
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: HX_MUMPS
+    domain: infection_history
+    label:
+      en: "Testicular inflammation related to mumps"
+      ar: "التهاب الخصية بسبب النكاف"
+    required_fields: [mumps_testicular_inflammation]
+    present_when: {field: mumps_testicular_inflammation, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_MUMPS
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MB_BMI
+    domain: metabolic
+    label:
+      en: "Body mass index at or above the review threshold"
+      ar: "بلوغ مؤشر كتلة الجسم حد المراجعة"
+    required_fields: [height_cm, weight_kg]
+    present_when: {field: bmi, op: gte, param: bmi_flag_at_or_above}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_BMI
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MB_DIABETES
+    domain: metabolic
+    label:
+      en: "Diabetes"
+      ar: "داء السكري"
+    required_fields: [diabetes]
+    present_when: {field: diabetes, op: eq, value: true}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_DIABETES
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MB_HYPERTENSION
+    domain: metabolic
+    label:
+      en: "High blood pressure"
+      ar: "ارتفاع ضغط الدم"
+    required_fields: [high_blood_pressure]
+    present_when: {field: high_blood_pressure, op: eq, value: true}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_HYPERTENSION
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MB_CHOLESTEROL
+    domain: metabolic
+    label:
+      en: "High cholesterol"
+      ar: "ارتفاع الكوليسترول"
+    required_fields: [high_cholesterol]
+    present_when: {field: high_cholesterol, op: eq, value: true}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_CHOLESTEROL
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_TOBACCO
+    domain: lifestyle_exposures
+    label:
+      en: "Tobacco, vaping or shisha use"
+      ar: "تعاطي التبغ أو السجائر الإلكترونية أو الشيشة"
+    required_fields: [tobacco_vaping_shisha]
+    present_when: {field: tobacco_vaping_shisha, op: in, value: ["former", "current"]}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_TOBACCO
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_ALCOHOL
+    domain: lifestyle_exposures
+    label:
+      en: "Alcohol use"
+      ar: "تعاطي الكحول"
+    required_fields: [alcohol_use]
+    present_when: {field: alcohol_use, op: in, value: ["occasional", "regular"]}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_ALCOHOL
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_ANABOLIC_STEROIDS
+    domain: lifestyle_exposures
+    label:
+      en: "Anabolic steroid or testosterone product use"
+      ar: "تعاطي الستيرويدات البنائية أو منتجات التستوستيرون"
+    required_fields: [anabolic_steroids_or_testosterone]
+    present_when:
+      field: anabolic_steroids_or_testosterone
+      op: in
+      value: ["former", "current"]
+    modifiable: true
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_ANABOLIC
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_SUBSTANCES
+    domain: lifestyle_exposures
+    label:
+      en: "Other substance use"
+      ar: "تعاطي مواد أخرى"
+    required_fields: [other_substances]
+    present_when: {field: other_substances, op: in, value: ["former", "current"]}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_SUBSTANCES
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: LS_OCCUPATIONAL
+    domain: lifestyle_exposures
+    label:
+      en: "Occupational heat or chemical exposure"
+      ar: "التعرض المهني للحرارة أو المواد الكيميائية"
+    required_fields: [occupational_heat_or_chemicals]
+    present_when: {field: occupational_heat_or_chemicals, op: eq, value: true}
+    modifiable: true
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_OCCUPATIONAL
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MX_CHEMO_RADIATION
+    domain: medical
+    label:
+      en: "History of chemotherapy or radiation"
+      ar: "سابقة العلاج الكيميائي أو الإشعاعي"
+    required_fields: [chemotherapy_or_radiation]
+    present_when: {field: chemotherapy_or_radiation, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_CHEMO_RADIATION
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: MX_CHRONIC
+    domain: medical
+    label:
+      en: "Chronic health conditions"
+      ar: "أمراض مزمنة"
+    required_fields: [chronic_conditions]
+    present_when: {field: chronic_conditions, op: eq, value: true}
+    modifiable: false
+    suggests_route: PRIMARY_CARE
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_CHRONIC
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: SX_SEXUAL_FUNCTION
+    domain: symptoms
+    label:
+      en: "Change in desire or sexual function"
+      ar: "تغير الرغبة أو الوظيفة الجنسية"
+    required_fields: [low_desire_or_sexual_function_change, erectile_or_ejaculation_difficulty]
+    present_when:
+      any:
+        - {field: low_desire_or_sexual_function_change, op: eq, value: true}
+        - {field: erectile_or_ejaculation_difficulty, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_SEXUAL_FUNCTION
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: PX_ABNORMAL_SEMEN
+    domain: prior_tests
+    label:
+      en: "Prior abnormal semen analysis"
+      ar: "نتيجة سابقة غير طبيعية لتحليل السائل المنوي"
+    required_fields: [prior_semen_analysis_result]
+    present_when: {field: prior_semen_analysis_result, op: eq, value: "abnormal"}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: true
+    snippet_id: SNP_ABNORMAL_SEMEN
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: PX_ABNORMAL_HORMONE
+    domain: prior_tests
+    label:
+      en: "Prior abnormal hormone result"
+      ar: "نتيجة سابقة غير طبيعية لتحليل الهرمونات"
+    required_fields: [prior_hormone_result]
+    present_when: {field: prior_hormone_result, op: eq, value: "abnormal"}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: false
+    snippet_id: SNP_ABNORMAL_HORMONE
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: FH_FAMILY_HISTORY
+    domain: family_genetic
+    label:
+      en: "Family history of infertility or genetic conditions"
+      ar: "تاريخ عائلي للعقم أو أمراض وراثية"
+    required_fields: [family_history_infertility_or_genetic]
+    present_when: {field: family_history_infertility_or_genetic, op: eq, value: true}
+    modifiable: false
+    suggests_route: ANDROLOGY_UROLOGY
+    is_ttc_criterion: false
+    key: false
+    snippet_id: SNP_FAMILY_HISTORY
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)"
+    requires_clinical_validation: true
+    needs_native_review: true

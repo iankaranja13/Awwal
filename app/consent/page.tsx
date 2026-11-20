@@ -14,7 +14,7 @@ const ITEMS: { scope: ConsentScope; label: StringKey; sub: StringKey }[] = [
 ];
 
 export default function ConsentPage() {
-  const { consent, setConsent } = useStore();
+  const { consent, setConsent, error } = useStore();
   const { t } = useT();
   const router = useRouter();
 
@@ -40,6 +40,11 @@ export default function ConsentPage() {
           />
         ))}
       </div>
+      {error && (
+        <p role="alert" className="mt-4 text-sm text-alarm">
+          {t("serverError")} {error}
+        </p>
+      )}
     </Page>
   );
 }

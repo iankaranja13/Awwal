@@ -1,0 +1,19 @@
+[
+  {
+    "user_handle": "demo-user-1",
+    "answers": {
+      "age_band": {"value": "30_34", "status": "answered"},
+      "trying_to_conceive": {"value": "no", "status": "answered"},
+      "tobacco_vaping_shisha": {"value": "current", "status": "answered"},
+      "diabetes": {"value": false, "status": "answered"}
+    }
+  },
+  {
+    "user_handle": "demo-user-2",
+    "answers": {
+      "age_band": {"value": "25_29", "status": "answered"},
+      "trying_to_conceive": {"value": "yes", "status": "answered"},
+      "months_trying": {"value": 3, "status": "answered"}
+    }
+  }
+]

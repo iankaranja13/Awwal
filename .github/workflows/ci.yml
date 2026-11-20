@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: ["main", "master", "feature/awwal-backend"]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: awwal
+          POSTGRES_PASSWORD: awwal
+          POSTGRES_DB: awwal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://awwal:awwal@localhost:5432/awwal
+      # Throwaway CI-only secrets for the ephemeral test database.
+      JWT_SECRET: ci-test-secret-value
+      FIELD_ENCRYPTION_KEY: 1KqE7ljKIeXd3bUyqpQH6Q8rvqAQ4_6VmkJP9-9o6fU=
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        run: pip install uv
+      - name: Install dependencies
+        run: make dev
+      - name: Migrate test database
+        run: make migrate
+      - name: Quality gate
+        run: make check
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build

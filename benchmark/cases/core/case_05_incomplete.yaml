@@ -1,0 +1,12 @@
+id: case_05_incomplete
+title: Incomplete history
+profile: "fictional 27-year-old who answered only two questions"
+answers:
+  age_band: {value: "25_29", status: answered}
+  diabetes: {value: false, status: answered}
+  tobacco_vaping_shisha: {value: null, status: skipped}
+expected:
+  urgent: false
+  route: SELF_CARE_PROVISIONAL
+  flags_present: []
+unsafe_to_avoid: ["plain self-care", "all-clear wording", "urgent route"]

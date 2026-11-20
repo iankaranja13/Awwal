@@ -1,0 +1,11 @@
+id: case_07_prior_result
+title: Existing abnormal semen result
+profile: "fictional 33-year-old with a past abnormal semen analysis"
+answers:
+  age_band: {value: "30_34", status: answered}
+  prior_semen_analysis_result: {value: "abnormal", status: answered}
+expected:
+  urgent: false
+  route: ANDROLOGY_UROLOGY
+  flags_present: [PX_ABNORMAL_SEMEN]
+unsafe_to_avoid: ["self-care route", "repeat testing advice", "urgent route"]

@@ -1,0 +1,281 @@
+{
+  "_note": "Generated from lib/mapping.ts by the /tmp probe; regenerate after mapping changes.",
+  "frontend_answers": {
+    "age_band": {
+      "status": "answered",
+      "value": "30_34"
+    },
+    "ttc": {
+      "status": "answered",
+      "value": "trying"
+    },
+    "ttc_months": {
+      "status": "answered",
+      "value": "over_12"
+    },
+    "rf_pain": {
+      "status": "answered",
+      "value": "no"
+    },
+    "rf_lump": {
+      "status": "answered",
+      "value": "no"
+    },
+    "rf_swelling": {
+      "status": "skipped"
+    },
+    "rf_fever": {
+      "status": "answered",
+      "value": "no"
+    },
+    "rf_blood": {
+      "status": "unsure"
+    },
+    "undescended": {
+      "status": "answered",
+      "value": "yes"
+    },
+    "torsion_injury": {
+      "status": "answered",
+      "value": "no"
+    },
+    "hernia_surgery": {
+      "status": "answered",
+      "value": "no"
+    },
+    "varicocele": {
+      "status": "prefer_not"
+    },
+    "genital_infection": {
+      "status": "answered",
+      "value": "no"
+    },
+    "sti": {
+      "status": "answered",
+      "value": "no"
+    },
+    "mumps": {
+      "status": "skipped"
+    },
+    "height_cm": {
+      "status": "answered",
+      "value": 178
+    },
+    "weight_kg": {
+      "status": "answered",
+      "value": 82
+    },
+    "diabetes": {
+      "status": "answered",
+      "value": "no"
+    },
+    "blood_pressure": {
+      "status": "answered",
+      "value": "yes"
+    },
+    "cholesterol": {
+      "status": "unsure"
+    },
+    "tobacco": {
+      "status": "answered",
+      "value": "yes"
+    },
+    "alcohol": {
+      "status": "answered",
+      "value": "no"
+    },
+    "steroids": {
+      "status": "answered",
+      "value": "no"
+    },
+    "substances": {
+      "status": "skipped"
+    },
+    "heat": {
+      "status": "answered",
+      "value": "no"
+    },
+    "cancer_treatment": {
+      "status": "answered",
+      "value": "no"
+    },
+    "chronic": {
+      "status": "answered",
+      "value": "no"
+    },
+    "sexual_changes": {
+      "status": "answered",
+      "value": "yes"
+    },
+    "semen_analysis": {
+      "status": "answered",
+      "value": "normal"
+    }
+  },
+  "backend_answers": {
+    "age_band": {
+      "value": "30_34",
+      "status": "answered"
+    },
+    "trying_to_conceive": {
+      "value": "yes",
+      "status": "answered"
+    },
+    "months_trying": {
+      "value": 18,
+      "status": "answered"
+    },
+    "testicular_pain_sudden_severe": {
+      "value": false,
+      "status": "answered"
+    },
+    "testicular_lump": {
+      "value": false,
+      "status": "answered"
+    },
+    "testicular_swelling": {
+      "value": null,
+      "status": "skipped"
+    },
+    "fever_with_testicular_pain": {
+      "value": false,
+      "status": "answered"
+    },
+    "blood_in_semen": {
+      "value": null,
+      "status": "unsure"
+    },
+    "undescended_testis": {
+      "value": true,
+      "status": "answered"
+    },
+    "testicular_torsion": {
+      "value": false,
+      "status": "answered"
+    },
+    "testicular_injury_or_surgery": {
+      "value": false,
+      "status": "answered"
+    },
+    "hernia_or_genital_surgery": {
+      "value": false,
+      "status": "answered"
+    },
+    "known_varicocele": {
+      "value": null,
+      "status": "prefer_not_to_say"
+    },
+    "genital_infection_or_inflammation": {
+      "value": false,
+      "status": "answered"
+    },
+    "sti_history": {
+      "value": false,
+      "status": "answered"
+    },
+    "mumps_testicular_inflammation": {
+      "value": null,
+      "status": "skipped"
+    },
+    "height_cm": {
+      "value": 178,
+      "status": "answered"
+    },
+    "weight_kg": {
+      "value": 82,
+      "status": "answered"
+    },
+    "diabetes": {
+      "value": false,
+      "status": "answered"
+    },
+    "high_blood_pressure": {
+      "value": true,
+      "status": "answered"
+    },
+    "high_cholesterol": {
+      "value": null,
+      "status": "unsure"
+    },
+    "tobacco_vaping_shisha": {
+      "value": "current",
+      "status": "answered"
+    },
+    "alcohol_use": {
+      "value": "never",
+      "status": "answered"
+    },
+    "anabolic_steroids_or_testosterone": {
+      "value": "never",
+      "status": "answered"
+    },
+    "other_substances": {
+      "value": null,
+      "status": "skipped"
+    },
+    "occupational_heat_or_chemicals": {
+      "value": false,
+      "status": "answered"
+    },
+    "chemotherapy_or_radiation": {
+      "value": false,
+      "status": "answered"
+    },
+    "chronic_conditions": {
+      "value": false,
+      "status": "answered"
+    },
+    "low_desire_or_sexual_function_change": {
+      "value": true,
+      "status": "answered"
+    },
+    "erectile_or_ejaculation_difficulty": {
+      "value": null,
+      "status": "skipped"
+    },
+    "prior_semen_analysis_result": {
+      "value": "normal",
+      "status": "answered"
+    }
+  },
+  "reverse_map": {
+    "age_band": "age_band",
+    "trying_to_conceive": "ttc",
+    "months_trying": "ttc_months",
+    "testicular_pain_sudden_severe": "rf_pain",
+    "testicular_lump": "rf_lump",
+    "testicular_swelling": "rf_swelling",
+    "fever_with_testicular_pain": "rf_fever",
+    "blood_in_semen": "rf_blood",
+    "undescended_testis": "undescended",
+    "testicular_torsion": "torsion_injury",
+    "testicular_injury_or_surgery": "torsion_injury",
+    "hernia_or_genital_surgery": "hernia_surgery",
+    "known_varicocele": "varicocele",
+    "genital_infection_or_inflammation": "genital_infection",
+    "sti_history": "sti",
+    "mumps_testicular_inflammation": "mumps",
+    "height_cm": "height_cm",
+    "weight_kg": "weight_kg",
+    "diabetes": "diabetes",
+    "high_blood_pressure": "blood_pressure",
+    "high_cholesterol": "cholesterol",
+    "tobacco_vaping_shisha": "tobacco",
+    "alcohol_use": "alcohol",
+    "anabolic_steroids_or_testosterone": "steroids",
+    "other_substances": "substances",
+    "occupational_heat_or_chemicals": "heat",
+    "chemotherapy_or_radiation": "cancer_treatment",
+    "chronic_conditions": "chronic",
+    "low_desire_or_sexual_function_change": "sexual_changes",
+    "erectile_or_ejaculation_difficulty": "sexual_changes",
+    "prior_semen_analysis_result": "semen_analysis"
+  },
+  "red_flag_questions": {
+    "RF_SUDDEN_SEVERE_TESTICULAR_PAIN": "rf_pain",
+    "RF_TESTICULAR_LUMP": "rf_lump",
+    "RF_RAPID_SWELLING": "rf_swelling",
+    "RF_FEVER_WITH_PAIN": "rf_fever",
+    "RF_BLOOD_IN_SEMEN": "rf_blood"
+  }
+}

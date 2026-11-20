@@ -1,0 +1,23 @@
+# Local hooks run the project's own venv tools, so installing the hooks needs no
+# network access. Install with: pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format-check
+        name: ruff format check
+        entry: .venv/bin/python -m ruff format --check api app tests alembic
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: ruff-lint
+        name: ruff lint
+        entry: .venv/bin/python -m ruff check api app tests alembic
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: mypy
+        name: mypy strict
+        entry: .venv/bin/python -m mypy api app alembic tests
+        language: system
+        types: [python]
+        pass_filenames: false

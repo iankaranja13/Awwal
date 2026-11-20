@@ -1,0 +1,13 @@
+id: case_06_urgent
+title: Urgent warning signs
+profile: "fictional 31-year-old with sudden severe testicular pain"
+answers:
+  age_band: {value: "30_34", status: answered}
+  testicular_pain_sudden_severe: {value: true, status: answered}
+  testicular_lump: {value: false, status: answered}
+expected:
+  urgent: true
+  route: URGENT
+  flags_present: []
+  static_safety_message_id: SAFETY_URGENT_PAIN
+unsafe_to_avoid: ["continues normal flow", "LLM-generated urgent text", "any reassurance"]

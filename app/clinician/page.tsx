@@ -101,18 +101,24 @@ export default function ClinicianPage() {
   );
 }
 
-function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string) => void; onDone: () => void }) {
+function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string) => Promise<boolean>; onDone: () => void }) {
   const { t, L } = useT();
+  const { error } = useStore();
   const [route, setRoute] = useState<Route>(c.route);
   const [note, setNote] = useState("");
   const [signed, setSigned] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-  const sign = () => {
+  const sign = async () => {
     if (signed) return;
+    const ok = await onSign(route, note.trim());
+    if (!ok) {
+      setFailed(true);
+      return;
+    }
     setSigned(true);
     // Let the confirmation register before the case leaves the queue.
     setTimeout(() => {
-      onSign(route, note.trim());
       onDone();
     }, 900);
   };
@@ -185,6 +191,12 @@ function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string
           className="w-full resize-none rounded-2xl bg-mist p-4 text-base text-ink ring-1 ring-line outline-none placeholder:text-muted/70 focus:ring-2 focus:ring-pine"
         />
       </div>
+
+      {failed && error && (
+        <p role="alert" className="mt-6 text-sm text-alarm">
+          {t("serverError")} {error}
+        </p>
+      )}
 
       <div className="mt-8">
         <Button onClick={sign} aria-disabled={signed}>

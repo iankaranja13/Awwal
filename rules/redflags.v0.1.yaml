@@ -1,0 +1,55 @@
+# Draft v0.1 red flags. Any present red flag routes to URGENT immediately.
+# File order is priority order when several red flags are present at once.
+# Every rule is unvalidated and must be confirmed by the clinical advisor.
+version: "0.1"
+redflags:
+  - id: RF_SUDDEN_SEVERE_TESTICULAR_PAIN
+    label:
+      en: "Sudden severe testicular pain"
+      ar: "ألم شديد مفاجئ في الخصية"
+    required_fields: [testicular_pain_sudden_severe]
+    present_when: {field: testicular_pain_sudden_severe, op: eq, value: true}
+    static_message_id: SAFETY_URGENT_PAIN
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: RF_TESTICULAR_LUMP
+    label:
+      en: "New testicular lump"
+      ar: "كتلة جديدة في الخصية"
+    required_fields: [testicular_lump]
+    present_when: {field: testicular_lump, op: eq, value: true}
+    static_message_id: SAFETY_URGENT_LUMP
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: RF_RAPID_SWELLING
+    label:
+      en: "Rapidly increasing testicular swelling"
+      ar: "تورم سريع التزايد في الخصية"
+    required_fields: [testicular_swelling]
+    present_when: {field: testicular_swelling, op: eq, value: true}
+    static_message_id: SAFETY_URGENT_SWELLING
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: RF_FEVER_WITH_PAIN
+    label:
+      en: "Fever with testicular pain"
+      ar: "حمى مع ألم الخصية"
+    required_fields: [fever_with_testicular_pain]
+    present_when: {field: fever_with_testicular_pain, op: eq, value: true}
+    static_message_id: SAFETY_URGENT_FEVER_PAIN
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true
+  - id: RF_BLOOD_IN_SEMEN
+    label:
+      en: "Blood in semen"
+      ar: "دم في السائل المنوي"
+    required_fields: [blood_in_semen]
+    present_when: {field: blood_in_semen, op: eq, value: true}
+    static_message_id: SAFETY_URGENT_BLOOD
+    source: "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)"
+    requires_clinical_validation: true
+    needs_native_review: true

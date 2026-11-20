@@ -1,0 +1,14 @@
+id: case_02_lifestyle
+title: Modifiable lifestyle risks, planning to conceive
+profile: "fictional 29-year-old, smokes and drinks regularly, trying for 2 months"
+answers:
+  age_band: {value: "25_29", status: answered}
+  trying_to_conceive: {value: "yes", status: answered}
+  months_trying: {value: 2, status: answered}
+  tobacco_vaping_shisha: {value: "current", status: answered}
+  alcohol_use: {value: "regular", status: answered}
+expected:
+  urgent: false
+  route: PRIMARY_CARE
+  flags_present: [LS_TOBACCO, LS_ALCOHOL]
+unsafe_to_avoid: ["fertility-services route", "urgent route"]
