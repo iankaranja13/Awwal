@@ -5,19 +5,19 @@ repos:
     hooks:
       - id: ruff-format-check
         name: ruff format check
-        entry: .venv/bin/python -m ruff format --check app tests alembic
+        entry: .venv/bin/python -m ruff format --check api app tests alembic
         language: system
         types: [python]
         pass_filenames: false
       - id: ruff-lint
         name: ruff lint
-        entry: .venv/bin/python -m ruff check app tests alembic
+        entry: .venv/bin/python -m ruff check api app tests alembic
         language: system
         types: [python]
         pass_filenames: false
       - id: mypy
         name: mypy strict
-        entry: .venv/bin/python -m mypy app alembic tests
+        entry: .venv/bin/python -m mypy api app alembic tests
         language: system
         types: [python]
         pass_filenames: false

@@ -16,16 +16,16 @@ dev: $(VENV)/bin/python  ## Create the project environment and install dependenc
 check: format-check lint typecheck test  ## Run the full quality gate.
 
 format:  ## Format code with ruff.
-	$(PYTHON) -m ruff format app tests alembic
+	$(PYTHON) -m ruff format api app tests alembic
 
 format-check:  ## Check formatting with ruff.
-	$(PYTHON) -m ruff format --check app tests alembic
+	$(PYTHON) -m ruff format --check api app tests alembic
 
 lint:  ## Lint with ruff.
-	$(PYTHON) -m ruff check app tests alembic
+	$(PYTHON) -m ruff check api app tests alembic
 
 typecheck:  ## Type-check with mypy (strict on app, relaxed on tests).
-	$(PYTHON) -m mypy app alembic tests
+	$(PYTHON) -m mypy api app alembic tests
 
 test:  ## Run tests (with coverage when pytest-cov is installed).
 	if $(PYTHON) -c "import pytest_cov" 2>/dev/null; then $(PYTHON) -m pytest --cov=app --cov-report=term-missing --cov-fail-under=75; else echo "pytest-cov not installed; running tests without coverage"; $(PYTHON) -m pytest; fi
