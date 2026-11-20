@@ -73,10 +73,12 @@ export function FlagRow({ flag, delay }: { flag: FlagResult; delay?: number }) {
                     <dt className="text-muted">{t("why")}</dt>
                     <dd className="text-ink">{L(flag.why)}</dd>
                   </div>
-                  <div>
-                    <dt className="text-muted">{t("unknownLabel")}</dt>
-                    <dd className="text-ink">{L(flag.unknown)}</dd>
-                  </div>
+                  {L(flag.unknown) && (
+                    <div>
+                      <dt className="text-muted">{t("unknownLabel")}</dt>
+                      <dd className="text-ink">{L(flag.unknown)}</dd>
+                    </div>
+                  )}
                 </>
               )}
               {flag.modifiable && flag.state === "PRESENT" && <p className="text-pine md:col-span-2">{t("changeable")}</p>}

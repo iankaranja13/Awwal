@@ -25,10 +25,12 @@ export const TOPICS: Topic[] = [
         kind: "choice",
         label: { en: "Your age", ar: "عمرك" },
         options: [
-          { value: "18_29", label: { en: "18–29", ar: "١٨–٢٩" } },
-          { value: "30_39", label: { en: "30–39", ar: "٣٠–٣٩" } },
-          { value: "40_49", label: { en: "40–49", ar: "٤٠–٤٩" } },
-          { value: "50_plus", label: { en: "50+", ar: "+٥٠" } },
+          { value: "18_24", label: { en: "18–24", ar: "١٨–٢٤" } },
+          { value: "25_29", label: { en: "25–29", ar: "٢٥–٢٩" } },
+          { value: "30_34", label: { en: "30–34", ar: "٣٠–٣٤" } },
+          { value: "35_39", label: { en: "35–39", ar: "٣٥–٣٩" } },
+          { value: "40_44", label: { en: "40–44", ar: "٤٠–٤٤" } },
+          { value: "45_plus", label: { en: "45+", ar: "+٤٥" } },
         ],
       },
       {
@@ -73,8 +75,11 @@ export const TOPICS: Topic[] = [
     questions: [
       yn("undescended", "Undescended testicle as a child", "خصية معلّقة في الطفولة"),
       yn("torsion_injury", "Testicular twist, injury or surgery", "التواء أو إصابة أو جراحة في الخصية"),
+      yn("hernia_surgery", "Hernia or genital surgery", "فتق أو جراحة في الأعضاء التناسلية"),
       yn("varicocele", "Told you have a varicocele", "تشخيص سابق بدوالي الخصية"),
-      yn("infection", "Mumps after puberty, or an STI", "نكاف بعد البلوغ أو عدوى منقولة جنسيًا"),
+      yn("genital_infection", "Genital infection or inflammation", "عدوى أو التهاب في الأعضاء التناسلية"),
+      yn("sti", "A sexually transmitted infection", "عدوى منقولة جنسيًا"),
+      yn("mumps", "Mumps that reached the testicles", "نكاف وصل إلى الخصيتين"),
     ],
   },
   {
@@ -86,6 +91,7 @@ export const TOPICS: Topic[] = [
       { id: "weight_kg", kind: "number", label: { en: "Weight", ar: "الوزن" }, unit: { en: "kg", ar: "كغ" }, min: 35, max: 250 },
       yn("diabetes", "Diabetes", "السكري"),
       yn("blood_pressure", "High blood pressure", "ارتفاع ضغط الدم"),
+      yn("cholesterol", "High cholesterol", "ارتفاع الكوليسترول"),
     ],
   },
   {
@@ -96,6 +102,7 @@ export const TOPICS: Topic[] = [
       yn("tobacco", "Smoke, vape or use shisha", "التدخين أو السجائر الإلكترونية أو الشيشة"),
       yn("alcohol", "Alcohol most weeks", "الكحول معظم الأسابيع"),
       yn("steroids", "Steroids or testosterone products", "منشطات أو منتجات تستوستيرون"),
+      yn("substances", "Other recreational substances", "مواد ترفيهية أخرى"),
       yn("heat", "Regular heat or chemical exposure", "تعرض منتظم للحرارة أو المواد الكيميائية"),
     ],
   },
@@ -105,6 +112,7 @@ export const TOPICS: Topic[] = [
     why: { en: "Some treatments affect sperm production.", ar: "بعض العلاجات تؤثر على إنتاج الحيوانات المنوية." },
     questions: [
       yn("cancer_treatment", "Chemotherapy or radiation", "علاج كيميائي أو إشعاعي"),
+      yn("chronic", "An ongoing chronic condition", "مرض مزمن مستمر"),
       yn("sexual_changes", "Changes in erections or desire", "تغيّر في الانتصاب أو الرغبة"),
     ],
   },

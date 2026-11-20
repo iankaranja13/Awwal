@@ -1,17 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useStore, useT } from "@/lib/store";
-import { PROVIDERS, SLOTS } from "@/lib/mock";
+import { SLOTS } from "@/lib/mock";
 import type { ReferralStatus } from "@/lib/types";
 import { Button, Label, LinkButton, Page } from "@/components/ui";
 
 const STAGES: ReferralStatus[] = ["proposed", "clinician_review", "confirmed", "booked", "attended", "result_explained", "closed"];
 
 export default function StatusPage() {
-  const { referral, advanceReferral, cancelReferral } = useStore();
-  const { t, L } = useT();
+  const {
+    referral, advanceReferral, closeReferral, cancelReferral, providers, loadProviders, busy, error,
+  } = useStore();
+  const { t, L, date } = useT();
+  const [outcome, setOutcome] = useState("");
+  useEffect(() => {
+    if (referral && referral.providerId && !providers.some((p) => p.id === referral.providerId)) {
+      void loadProviders({ type: referral.type, language: "any", gender: "any" });
+    }
+  }, [referral, providers, loadProviders]);
 
   if (!referral) {
     return (
@@ -19,39 +27,46 @@ export default function StatusPage() {
     );
   }
 
-  const provider = PROVIDERS.find((p) => p.id === referral.providerId);
+  const provider = providers.find((p) => p.id === referral.providerId);
   const slot = SLOTS.find((s) => s.en === referral.slot);
+  const when = referral.appointmentAt ? date(referral.appointmentAt) : slot ? L(slot) : "";
   const ended = referral.status === "cancelled" || referral.status === "no_show";
   const reached = new Set(referral.events.map((e) => e.to));
   const lastReached = STAGES.reduce((acc, s, i) => (reached.has(s) ? i : acc), 0);
   const current = ended ? -1 : STAGES.indexOf(referral.status);
   const fill = lastReached / (STAGES.length - 1);
   const open = !ended && referral.status !== "closed";
+  const canCancel = referral.status === "clinician_review" || referral.status === "booked";
+  // Demo controls stand in for staff, using the role each transition needs.
+  const demoBy = referral.status === "attended" ? "clinician" : "navigator";
 
   return (
     <Page
       title={t("statusTitle")}
-      sub={`${provider ? L(provider.name) : ""}${slot ? `, ${L(slot)}` : ""}, ${t(`t_${referral.type}` as const)}`}
+      sub={`${provider ? L(provider.name) : ""}${when ? `, ${when}` : ""}, ${t(`t_${referral.type}` as const)}`}
       actions={
         open ? (
           <>
-            {/* Demo controls stand in for the navigator. Rule 7: only a clinician can confirm. */}
+            {/* Demo controls stand in for staff. Rule 7: only a clinician can confirm. */}
             {referral.status === "clinician_review" ? (
               <LinkButton href="/clinician" variant="quiet">
                 {t("clinicianRole")}
               </LinkButton>
-            ) : (
-              <Button variant="quiet" onClick={() => advanceReferral("navigator")}>
+            ) : referral.status === "result_explained" ? null : (
+              <Button variant="quiet" disabled={busy} onClick={() => advanceReferral(demoBy)}>
                 {t("demoNext")}
               </Button>
             )}
-            <button
-              type="button"
-              onClick={cancelReferral}
-              className="inline-flex h-12 cursor-pointer items-center rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft"
-            >
-              {t("cancel")}
-            </button>
+            {canCancel && (
+              <button
+                type="button"
+                onClick={() => cancelReferral()}
+                disabled={busy}
+                className="inline-flex h-12 cursor-pointer items-center rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft disabled:opacity-50"
+              >
+                {t("cancel")}
+              </button>
+            )}
           </>
         ) : null
       }
@@ -113,6 +128,30 @@ export default function StatusPage() {
               <Label>{t("outcome")}</Label>
               <p className="text-base text-ink">{L(referral.outcomeNote)}</p>
             </div>
+          )}
+
+          {referral.status === "result_explained" && (
+            <div>
+              <Label>{t("outcome")}</Label>
+              <textarea
+                rows={3}
+                value={outcome}
+                onChange={(e) => setOutcome(e.target.value)}
+                placeholder={t("outcomePlaceholder")}
+                className="w-full resize-none rounded-2xl bg-paper p-4 text-base text-ink ring-1 ring-line outline-none placeholder:text-muted/70 focus:ring-2 focus:ring-pine"
+              />
+              <div className="mt-4">
+                <Button disabled={busy || !outcome.trim()} onClick={() => closeReferral(outcome)}>
+                  {busy ? t("working") : t("recordOutcome")}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <p role="alert" className="text-sm text-alarm">
+              {t("serverError")} {error}
+            </p>
           )}
 
           {referral.reminders.length > 0 && (

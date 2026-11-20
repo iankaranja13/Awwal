@@ -67,12 +67,14 @@ export type Assessment = {
   routeReason: Bi;
   missing: { id: string; label: Bi }[];
   redFlagsUnanswered: boolean;
-  explanationSource: "template" | "llm";
+  explanationSource: "template" | "llm" | "static";
+  /** Static safety message for the urgent route; null otherwise. */
+  safety: { title: Bi; body: Bi } | null;
   trace: TraceStep[];
 };
 
 /* ---------- Booking & referral ---------- */
-export type BookingType = "teleconsult" | "blood_test" | "sample_collection";
+export type BookingType = "teleconsult" | "blood_test" | "sample_collection" | "in_person";
 
 export type Provider = {
   id: string;
@@ -102,6 +104,8 @@ export type Referral = {
   type: BookingType;
   providerId: string;
   slot: string;
+  /** Real appointment/preferred time from the server (ISO), when known. */
+  appointmentAt?: string;
   status: ReferralStatus;
   events: { to: ReferralStatus; at: string; by: "you" | "clinician" | "navigator" | "system" }[];
   reminders: { at: string; text: Bi }[];
@@ -111,4 +115,4 @@ export type Referral = {
 
 /* ---------- Privacy ---------- */
 export type Share = { id: string; recipient: Bi; createdAt: string; expiresAt: string; revokedAt?: string };
-export type AuditEntry = { id: string; at: string; action: Bi; actor: "you" | "clinician" | "system" };
+export type AuditEntry = { id: string; at: string; action: Bi; actor: "you" | "clinician" | "navigator" | "system" };

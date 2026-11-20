@@ -1,16 +1,4 @@
-import type { Bi, Provider, Route } from "./types";
-
-/** Mock directory. Not real providers. */
-export const PROVIDERS: Provider[] = [
-  { id: "p1", name: { en: "Dr. Omar Haddad", ar: "د. عمر حداد" }, area: { en: "Al Reem, Abu Dhabi", ar: "الريم، أبوظبي" }, types: ["teleconsult"], languages: ["ar", "en"], clinicianGender: "male", homeSampling: false },
-  { id: "p2", name: { en: "Dr. Sara Nasser", ar: "د. سارة ناصر" }, area: { en: "Khalifa City", ar: "مدينة خليفة" }, types: ["teleconsult"], languages: ["ar", "en"], clinicianGender: "female", homeSampling: false },
-  { id: "p3", name: { en: "Dr. Daniel Reyes", ar: "د. دانيال رييس" }, area: { en: "Online", ar: "عن بُعد" }, types: ["teleconsult"], languages: ["en"], clinicianGender: "male", homeSampling: false },
-  { id: "p4", name: { en: "Corniche Lab", ar: "مختبر الكورنيش" }, area: { en: "Corniche, Abu Dhabi", ar: "الكورنيش، أبوظبي" }, types: ["blood_test", "sample_collection"], languages: ["ar", "en"], clinicianGender: "male", homeSampling: true },
-  { id: "p5", name: { en: "Al Ain Diagnostics", ar: "العين للتشخيص" }, area: { en: "Al Ain", ar: "العين" }, types: ["blood_test"], languages: ["ar"], clinicianGender: "female", homeSampling: true },
-  { id: "p6", name: { en: "Men's Health Clinic", ar: "عيادة صحة الرجل" }, area: { en: "Mussafah", ar: "مصفح" }, types: ["sample_collection", "blood_test"], languages: ["ar", "en"], clinicianGender: "male", homeSampling: false },
-  { id: "p7", name: { en: "Dr. Layla Karim", ar: "د. ليلى كريم" }, area: { en: "Online", ar: "عن بُعد" }, types: ["teleconsult"], languages: ["ar"], clinicianGender: "female", homeSampling: false },
-  { id: "p8", name: { en: "Saadiyat Medical", ar: "السعديات الطبي" }, area: { en: "Saadiyat Island", ar: "جزيرة السعديات" }, types: ["blood_test", "sample_collection"], languages: ["en"], clinicianGender: "female", homeSampling: true },
-];
+import type { Bi, Route } from "./types";
 
 export const SLOTS: Bi[] = [
   { en: "Tomorrow, 9:30", ar: "غدًا، ٩:٣٠" },

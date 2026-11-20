@@ -12,7 +12,7 @@ const visible = (q: Question, a: Answers) =>
   q.kind !== "choice" || !q.showIf || a[q.showIf.id]?.value === q.showIf.equals;
 
 export default function IntakePage() {
-  const { consent, answers, setAnswer, topicIndex, setTopicIndex, runAssessment } = useStore();
+  const { consent, answers, setAnswer, topicIndex, setTopicIndex, runAssessment, busy, error } = useStore();
   const { t, L } = useT();
   const router = useRouter();
   const [dir, setDir] = useState(1);
@@ -29,7 +29,7 @@ export default function IntakePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const next = () => {
+  const next = async () => {
     // Anything left blank is recorded as skipped, never as "no".
     const final: Answers = { ...answers };
     for (const q of questions) {
@@ -39,7 +39,8 @@ export default function IntakePage() {
       }
     }
     if (last) {
-      const r = runAssessment(final);
+      const r = await runAssessment(final);
+      if (!r) return;
       router.push(r.route === "URGENT" ? "/next" : "/results");
       return;
     }
@@ -154,8 +155,15 @@ export default function IntakePage() {
           <Button variant="quiet" onClick={back}>
             {t("back")}
           </Button>
-          <Button onClick={next}>{last ? t("seeResults") : t("continue")}</Button>
+          <Button onClick={next} disabled={busy}>
+            {last ? (busy ? t("working") : t("seeResults")) : t("continue")}
+          </Button>
         </div>
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-alarm">
+            {t("serverError")} {error}
+          </p>
+        )}
       </div>
     </div>
   );

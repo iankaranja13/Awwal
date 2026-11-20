@@ -66,7 +66,6 @@ export const STRINGS = {
   missingH: { en: "Missing answers", ar: "إجابات ناقصة" },
   missingWhy:{ en: "Without these, we can't rule things out.", ar: "دونها لا يمكننا استبعاد شيء." },
   selfCareSteps: { en: "What you can change", ar: "ما يمكنك تغييره" },
-  bookAnyway: { en: "Book a check anyway", ar: "احجز فحصًا على أي حال" },
   redOpen: { en: "If you have sudden pain, a new lump or fever, get care today.", ar: "إن كان لديك ألم مفاجئ أو كتلة جديدة أو حرارة، اطلب الرعاية اليوم." },
   ladderLabel: { en: "Where you are on the care path", ar: "موقعك على مسار الرعاية" },
 
@@ -81,6 +80,8 @@ export const STRINGS = {
   t_teleconsult: { en: "Video call", ar: "مكالمة فيديو" },
   t_blood_test: { en: "Blood test", ar: "تحليل دم" },
   t_sample_collection: { en: "Sample", ar: "عيّنة" },
+  t_in_person: { en: "In person", ar: "حضوري" },
+  loadingProviders: { en: "Loading providers…", ar: "جارٍ تحميل مقدمي الرعاية…" },
   fLanguage: { en: "Language", ar: "اللغة" },
   fClinician: { en: "Clinician", ar: "الطبيب" },
   any: { en: "Any", ar: "الكل" },
@@ -116,6 +117,13 @@ export const STRINGS = {
   demoNext: { en: "Demo: move to next stage", ar: "عرض: الانتقال للمرحلة التالية" },
   noReferral: { en: "No referral yet.", ar: "لا توجد إحالة بعد." },
   startAssessment: { en: "Start", ar: "ابدأ" },
+  outcomePlaceholder: { en: "Outcome note, e.g. what was decided", ar: "ملاحظة النتيجة، مثل ما تم الاتفاق عليه" },
+  recordOutcome: { en: "Record outcome and close", ar: "تسجيل النتيجة والإغلاق" },
+  serverError: {
+    en: "Couldn't reach the server. Check the API is running and try again.",
+    ar: "تعذّر الاتصال بالخادم. تأكد من تشغيل الواجهة وحاول مجددًا.",
+  },
+  working: { en: "Working…", ar: "جارٍ العمل…" },
 
   // privacy
   privacyTitle: { en: "Your data", ar: "بياناتك" },

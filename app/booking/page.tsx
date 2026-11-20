@@ -1,17 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useStore, useT } from "@/lib/store";
-import { PROVIDERS, SLOTS } from "@/lib/mock";
+import { BOOKABLE_ROUTES } from "@/lib/mapping";
+import { SLOTS } from "@/lib/mock";
 import type { BookingType, Lang } from "@/lib/types";
 import { BackLink, Button, Chip, Label, Page, Sheet, Toggle, useRequire } from "@/components/ui";
 
-const TYPES: BookingType[] = ["teleconsult", "blood_test", "sample_collection"];
+const TYPES: BookingType[] = ["teleconsult", "blood_test", "sample_collection", "in_person"];
 
 export default function BookingPage() {
-  const { assessment, consent, setConsent, createReferral, shares, createShare } = useStore();
+  const {
+    assessment, consent, setConsent, createReferral, providers, providersLoading, loadProviders, busy, error,
+  } = useStore();
   const { t, L } = useT();
   const router = useRouter();
   const [type, setType] = useState<BookingType>("teleconsult");
@@ -21,28 +24,30 @@ export default function BookingPage() {
   const [slot, setSlot] = useState<number | null>(null);
   const [phone, setPhone] = useState("");
   const [info, setInfo] = useState(false);
-  if (!useRequire(!!assessment, "/intake") || !assessment) return null;
+  const hasAssessment = useRequire(!!assessment, "/intake");
+  const bookable = useRequire(!assessment || BOOKABLE_ROUTES.includes(assessment.route), "/next");
+  useEffect(() => {
+    if (assessment && BOOKABLE_ROUTES.includes(assessment.route)) {
+      void loadProviders({ type, language: langF, gender });
+    }
+  }, [assessment, type, langF, gender, loadProviders]);
+  if (!hasAssessment || !bookable || !assessment) return null;
 
-  const needsReview = assessment.route !== "SELF_CARE" && assessment.route !== "SELF_CARE_PROVISIONAL";
-  const list = PROVIDERS.filter(
-    (p) =>
-      p.types.includes(type) &&
-      (langF === "any" || p.languages.includes(langF)) &&
-      (gender === "any" || p.clinicianGender === gender)
-  );
+  // Every bookable route needs clinician review before confirmation.
+  const needsReview = true;
+  const list = providers;
   const phoneOk = phone.replace(/\D/g, "").length >= 9;
-  const ready = providerId && slot !== null && phoneOk && (!needsReview || consent.share_with_clinician);
+  const ready = providerId && slot !== null && phoneOk && consent.share_with_clinician;
 
   const pick = (id: string) => {
     setProviderId(id === providerId ? null : id);
     setSlot(null);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!ready || slot === null || !providerId) return;
-    if (needsReview && !shares.some((s) => !s.revokedAt)) createShare();
-    createReferral(type, providerId, SLOTS[slot].en);
-    router.push("/status");
+    const ok = await createReferral(type, providerId, SLOTS[slot].en, phone);
+    if (ok) router.push("/status");
   };
 
   return (
@@ -53,7 +58,7 @@ export default function BookingPage() {
         <div className="mt-10 space-y-8">
           {/* type: segmented control with a sliding indicator */}
           <div>
-            <div role="radiogroup" aria-label={t("bookTitle")} className="grid max-w-md grid-cols-3 rounded-full bg-paper p-1 ring-1 ring-line">
+            <div role="radiogroup" aria-label={t("bookTitle")} className="grid max-w-md grid-cols-4 rounded-full bg-paper p-1 ring-1 ring-line">
               {TYPES.map((ty) => (
                 <button
                   key={ty}
@@ -108,7 +113,11 @@ export default function BookingPage() {
     >
       <ul className="divide-y divide-line border-y border-line">
         <AnimatePresence initial={false} mode="popLayout">
-          {list.length === 0 ? (
+          {providersLoading ? (
+            <motion.li key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 text-base text-muted">
+              {t("loadingProviders")}
+            </motion.li>
+          ) : list.length === 0 ? (
             <motion.li key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 text-base text-muted">
               {t("noProviders")}
             </motion.li>
@@ -184,9 +193,14 @@ export default function BookingPage() {
               />
             </div>
             <div className="flex flex-col items-start gap-2">
-              <Button disabled={!ready} onClick={submit}>
-                {t("requestBooking")}
+              <Button disabled={!ready || busy} onClick={submit}>
+                {busy ? t("working") : t("requestBooking")}
               </Button>
+              {error && (
+                <p role="alert" className="text-sm text-alarm">
+                  {t("serverError")} {error}
+                </p>
+              )}
             </div>
             {needsReview && !consent.share_with_clinician && (
               <div className="border-y border-line md:col-span-2">

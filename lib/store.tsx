@@ -1,15 +1,47 @@
 "use client";
 
 /**
- * In-memory journey store. Nothing sensitive is persisted in the browser;
- * only the language choice goes to localStorage (per the build plan).
- * Swap the mock calls for lib/api.ts once Person A's endpoints are live.
+ * Journey store, backed by the live Awwal API. Session, answers and journey
+ * state live in memory only; nothing sensitive is persisted in the browser.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { assess } from "./engine";
+import {
+  ApiError,
+  deleteMe,
+  deleteShare,
+  ensureDemoLogin,
+  ensureSession,
+  getAudit,
+  getExport,
+  getProviders,
+  getReferral,
+  getTrace,
+  listShares,
+  patchReferralStatus,
+  postAssess,
+  postConsent,
+  postReferral,
+  postReview,
+  postShare,
+  putIntake,
+  resetSession,
+} from "./api";
+import {
+  BOOKABLE_ROUTES,
+  mapAuditEntry,
+  mapProvider,
+  mapReferral,
+  mapShare,
+  mergeAssessment,
+  redFlagsOpen,
+  slotToDate,
+  toBackendAnswers,
+  type ActorIds,
+} from "./mapping";
 import { STRINGS, type StringKey } from "./strings";
 import type {
-  Answer, Answers, Assessment, AuditEntry, Bi, BookingType, Consent, ConsentScope, Lang, Referral, ReferralStatus, Route, Share,
+  Answer, Answers, Assessment, AuditEntry, Bi, BookingType, Consent, ConsentScope, Lang, Provider,
+  Referral, ReferralStatus, Route, Share,
 } from "./types";
 
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 9)}`;
@@ -30,59 +62,41 @@ type Store = {
   lang: Lang;
   setLang: (l: Lang) => void;
   consent: Consent;
-  setConsent: (s: ConsentScope, v: boolean) => void;
+  setConsent: (s: ConsentScope, v: boolean) => Promise<void>;
   answers: Answers;
   setAnswer: (id: string, a: Answer | undefined) => void;
   topicIndex: number;
   setTopicIndex: (i: number) => void;
   assessment: Assessment | null;
-  runAssessment: (override?: Answers) => Assessment;
+  runAssessment: (override?: Answers) => Promise<Assessment | null>;
+  providers: Provider[];
+  providersLoading: boolean;
+  loadProviders: (filters: { type: BookingType; language: Lang | "any"; gender: "any" | "male" | "female" }) => Promise<void>;
   referral: Referral | null;
-  createReferral: (type: BookingType, providerId: string, slot: string) => void;
-  advanceReferral: (by: Referral["events"][number]["by"]) => void;
-  cancelReferral: () => void;
+  createReferral: (type: BookingType, providerId: string, slotEn: string, phone: string) => Promise<boolean>;
+  advanceReferral: (by: Referral["events"][number]["by"]) => Promise<boolean>;
+  closeReferral: (outcomeNote: string) => Promise<boolean>;
+  cancelReferral: () => Promise<boolean>;
   shares: Share[];
-  createShare: () => void;
-  revokeShare: (id: string) => void;
+  createShare: () => Promise<void>;
+  revokeShare: (id: string) => Promise<void>;
+  refreshShares: () => Promise<void>;
   audit: AuditEntry[];
+  refreshAudit: () => Promise<void>;
   reviews: Record<string, Review>;
-  signOff: (caseId: string, route: Route, note: string) => void;
+  signOff: (caseId: string, route: Route, note: string) => Promise<boolean>;
   hidden: boolean;
   setHidden: (h: boolean) => void;
-  deleteAll: () => void;
-  exportData: () => string;
+  deleteAll: () => Promise<boolean>;
+  exportData: () => Promise<string | null>;
+  busy: boolean;
+  error: string | null;
+  clearError: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
 
 const NO_CONSENT: Consent = { intake: false, share_with_clinician: false, reminders: false, aggregate_analytics: false };
-
-const A = {
-  consent: (s: ConsentScope, v: boolean): Bi => ({
-    en: `${v ? "Granted" : "Revoked"}: ${STRINGS[({ intake: "c_intake", share_with_clinician: "c_share", reminders: "c_reminders", aggregate_analytics: "c_analytics" } as const)[s]].en}`,
-    ar: `${v ? "منح" : "إلغاء"}: ${STRINGS[({ intake: "c_intake", share_with_clinician: "c_share", reminders: "c_reminders", aggregate_analytics: "c_analytics" } as const)[s]].ar}`,
-  }),
-};
-
-function pushStatus(r: Referral, to: ReferralStatus, by: Referral["events"][number]["by"]): Referral {
-  const next: Referral = { ...r, status: to, events: [...r.events, { to, at: now(), by }] };
-  if (to === "booked") {
-    next.reminders = [
-      { at: now(), text: { en: "Your appointment is set.", ar: "تم تحديد موعدك." } },
-      { at: now(), text: { en: "Reminder: appointment tomorrow.", ar: "تذكير: موعدك غدًا." } },
-    ];
-  }
-  if (to === "attended") {
-    next.reminders = [...next.reminders, { at: now(), text: { en: "Follow-up check created.", ar: "أُنشئت متابعة." } }];
-  }
-  if (to === "result_explained") {
-    next.outcomeNote = {
-      en: "Results discussed. Repeat semen test in 3 months.",
-      ar: "نوقشت النتائج. إعادة تحليل السائل المنوي بعد ٣ أشهر.",
-    };
-  }
-  return next;
-}
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   // English-only for now. Arabic copy is kept in the data files so it can be re-enabled.
@@ -91,32 +105,65 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<Answers>({});
   const [topicIndex, setTopicIndex] = useState(0);
   const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [providersLoading, setProvidersLoading] = useState(false);
   const [referral, setReferral] = useState<Referral | null>(null);
   const [shares, setShares] = useState<Share[]>([]);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [reviews, setReviews] = useState<Record<string, Review>>({});
   const [hidden, setHidden] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
 
+  const clearError = useCallback(() => setError(null), []);
+
+  const wrap = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | null> => {
+    setBusy(true);
+    setError(null);
+    try {
+      return await fn();
+    } catch (e) {
+      setError(e instanceof ApiError ? `${e.code}: ${e.message}` : "Unexpected error.");
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
   const log = useCallback((action: Bi, actor: AuditEntry["actor"] = "you") => {
     setAudit((a) => [{ id: uid("au"), at: now(), action, actor }, ...a]);
   }, []);
 
+  /** Actor ids used to render referral event authors ("you", "clinician"...). */
+  const actorIds = useCallback(async (): Promise<ActorIds> => {
+    const [s, c, n] = await Promise.all([
+      ensureSession(lang),
+      ensureDemoLogin("clinician"),
+      ensureDemoLogin("navigator"),
+    ]);
+    return { userId: s.userId, clinicianId: c.userId, navigatorId: n.userId };
+  }, [lang]);
+
   const setLang = useCallback((l: Lang) => setLangState(l), []);
 
   const setConsent = useCallback(
-    (s: ConsentScope, v: boolean) => {
-      setConsentState((c) => ({ ...c, [s]: v }));
-      log(A.consent(s, v));
-      if (s === "share_with_clinician" && !v) {
-        setShares((sh) => sh.map((x) => (x.revokedAt ? x : { ...x, revokedAt: now() })));
-      }
-    },
-    [log]
+    (s: ConsentScope, v: boolean) =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const res = await postConsent(session.token, s, v);
+        setConsentState((c) => ({ ...c, ...res.state }));
+        if (s === "share_with_clinician" && !v) {
+          const rows = await listShares(session.token);
+          await Promise.all(rows.filter((r) => !r.revoked_at).map((r) => deleteShare(session.token, r.id)));
+          setShares((sh) => sh.map((x) => (x.revokedAt ? x : { ...x, revokedAt: now() })));
+        }
+      }).then(() => undefined),
+    [wrap, lang]
   );
 
   const setAnswer = useCallback((id: string, a: Answer | undefined) => {
@@ -128,108 +175,265 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const runAssessment = useCallback((override?: Answers) => {
-    const r = assess(override ?? answers);
-    setAssessment(r);
-    log({ en: `Signals checked (rules ${r.rulesVersion})`, ar: `فحص الإشارات (القواعد ${r.rulesVersion})` }, "system");
-    return r;
-  }, [answers, log]);
+  const runAssessment = useCallback(
+    (override?: Answers) =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const final = override ?? answers;
+        await putIntake(session.token, toBackendAnswers(final));
+        // Assessed twice so results read instantly in both languages.
+        const [enRes, arRes] = await Promise.all([
+          postAssess(session.token, "en"),
+          postAssess(session.token, "ar"),
+        ]);
+        const trace = await getTrace(session.token, enRes.assessment_id);
+        const merged = mergeAssessment(enRes, arRes, trace, redFlagsOpen(final));
+        setAssessment(merged);
+        log(
+          {
+            en: `Signals checked (rules ${merged.rulesVersion})`,
+            ar: `فحص الإشارات (القواعد ${merged.rulesVersion})`,
+          },
+          "system"
+        );
+        return merged;
+      }),
+    [wrap, lang, answers, log]
+  );
+
+  const loadProviders: Store["loadProviders"] = useCallback(
+    (filters) =>
+      wrap(async () => {
+        setProvidersLoading(true);
+        try {
+          const session = await ensureSession(lang);
+          const rows = await getProviders(session.token, {
+            type: filters.type,
+            language: filters.language === "any" ? undefined : filters.language,
+            clinician_gender: filters.gender === "any" ? undefined : filters.gender,
+          });
+          setProviders(rows.map(mapProvider));
+        } finally {
+          setProvidersLoading(false);
+        }
+      }).then(() => undefined),
+    [wrap, lang]
+  );
+
+  const refreshShares = useCallback(
+    () =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const rows = await listShares(session.token);
+        setShares(rows.map(mapShare));
+      }).then(() => undefined),
+    [wrap, lang]
+  );
+
+  const createShare = useCallback(
+    () =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const clinician = await ensureDemoLogin("clinician");
+        const created = await postShare(session.token, {
+          recipient_id: clinician.userId,
+          scope: { all: true },
+          expires_in_hours: 7 * 24,
+        });
+        setShares((s) => [mapShare(created), ...s]);
+      }).then(() => undefined),
+    [wrap, lang]
+  );
+
+  const revokeShare = useCallback(
+    (id: string) =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const revoked = await deleteShare(session.token, id);
+        setShares((s) => s.map((x) => (x.id === id ? mapShare(revoked) : x)));
+      }).then(() => undefined),
+    [wrap, lang]
+  );
 
   const createReferral = useCallback(
-    (type: BookingType, providerId: string, slot: string) => {
-      if (!assessment) return;
-      const selfCare = assessment.route === "SELF_CARE" || assessment.route === "SELF_CARE_PROVISIONAL";
-      let r: Referral = {
-        id: uid("ref"),
-        assessmentId: assessment.id,
-        route: assessment.route,
-        type,
-        providerId,
-        slot,
-        status: "proposed",
-        events: [{ to: "proposed", at: now(), by: "you" }],
-        reminders: [],
-      };
-      // Self-care needs no sign-off; everything else waits for a clinician.
-      r = selfCare ? pushStatus(pushStatus(r, "confirmed", "system"), "booked", "system") : pushStatus(r, "clinician_review", "system");
-      setReferral(r);
-      log({ en: "Booking requested", ar: "طلب حجز" });
-    },
-    [assessment, log]
+    (type: BookingType, providerId: string, slotEn: string, phone: string) =>
+      wrap(async () => {
+        if (!assessment) return;
+        const session = await ensureSession(lang);
+        if (!BOOKABLE_ROUTES.includes(assessment.route)) return;
+        const rows = await listShares(session.token);
+        if (!rows.some((r) => !r.revoked_at)) {
+          const clinician = await ensureDemoLogin("clinician");
+          const created = await postShare(session.token, {
+            recipient_id: clinician.userId,
+            scope: { all: true },
+            expires_in_hours: 7 * 24,
+          });
+          setShares((s) => [mapShare(created), ...s]);
+        } else {
+          setShares(rows.map(mapShare));
+        }
+        const created = await postReferral(session.token, {
+          assessment_id: assessment.id,
+          type,
+          provider_id: providerId,
+          preferred_time: slotToDate(slotEn, new Date()),
+          contact: { phone },
+        });
+        const mapped = mapReferral(created, await actorIds());
+        setReferral({ ...mapped, slot: slotEn });
+        return true;
+      }).then((v) => v !== null),
+    [wrap, lang, assessment, actorIds]
   );
 
   const advanceReferral = useCallback(
-    (by: Referral["events"][number]["by"]) => {
-      setReferral((r) => {
-        if (!r) return r;
-        const to = NEXT_STATUS[r.status];
-        if (!to) return r;
-        // Rule 7: no confirmation without clinician sign-off unless self-care
-        if (r.status === "clinician_review" && by !== "clinician") return r;
-        return pushStatus(r, to, by);
-      });
-    },
-    []
+    (by: Referral["events"][number]["by"]) =>
+      wrap(async () => {
+        if (!referral) return;
+        const to = NEXT_STATUS[referral.status];
+        // Rule 7: only a clinician sign-off leaves review, via the review endpoint.
+        if (!to || to === "closed" || referral.status === "clinician_review") return;
+        const session = await ensureSession(lang);
+        const token =
+          by === "clinician"
+            ? (await ensureDemoLogin("clinician")).token
+            : by === "navigator"
+              ? (await ensureDemoLogin("navigator")).token
+              : session.token;
+        const updated = await patchReferralStatus(token, referral.id, {
+          to_status: to,
+          appointment_time:
+            to === "booked" ? (referral.appointmentAt ?? slotToDate("", new Date())) : undefined,
+        });
+        const mapped = mapReferral(updated, await actorIds());
+        setReferral((r) => (r ? { ...mapped, slot: r.slot, clinicianNote: r.clinicianNote } : mapped));
+        return true;
+      }).then((v) => v !== null),
+    [wrap, lang, referral, actorIds]
   );
 
-  const cancelReferral = useCallback(() => {
-    setReferral((r) => (r ? pushStatus(r, "cancelled", "you") : r));
-    log({ en: "Referral cancelled", ar: "أُلغيت الإحالة" });
-  }, [log]);
+  const closeReferral = useCallback(
+    (outcomeNote: string) =>
+      wrap(async () => {
+        if (!referral || referral.status !== "result_explained" || !outcomeNote.trim()) return;
+        const clinician = await ensureDemoLogin("clinician");
+        const updated = await patchReferralStatus(clinician.token, referral.id, {
+          to_status: "closed",
+          outcome_note: outcomeNote.trim(),
+        });
+        const mapped = mapReferral(updated, await actorIds());
+        setReferral((r) => (r ? { ...mapped, slot: r.slot, clinicianNote: r.clinicianNote } : mapped));
+        return true;
+      }).then((v) => v !== null),
+    [wrap, referral, actorIds]
+  );
 
-  const createShare = useCallback(() => {
-    const exp = new Date(Date.now() + 7 * 864e5).toISOString();
-    setShares((s) => [{ id: uid("sh"), recipient: { en: "Reviewing clinician", ar: "الطبيب المراجع" }, createdAt: now(), expiresAt: exp }, ...s]);
-    log({ en: "Shared with clinician for 7 days", ar: "مشاركة مع الطبيب لمدة ٧ أيام" });
-  }, [log]);
+  const cancelReferral = useCallback(
+    () =>
+      wrap(async () => {
+        if (!referral || !["clinician_review", "booked"].includes(referral.status)) return;
+        const session = await ensureSession(lang);
+        const updated = await patchReferralStatus(session.token, referral.id, { to_status: "cancelled" });
+        const mapped = mapReferral(updated, await actorIds());
+        setReferral((r) => (r ? { ...mapped, slot: r.slot, clinicianNote: r.clinicianNote } : mapped));
+        return true;
+      }).then((v) => v !== null),
+    [wrap, lang, referral, actorIds]
+  );
 
-  const revokeShare = useCallback(
-    (id: string) => {
-      setShares((s) => s.map((x) => (x.id === id ? { ...x, revokedAt: now() } : x)));
-      log({ en: "Share revoked", ar: "أُلغيت المشاركة" });
-    },
-    [log]
+  const refreshAudit = useCallback(
+    () =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        const rows = await getAudit(session.token);
+        const server = rows.map(mapAuditEntry);
+        setAudit((prev) => {
+          const local = prev.filter((e) => e.id.startsWith("au_"));
+          return [...local, ...server].sort((a, b) => (a.at < b.at ? 1 : -1));
+        });
+      }).then(() => undefined),
+    [wrap, lang]
   );
 
   const signOff = useCallback(
-    (caseId: string, route: Route, note: string) => {
-      setReviews((r) => ({ ...r, [caseId]: { route, note, signedAt: now() } }));
-      if (caseId === "me") {
-        setReferral((r) => {
-          if (!r || r.status !== "clinician_review") return r;
-          const confirmed = pushStatus({ ...r, route, clinicianNote: note || undefined }, "confirmed", "clinician");
-          return pushStatus(confirmed, "booked", "system");
-        });
-        log({ en: "Clinician signed off your referral", ar: "اعتمد الطبيب إحالتك" }, "clinician");
+    async (caseId: string, route: Route, note: string): Promise<boolean> => {
+      if (caseId !== "me") {
+        setReviews((r) => ({ ...r, [caseId]: { route, note, signedAt: now() } }));
+        return true;
       }
+      const done = await wrap(async () => {
+        if (!assessment || !referral || referral.status !== "clinician_review") {
+          throw new ApiError(0, "NOTHING_TO_REVIEW", "No referral is waiting for review.");
+        }
+        const session = await ensureSession(lang);
+        const clinician = await ensureDemoLogin("clinician");
+        await postReview(clinician.token, {
+          assessment_id: assessment.id,
+          decision: "approved",
+          edits: route !== referral.route ? { route } : undefined,
+          notes: note.trim() || undefined,
+        });
+        setReviews((r) => ({ ...r, [caseId]: { route, note, signedAt: now() } }));
+        const updated = await getReferral(session.token, referral.id);
+        const mapped = mapReferral(updated, await actorIds());
+        setReferral((r) =>
+          r ? { ...mapped, slot: r.slot, clinicianNote: note.trim() || r.clinicianNote } : mapped
+        );
+        log({ en: "Clinician signed off your referral", ar: "اعتمد الطبيب إحالتك" }, "clinician");
+        return true;
+      });
+      return done ?? false;
     },
-    [log]
+    [wrap, lang, assessment, referral, actorIds, log]
   );
 
-  const exportData = useCallback(
-    () => JSON.stringify({ exportedAt: now(), consent, answers, assessment, referral, shares, audit }, null, 2),
-    [consent, answers, assessment, referral, shares, audit]
-  );
+  const exportData = useCallback(async (): Promise<string | null> => {
+    const data = await wrap(async () => {
+      const session = await ensureSession(lang);
+      return getExport(session.token);
+    });
+    return data === null ? null : JSON.stringify(data, null, 2);
+  }, [wrap, lang]);
 
-  const deleteAll = useCallback(() => {
-    setAnswers({});
-    setAssessment(null);
-    setReferral(null);
-    setShares([]);
-    setTopicIndex(0);
-    setConsentState(NO_CONSENT);
-    // audit keeps entries, identity removed (prototype has no identity to remove)
-    setAudit((a) => [{ id: uid("au"), at: now(), action: { en: "Personal data deleted", ar: "حُذفت البيانات الشخصية" }, actor: "you" }, ...a]);
-  }, []);
+  const deleteAll = useCallback(
+    () =>
+      wrap(async () => {
+        const session = await ensureSession(lang);
+        await deleteMe(session.token);
+        resetSession();
+        setAnswers({});
+        setAssessment(null);
+        setReferral(null);
+        setShares([]);
+        setProviders([]);
+        setTopicIndex(0);
+        setConsentState(NO_CONSENT);
+        setAudit([
+          {
+            id: uid("au"),
+            at: now(),
+            action: { en: "Personal data deleted", ar: "حُذفت البيانات الشخصية" },
+            actor: "you",
+          },
+        ]);
+        return true;
+      }).then((v) => v !== null),
+    [wrap, lang]
+  );
 
   const value = useMemo<Store>(
     () => ({
-      lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, setTopicIndex, assessment, runAssessment,
-      referral, createReferral, advanceReferral, cancelReferral, shares, createShare, revokeShare, audit, reviews, signOff,
-      hidden, setHidden, deleteAll, exportData,
+      lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, setTopicIndex, assessment,
+      runAssessment, providers, providersLoading, loadProviders, referral, createReferral,
+      advanceReferral, closeReferral, cancelReferral, shares, createShare, revokeShare, refreshShares,
+      audit, refreshAudit, reviews, signOff, hidden, setHidden, deleteAll, exportData,
+      busy, error, clearError,
     }),
-    [lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, assessment, runAssessment, referral, createReferral,
-      advanceReferral, cancelReferral, shares, createShare, revokeShare, audit, reviews, signOff, hidden, deleteAll, exportData]
+    [lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, setTopicIndex, assessment, runAssessment,
+      providers, providersLoading, loadProviders, referral, createReferral, advanceReferral,
+      closeReferral, cancelReferral, shares, createShare, revokeShare, refreshShares, audit,
+      refreshAudit, reviews, signOff, hidden, deleteAll, exportData, busy, error, clearError]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
