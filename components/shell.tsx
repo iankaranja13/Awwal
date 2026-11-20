@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useStore, useT } from "@/lib/store";
-import { Icon } from "./icon";
+import { motion } from "motion/react";
+import { useT } from "@/lib/store";
 
 const NAV = [
   { href: "/status", key: "navReferral" },
@@ -14,17 +12,8 @@ const NAV = [
 ] as const;
 
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { hidden, setHidden } = useStore();
   const { t } = useT();
   const path = usePathname();
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && hidden) setHidden(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [hidden, setHidden]);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[76rem] flex-col px-6 md:px-12">
@@ -51,14 +40,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-          <button
-            type="button"
-            onClick={() => setHidden(true)}
-            className="ms-2 inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-4 text-sm text-ink ring-1 ring-line transition-colors hover:bg-pine-soft"
-          >
-            <Icon name="hide" className="size-4" />
-            {t("quickHide")}
-          </button>
         </nav>
       </header>
 
@@ -68,27 +49,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <span>{t("banner")}</span>
         <span>{t("footerRules")}</span>
       </footer>
-
-      <AnimatePresence>
-        {hidden && (
-          <motion.div
-            key="cover"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
-            className="fixed inset-0 z-50 bg-white text-neutral-800"
-          >
-            <div className="mx-auto max-w-[76rem] px-6 pt-8 md:px-12">
-              {/* Neutral cover. Click the title (or press Esc) to return. */}
-              <button type="button" onClick={() => setHidden(false)} className="text-2xl font-medium">
-                {t("notes")}
-              </button>
-              <p className="mt-10 text-sm text-neutral-400">{t("noNotes")}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

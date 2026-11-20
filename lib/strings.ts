@@ -4,7 +4,6 @@ export const STRINGS = {
   langSwitch: { en: "عربي", ar: "English" },
   langSwitchLabel: { en: "Switch to Arabic", ar: "التبديل إلى الإنجليزية" },
   privacy: { en: "Privacy", ar: "الخصوصية" },
-  quickHide: { en: "Hide", ar: "إخفاء" },
   navReferral: { en: "My referral", ar: "إحالتي" },
   footerRules: { en: "Rules are a draft pending clinical review.", ar: "القواعد مسودة بانتظار المراجعة الطبية." },
   back: { en: "Back", ar: "رجوع" },
@@ -155,10 +154,6 @@ export const STRINGS = {
   traceNote: { en: "Fixed rules decide. Nothing here was written by AI.", ar: "قواعد ثابتة تقرر. لم يُكتب شيء هنا بالذكاء الاصطناعي." },
   rules: { en: "Rules", ar: "القواعد" },
   close: { en: "Close", ar: "إغلاق" },
-
-  // quick hide
-  notes: { en: "Notes", ar: "ملاحظات" },
-  noNotes: { en: "No notes", ar: "لا ملاحظات" },
 
   // clinician
   clinicianTitle: { en: "Review queue", ar: "قائمة المراجعة" },

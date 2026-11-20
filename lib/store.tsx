@@ -85,8 +85,6 @@ type Store = {
   refreshAudit: () => Promise<void>;
   reviews: Record<string, Review>;
   signOff: (caseId: string, route: Route, note: string) => Promise<boolean>;
-  hidden: boolean;
-  setHidden: (h: boolean) => void;
   deleteAll: () => Promise<boolean>;
   exportData: () => Promise<string | null>;
   busy: boolean;
@@ -111,7 +109,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [shares, setShares] = useState<Share[]>([]);
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [reviews, setReviews] = useState<Record<string, Review>>({});
-  const [hidden, setHidden] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -427,13 +424,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, setTopicIndex, assessment,
       runAssessment, providers, providersLoading, loadProviders, referral, createReferral,
       advanceReferral, closeReferral, cancelReferral, shares, createShare, revokeShare, refreshShares,
-      audit, refreshAudit, reviews, signOff, hidden, setHidden, deleteAll, exportData,
+      audit, refreshAudit, reviews, signOff, deleteAll, exportData,
       busy, error, clearError,
     }),
     [lang, setLang, consent, setConsent, answers, setAnswer, topicIndex, setTopicIndex, assessment, runAssessment,
       providers, providersLoading, loadProviders, referral, createReferral, advanceReferral,
       closeReferral, cancelReferral, shares, createShare, revokeShare, refreshShares, audit,
-      refreshAudit, reviews, signOff, hidden, deleteAll, exportData, busy, error, clearError]
+      refreshAudit, reviews, signOff, deleteAll, exportData, busy, error, clearError]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

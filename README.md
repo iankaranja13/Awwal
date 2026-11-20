@@ -149,9 +149,6 @@ reloading the page starts a fresh anonymous session.
 | `/privacy` | Permissions, shares with expiry and revoke, activity log, download, delete |
 | `/clinician` | Review queue, brief, change route, sign off |
 
-The "Hide" button in the header covers the app with a neutral "Notes"
-screen. Click "Notes" or press Esc to return.
-
 ### Demo paths
 
 - **Urgent:** answer Yes to any question in "Right now". You skip results and land on the static urgent screen.
