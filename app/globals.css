@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/*
+  Awwal tokens
+  mist     #EDF0EC  page
+  paper    #F8F9F6  raised surfaces (sheets, inputs)
+  ink      #0E2624  text, primary surfaces
+  pine     #1E4D47  actions, selected states
+  muted    #5B6E68  secondary text (AA on mist)
+  line     #D5DCD7  hairlines
+  saffron  #C8902E  reserved for "your path": progress + route line only
+  alarm    #A3231B  urgent only
+*/
+@theme {
+  --color-mist: #edf0ec;
+  --color-paper: #f8f9f6;
+  --color-ink: #0e2624;
+  --color-pine: #1e4d47;
+  --color-pine-soft: #dfe8e4;
+  --color-muted: #5b6e68;
+  --color-line: #d5dcd7;
+  --color-saffron: #c8902e;
+  --color-alarm: #a3231b;
+  --color-alarm-soft: #f6e4e1;
+
+  --font-sans: var(--font-readex), ui-sans-serif, system-ui, sans-serif;
+
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.35;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.375rem;
+  --text-lg--line-height: 1.3;
+  --text-xl: 1.875rem;
+  --text-xl--line-height: 1.15;
+  --text-2xl: 2.75rem;
+  --text-2xl--line-height: 1.08;
+  --text-3xl: 4.25rem;
+  --text-3xl--line-height: 1.02;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-mist);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100dvh;
+    font-feature-settings: "kern";
+  }
+  ::selection {
+    background: var(--color-pine);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  /* Latin display type gets tighter tracking; Arabic must keep 0 so letters stay joined */
+  html[lang="en"] .display {
+    letter-spacing: -0.02em;
+  }
+  button,
+  [role="button"],
+  input[type="checkbox"] + label {
+    -webkit-tap-highlight-color: transparent;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* Mirror directional glyphs (chevrons, back arrows) in RTL only */
+[dir="rtl"] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

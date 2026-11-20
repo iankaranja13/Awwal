@@ -1,16 +1,22 @@
-# Awwal backend
+# Awwal (أوّل)
 
-Prototype backend for Awwal, a discreet Arabic/English digital front door for
-men's reproductive health. This prototype uses synthetic data only, is not
-clinically validated, and makes no compliance claims.
+A discreet Arabic/English digital front door for men's reproductive health.
+Prototype with synthetic data only; not clinically validated, not a
+diagnosis, and making no compliance claims.
 
-## Prerequisites
+This repo holds both parts: a Python/FastAPI backend (`app/`,
+`rules/`, `tests/`, …) and a Next.js frontend (`app/*.tsx`, `components/`,
+`lib/`, `package.json`). See below for each part.
+
+## Backend
+
+### Prerequisites
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) for environment management
 - Docker and Docker Compose for Postgres (production-like runs)
 
-## Quick start
+### Quick start
 
 ```sh
 cp .env.example .env
@@ -26,7 +32,7 @@ Then open `http://localhost:8000/api/v1/health` (docs at `/api/docs`).
 With Docker: `docker compose up --build` (needs `.env` with real secrets).
 See [deployment](docs/deployment.md) for operations and demo credentials.
 
-## Make targets
+### Make targets
 
 Run `make help` for the list. The quality gate is `make check`
 (format-check, lint, typecheck, test). `make test` reports coverage when
@@ -34,12 +40,12 @@ Run `make help` for the list. The quality gate is `make check`
 `make benchmark` runs the evaluation harness into `benchmark/reports/`.
 `make seed` and `make reset` manage demo data.
 
-## Environment variables
+### Environment variables
 
 See `.env.example` for the full list. `JWT_SECRET` and
 `FIELD_ENCRYPTION_KEY` are required; the app fails fast without them.
 
-## Tests
+### Tests
 
 ```sh
 make test
@@ -50,7 +56,7 @@ network access. Most database tests run on isolated SQLite files; the
 append-only trigger tests need Postgres and run when `DATABASE_URL` points
 at a migrated Postgres (CI does this, otherwise they skip).
 
-## Benchmark
+### Benchmark
 
 ```sh
 make benchmark
@@ -61,7 +67,7 @@ HTTP stack and writes `benchmark/reports/report.md` and `report.json`
 with route agreement, under-triage count, invariant results, validator
 rates, language parity and subgroup tables.
 
-## Layout
+### Backend layout
 
 - `app/core/` settings, errors, JSON logging, JWT/security, encryption,
   database, auth dependencies, rate limiting
@@ -78,7 +84,7 @@ rates, language parity and subgroup tables.
 - `tests/` pytest suite; `docs/` decisions, API, privacy and deployment
 - `seed/` demo users, providers and prior results
 
-## Docs
+### Backend docs
 
 - `docs/backend-architecture.md` layers and request flow
 - `docs/api.md` endpoint guide with a curl demo journey
@@ -87,6 +93,62 @@ rates, language parity and subgroup tables.
 - `docs/decisions.md` short decision records
 - `docs/open-clinical-questions.md` questions for the clinical advisor
 - `docs/todo.md` follow-ups (no stray TODOs in code)
+
+## Frontend
+
+A private first step for men's reproductive health. Prototype with synthetic
+data. Not a diagnosis.
+
+### Run
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+```
+
+English only, built as a desktop web app. Pages use a split layout: the
+heading and main action sit on the left and stay in place, and the content
+is on the right. Narrow windows stack the two columns. Arabic strings are
+still in `lib/strings.ts` and `lib/intake.ts` but aren't shown; the
+language is fixed in `lib/store.tsx`.
+
+### Screens
+
+| Route | Screen |
+| --- | --- |
+| `/` | Welcome |
+| `/consent` | Four separate permissions, none pre-ticked |
+| `/intake` | Seven short topics; every question has "Not sure" and "Rather not say"; blanks become `skipped` |
+| `/results` | Flags in three states (filled, dashed, hollow marker plus text) and the workflow trace sheet |
+| `/next` | One route on the care-path line; urgent gets a static full-screen message |
+| `/booking` | Video call, blood test or sample; language and clinician filters; phone asked only here |
+| `/status` | Referral stages, simulated reminders, outcome; demo button stands in for the navigator |
+| `/privacy` | Permissions, shares with expiry and revoke, activity log, download, delete |
+| `/clinician` | Review queue, brief, change route, sign off |
+
+The "Hide" button in the header covers the app with a neutral "Notes"
+screen. Click "Notes" or press Esc to return.
+
+### Demo paths
+
+- **Urgent:** answer Yes to any question in "Right now". You skip results and land on the static urgent screen.
+- **Incomplete:** leave "Told you have a varicocele" or "Semen analysis" blank. You get "A few answers are missing" with the list.
+- **Specialist through sign-off:** answer Yes to testicular surgery, book, then open the clinician view from the status page and sign off. The status moves to Confirmed and then Booked.
+
+### For Person A (engine/API)
+
+`lib/types.ts` is the contract. `lib/engine.ts` is a **mock** that returns
+the same `Assessment` shape using three-valued logic (true / false /
+unknown → `NOT_ASSESSABLE`). Swap `assess()` and the store actions in
+`lib/store.tsx` for API calls when endpoints are live.
+
+### Design notes
+
+- Tokens live in `app/globals.css`. Saffron `#C8902E` is reserved for the user's path (progress bar, route line, status line) and is used nowhere else.
+- Type: Readex Pro, light weight for headings.
+- The care path on the next-step screen is horizontal, from self-care to urgent, and the line draws to the user's stop.
+- Motion: one entrance per screen, the route line drawing to the user's stop, and responses to taps (chips, toggles, expanding rows, sheets). Reduced-motion settings are respected.
+- All clinical content needs clinician review.
 
 ## Known limitations
 
