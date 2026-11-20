@@ -1,7 +1,6 @@
 """Append-only enforcement for the consent ledger and audit log."""
 
 import os
-import uuid
 from pathlib import Path
 
 import pytest
@@ -77,8 +76,15 @@ def test_audit_log_allows_anonymisation_only() -> None:
     engine = create_engine(os.environ["DATABASE_URL"])
     session = Session(engine)
     try:
+        user = User(
+            pseudonymous_handle="user-audit-anonymise",
+            role=Role.USER,
+            language=Language.EN,
+        )
+        session.add(user)
+        session.flush()
         entry = AuditLog(
-            actor_id=uuid.uuid4(),
+            actor_id=user.id,
             actor_role="user",
             action="test.ping",
             object_type="test",
