@@ -1,6 +1,6 @@
 # Awwal benchmark report
 
-Generated: 2026-11-20T07:14:47.317385+00:00 (rules 0.1, provider mock, seed 20261119)
+Generated: 2026-11-20T11:23:29.605889+00:00 (rules 0.1, provider mock, seed 20261119)
 
 ## Core cases
 
@@ -30,6 +30,12 @@ Language parity: 109/109
 
 Explanations checked: 18, passed: 18
 LLM calls: 109, fallbacks: 0, rejections: 0
+
+## Citations
+
+Citation precision: 18/18
+Present-flag coverage: 16/16
+Cited-set parity: 9/9
 
 ## Subgroups
 

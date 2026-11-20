@@ -36,6 +36,7 @@ from app.llm.validator import (  # noqa: E402
 )
 from app.main import create_app  # noqa: E402
 from app.rules_engine.loader import load_rules  # noqa: E402
+from app.services.content import load_excerpts  # noqa: E402
 from app.rules_engine.models import AssessmentInput, FlagResult, RuleSet  # noqa: E402
 from app.rules_engine.triage import run_triage  # noqa: E402
 from benchmark.generate_variants import generate_variants  # noqa: E402
@@ -154,7 +155,11 @@ def _subgroup(answers: dict[str, Any], language: str) -> tuple[str, str, str]:
 
 
 def _validate_stored_text(
-    rules: RuleSet, answers: dict[str, Any], text_doc: dict[str, Any], language: str
+    rules: RuleSet,
+    answers: dict[str, Any],
+    text_doc: dict[str, Any],
+    language: str,
+    excerpt_ids: frozenset[str],
 ) -> bool:
     """Validate one stored explanation against rebuilt ground truth.
 
@@ -163,6 +168,7 @@ def _validate_stored_text(
         answers: Answers by item id.
         text_doc: Stored explanation text.
         language: Explanation language.
+        excerpt_ids: Citable excerpt ids.
 
     Returns:
         True when validation passes.
@@ -179,8 +185,29 @@ def _validate_stored_text(
             f.id for f in flags if f.state == FlagState.NOT_ASSESSABLE
         ),
         allowed_numbers=build_allowed_numbers(rules, flags, len(result.missing_items), inputs),
+        provided_sources=excerpt_ids,
     )
     return validate_explanation(text_doc, context).ok
+
+
+def _citation_stats(
+    text_doc: dict[str, Any], present_ids: frozenset[str], excerpt_ids: frozenset[str]
+) -> tuple[bool, int, int]:
+    """Measure citation precision and present-flag coverage.
+
+    Args:
+        text_doc: Stored explanation text.
+        present_ids: Present flag ids.
+        excerpt_ids: Citable excerpt ids.
+
+    Returns:
+        Precision flag, covered present flags, and present flag count.
+    """
+    by_flag = {entry["flag_id"]: entry.get("sources", []) for entry in text_doc.get("flags", [])}
+    cited = {source for sources in by_flag.values() for source in sources}
+    precise = cited <= set(excerpt_ids)
+    covered = sum(1 for flag_id in present_ids if by_flag.get(flag_id))
+    return precise, covered, len(present_ids)
 
 
 def _stored_text(engine: Any, assessment_id: str) -> dict[str, Any]:
@@ -209,7 +236,12 @@ def _stored_text(engine: Any, assessment_id: str) -> dict[str, Any]:
 
 
 def _run_pipeline_case(
-    client: TestClient, engine: Any, rules: RuleSet, case: dict[str, Any], stats: dict[str, Any]
+    client: TestClient,
+    engine: Any,
+    rules: RuleSet,
+    case: dict[str, Any],
+    stats: dict[str, Any],
+    excerpt_ids: frozenset[str],
 ) -> dict[str, Any]:
     """Run one core pipeline case in both languages.
 
@@ -219,6 +251,7 @@ def _run_pipeline_case(
         rules: Loaded rule set.
         case: Loaded case mapping.
         stats: Mutable statistics collector.
+        excerpt_ids: Citable excerpt ids.
 
     Returns:
         Case record for the report.
@@ -236,13 +269,21 @@ def _run_pipeline_case(
     parity_ok, _ = check_language_parity(english, arabic)
     stats["parity"]["checked"] += 1
     stats["parity"]["passed"] += int(parity_ok)
+    stored_texts: dict[str, dict[str, Any]] = {}
     for language, body in (("en", english), ("ar", arabic)):
         stored = _stored_text(engine, body["assessment_id"])
-        valid = _validate_stored_text(rules, case["answers"], stored, language)
+        stored_texts[language] = stored
+        valid = _validate_stored_text(rules, case["answers"], stored, language, excerpt_ids)
         stats["validator"]["checked"] += 1
         stats["validator"]["passed"] += int(valid)
         if body["explanation_source"] != "template":
             stats["validator"]["unexpected_source"] += 1
+        present_ids = frozenset(f["id"] for f in body["flags"] if f["state"] == "PRESENT")
+        precise, covered, total = _citation_stats(stored, present_ids, excerpt_ids)
+        stats["citations"]["checked"] += 1
+        stats["citations"]["precise"] += int(precise)
+        stats["citations"]["covered"] += covered
+        stats["citations"]["cover_total"] += total
         age, lang, completeness = _subgroup(case["answers"], language)
         stats["subgroups"].append(
             {
@@ -253,6 +294,12 @@ def _run_pipeline_case(
                 "route": body["route"],
             }
         )
+    cited_sets = [
+        {entry["flag_id"]: sorted(entry.get("sources", [])) for entry in doc.get("flags", [])}
+        for doc in stored_texts.values()
+    ]
+    stats["citations"]["parity_checked"] += 1
+    stats["citations"]["parity_passed"] += int(cited_sets[0] == cited_sets[1])
     explained = client.post(
         "/api/v1/explain", headers=headers, json={"assessment_id": english["assessment_id"]}
     ).json()
@@ -459,6 +506,12 @@ def _write_report(output_dir: Path, summary: dict[str, Any]) -> None:
         f"LLM calls: {summary['llm_calls']}, fallbacks: {summary['llm_fallbacks']}, "
         f"rejections: {summary['llm_rejected']}",
         "",
+        "## Citations",
+        "",
+        f"Citation precision: {summary['citation_precise']}/{summary['citation_checked']}",
+        f"Present-flag coverage: {summary['citation_covered']}/{summary['citation_cover_total']}",
+        f"Cited-set parity: {summary['citation_parity']}",
+        "",
         "## Subgroups",
         "",
         "| Age | Language | Completeness | Count | Routes |",
@@ -495,6 +548,14 @@ def _empty_stats() -> dict[str, Any]:
     return {
         "parity": {"checked": 0, "passed": 0},
         "validator": {"checked": 0, "passed": 0, "unexpected_source": 0},
+        "citations": {
+            "checked": 0,
+            "precise": 0,
+            "covered": 0,
+            "cover_total": 0,
+            "parity_checked": 0,
+            "parity_passed": 0,
+        },
         "llm": {"calls": 0, "fallbacks": 0, "rejected": 0},
         "red": {"checked": 0, "passed": 0},
         "clear": {"checked": 0, "passed": 0},
@@ -558,6 +619,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     case_files = sorted((ROOT / "benchmark" / "cases" / "core").glob("*.yaml"))
     cases = [yaml.safe_load(path.read_text(encoding="utf-8")) for path in case_files]
     stats = _empty_stats()
+    excerpt_ids = frozenset(
+        entry.id for entry in load_excerpts(str(ROOT / "app" / "content"), Language.EN).excerpts
+    )
     core_records: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
     for case in cases:
@@ -577,7 +641,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                     }
                 )
                 continue
-            core_records.append(_run_pipeline_case(client, engine, rules, case, stats))
+            core_records.append(
+                _run_pipeline_case(client, engine, rules, case, stats, excerpt_ids)
+            )
         except Exception as exc:
             failures.append({"case": case["id"], "invariant": "run", "message": str(exc)[:300]})
             core_records.append(
@@ -632,6 +698,13 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         "parity_passed": stats["parity"]["passed"],
         "validator_checked": stats["validator"]["checked"],
         "validator_passed": stats["validator"]["passed"],
+        "citation_checked": stats["citations"]["checked"],
+        "citation_precise": stats["citations"]["precise"],
+        "citation_covered": stats["citations"]["covered"],
+        "citation_cover_total": stats["citations"]["cover_total"],
+        "citation_parity": (
+            f"{stats['citations']['parity_passed']}/{stats['citations']['parity_checked']}"
+        ),
         "llm_calls": stats["llm"]["calls"],
         "llm_fallbacks": stats["llm"]["fallbacks"],
         "llm_rejected": stats["llm"]["rejected"],

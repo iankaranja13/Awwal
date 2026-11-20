@@ -30,10 +30,12 @@ from app.core.enums import Language
 from app.core.errors import register_error_handlers
 from app.core.logging import RequestIdMiddleware, configure_logging
 from app.llm.client import load_prompt
+from app.llm.retrieval import build_excerpt_index
 from app.rules_engine.loader import load_rules
 from app.schemas.health import HealthResponse
 from app.services.content import (
     ContentError,
+    load_excerpts,
     load_next_steps,
     load_snippets,
     load_static_safety,
@@ -56,6 +58,9 @@ def _warm_caches(settings: Settings) -> None:
     load_intake_schema(settings.content_dir)
     load_prompt("explain")
     load_prompt("brief")
+    for language in (Language.EN, Language.AR):
+        excerpts = load_excerpts(settings.content_dir, language)
+        build_excerpt_index(excerpts, [rule.id for rule in rules.flags])
     for language in (Language.EN, Language.AR):
         safety = load_static_safety(settings.content_dir, language)
         snippets = load_snippets(settings.content_dir, language)

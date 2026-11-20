@@ -107,6 +107,8 @@ def test_explain_uses_llm_by_default(
     assert body["model"] == "mock"
     assert body["validator"]["ok"] is True
     assert body["explanation"]["language"] == "en"
+    by_flag = {entry["flag_id"]: entry["sources"] for entry in body["explanation"]["flags"]}
+    assert by_flag["MB_DIABETES"] == ["EXC_MB_DIABETES"]
 
 
 def test_explain_regenerates_in_arabic(
@@ -266,6 +268,8 @@ def test_brief_serves_owner(db_client: TestClient, consented_headers: dict[str, 
     assert body["brief"]["route"] == "PRIMARY_CARE"
     assert body["brief"]["scope_note"]
     assert any(entry["flag_id"] == "MB_DIABETES" for entry in body["brief"]["flags"])
+    by_flag = {entry["flag_id"]: entry["sources"] for entry in body["brief"]["flags"]}
+    assert by_flag["MB_DIABETES"] == ["EXC_MB_DIABETES"]
 
 
 def test_brief_hides_other_users_assessments(

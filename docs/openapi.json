@@ -1348,6 +1348,14 @@
             ],
             "title": "Why We Ask",
             "description": "Why text for missing fields."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
           }
         },
         "type": "object",
@@ -1554,6 +1562,14 @@
             ],
             "title": "Note",
             "description": "Short note, if any."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
           }
         },
         "type": "object",
@@ -2015,6 +2031,14 @@
             ],
             "title": "Modifiable Note",
             "description": "Modifiable note, if any."
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources",
+            "description": "Cited excerpt ids."
           }
         },
         "type": "object",

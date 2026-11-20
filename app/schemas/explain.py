@@ -16,6 +16,7 @@ class ExplainedFlag(BaseModel):
     explanation: str = Field(min_length=1, description="Plain-language explanation.")
     unknowns: list[str] = Field(default_factory=list, description="Open unknowns.")
     modifiable_note: str | None = Field(default=None, description="Modifiable note, if any.")
+    sources: list[str] = Field(default_factory=list, description="Cited excerpt ids.")
 
 
 class ExplainerOutput(BaseModel):
@@ -40,6 +41,7 @@ class BriefFlag(BaseModel):
     label: str = Field(description="Display label.")
     source: str = Field(description="Guideline source hint (unvalidated).")
     note: str | None = Field(default=None, description="Short note, if any.")
+    sources: list[str] = Field(default_factory=list, description="Cited excerpt ids.")
 
 
 class BriefOutput(BaseModel):

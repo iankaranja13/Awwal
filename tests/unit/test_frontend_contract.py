@@ -70,6 +70,10 @@ def test_mapped_golden_assesses_andrology_in_both_languages(
     ar = _assess(db_client, consented_headers, "ar")
     assert en["route"] == ar["route"] == "ANDROLOGY_UROLOGY"
     assert en["urgent"] is False
+    assert all("sources" in flag for flag in en["flags"])
+    assert "EXC_HX_UNDESCENDED_TESTIS" in next(
+        flag["sources"] for flag in en["flags"] if flag["id"] == "HX_UNDESCENDED_TESTIS"
+    )
     states = {flag["id"]: flag["state"] for flag in en["flags"]}
     assert states["HX_UNDESCENDED_TESTIS"] == "PRESENT"
     assert states["LS_TTC_STANDARD"] == "PRESENT"

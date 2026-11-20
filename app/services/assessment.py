@@ -223,8 +223,10 @@ def _build_flag(
     entry = explained.get(flag.id)
     if entry is None:
         text = snippets.snippets[flag.snippet_id]
+        sources: list[str] = []
     else:
         text = entry.explanation
+        sources = list(entry.sources)
     label = flag.label.en if language == Language.EN else flag.label.ar
     why = "; ".join(why_map[field] for field in flag.missing_fields) or None
     return AssessFlag(
@@ -239,6 +241,7 @@ def _build_flag(
         requires_clinical_validation=flag.requires_clinical_validation,
         explanation=text,
         why_we_ask=why,
+        sources=sources,
     )
 
 

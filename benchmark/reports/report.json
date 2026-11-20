@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T07:14:47.317385+00:00",
+  "generated_at": "2026-11-20T11:23:29.605889+00:00",
   "rules_version": "0.1",
   "provider": "mock",
   "model": "mock",
@@ -112,6 +112,11 @@
   "parity_passed": 109,
   "validator_checked": 18,
   "validator_passed": 18,
+  "citation_checked": 18,
+  "citation_precise": 18,
+  "citation_covered": 16,
+  "citation_cover_total": 16,
+  "citation_parity": "9/9",
   "llm_calls": 109,
   "llm_fallbacks": 0,
   "llm_rejected": 0,

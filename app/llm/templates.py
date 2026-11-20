@@ -1,5 +1,7 @@
 """Deterministic template explanations (no model calls)."""
 
+from collections.abc import Mapping
+
 from app.core.enums import FlagState, Language, Route
 from app.rules_engine.models import FlagResult
 from app.schemas.explain import BriefFlag, BriefOutput, ExplainedFlag, ExplainerOutput
@@ -34,6 +36,7 @@ def build_template_explanation(
     snippets: SnippetsFile,
     next_steps: NextStepsFile,
     explainer: ExplainerFile,
+    excerpt_index: Mapping[str, tuple[str, ...]] | None = None,
 ) -> ExplainerOutput:
     """Build a deterministic explanation from snippets and templates.
 
@@ -45,6 +48,7 @@ def build_template_explanation(
         snippets: Flag snippets for the language.
         next_steps: Next-step texts for the language.
         explainer: Template strings for the language.
+        excerpt_index: Excerpt ids by flag id (empty cites when omitted).
 
     Returns:
         Explanation document in the shared output contract.
@@ -56,12 +60,14 @@ def build_template_explanation(
         summary = explainer.summary_provisional
     else:
         summary = explainer.summary_clear
+    index = excerpt_index or {}
     explained = [
         ExplainedFlag(
             flag_id=flag.id,
             explanation=_required(snippets.snippets, flag.snippet_id, "snippet"),
             unknowns=[why_map[field] for field in flag.missing_fields if field in why_map],
             modifiable_note=explainer.modifiable_note if flag.modifiable else None,
+            sources=list(index.get(flag.id, ())),
         )
         for flag in flags
     ]
@@ -82,6 +88,7 @@ def build_brief_template(
     language: Language,
     explainer: ExplainerFile,
     scope_note: str,
+    excerpt_index: Mapping[str, tuple[str, ...]] | None = None,
 ) -> BriefOutput:
     """Build a deterministic clinician brief from structured data.
 
@@ -93,6 +100,7 @@ def build_brief_template(
         language: Brief language.
         explainer: Template strings for the language.
         scope_note: Record scope note.
+        excerpt_index: Excerpt ids by flag id (empty cites when omitted).
 
     Returns:
         Brief document in the shared output contract.
@@ -112,6 +120,7 @@ def build_brief_template(
         reason = f"{', '.join(route_reason)}."
     else:
         reason = explainer.brief_rationale_none
+    index = excerpt_index or {}
     entries = [
         BriefFlag(
             flag_id=flag.id,
@@ -119,6 +128,7 @@ def build_brief_template(
             label=flag.label.en if language == Language.EN else flag.label.ar,
             source=flag.source,
             note=None,
+            sources=list(index.get(flag.id, ())),
         )
         for flag in flags
     ]

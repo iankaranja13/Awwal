@@ -50,6 +50,7 @@ class ValidationContext:
     all_flag_ids: frozenset[str] = frozenset()
     not_assessable_ids: frozenset[str] = frozenset()
     allowed_numbers: frozenset[str] = frozenset()
+    provided_sources: frozenset[str] = frozenset()
 
 
 def _numbers_allowed(value: str, allowed: frozenset[str]) -> bool:
@@ -212,6 +213,8 @@ def validate_explanation(output: dict[str, Any], context: ValidationContext) -> 
     for entry in parsed.flags:
         if entry.flag_id in context.not_assessable_ids and not entry.unknowns:
             errors.append(f"missing unknowns for {entry.flag_id}")
+        for source in sorted(set(entry.sources) - set(context.provided_sources)):
+            errors.append(f"unknown source {source} cited for {entry.flag_id}")
     texts = (
         [parsed.summary, parsed.next_step_text, parsed.disclaimer]
         + [entry.explanation for entry in parsed.flags]
@@ -250,6 +253,9 @@ def validate_brief(output: dict[str, Any], context: ValidationContext) -> Valida
         errors.append(f"unknown flag {flag_id}")
     for flag_id in sorted(set(context.present_flag_ids) - explained):
         errors.append(f"present flag {flag_id} omitted")
+    for entry in parsed.flags:
+        for source in sorted(set(entry.sources) - set(context.provided_sources)):
+            errors.append(f"unknown source {source} cited for {entry.flag_id}")
     texts = (
         [parsed.reason_for_contact, parsed.route_rationale, parsed.scope_note]
         + [entry.label for entry in parsed.flags]

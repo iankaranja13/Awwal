@@ -49,6 +49,7 @@ class MockProvider:
         explainer = load_explainer(self.content_dir, language)
         snippets = load_snippets(self.content_dir, language)
         flags = user_json.get("flags", [])
+        excerpts = user_json.get("excerpts", [])
         present = [flag for flag in flags if flag.get("state") == "PRESENT"]
         if present:
             summary = explainer.summary_signals.format(count=len(present))
@@ -64,6 +65,11 @@ class MockProvider:
                 ),
                 "unknowns": list(flag.get("unknowns", [])),
                 "modifiable_note": (explainer.modifiable_note if flag.get("modifiable") else None),
+                "sources": [
+                    excerpt["excerpt_id"]
+                    for excerpt in excerpts
+                    if flag["flag_id"] in excerpt.get("flag_ids", [])
+                ],
             }
             for flag in flags
         ]
@@ -85,6 +91,7 @@ class MockProvider:
         Returns:
             Brief-shaped mapping.
         """
+        excerpts = user_json.get("excerpts", [])
         flags = [
             {
                 "flag_id": flag["flag_id"],
@@ -92,6 +99,11 @@ class MockProvider:
                 "label": flag.get("label", ""),
                 "source": flag.get("source", ""),
                 "note": None,
+                "sources": [
+                    excerpt["excerpt_id"]
+                    for excerpt in excerpts
+                    if flag["flag_id"] in excerpt.get("flag_ids", [])
+                ],
             }
             for flag in user_json.get("flags", [])
         ]

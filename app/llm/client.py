@@ -12,7 +12,7 @@ from app.llm.providers.azure_openai import AzureOpenAIProvider
 from app.llm.providers.mock import MockProvider
 from app.llm.providers.openai_compatible import OpenAICompatibleProvider
 
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 
 
 class LLMClient(Protocol):

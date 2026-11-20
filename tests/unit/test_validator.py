@@ -316,3 +316,70 @@ def test_brief_verdicts_rejected() -> None:
         allowed_numbers=frozenset(),
     )
     assert validate_brief(brief, context).ok is False
+
+
+def test_invented_source_rejected() -> None:
+    """Reject citations outside the provided excerpts."""
+    output = _output()
+    output["flags"][0]["sources"] = ["EXC_MADE_UP"]
+    context = _context(provided_sources=frozenset({"EXC_MB_DIABETES"}))
+    result = validate_explanation(output, context)
+    assert result.ok is False
+    assert any("unknown source" in error for error in result.errors)
+
+
+def test_valid_sources_pass() -> None:
+    """Accept citations within the provided excerpts."""
+    output = _output()
+    output["flags"][0]["sources"] = ["EXC_MB_DIABETES"]
+    context = _context(provided_sources=frozenset({"EXC_MB_DIABETES"}))
+    assert validate_explanation(output, context).ok is True
+
+
+def test_brief_invented_source_rejected() -> None:
+    """Reject brief citations outside the provided excerpts."""
+    flags = [_flag("MB_DIABETES", "PRESENT", "SNP_DIABETES")]
+    explainer = load_explainer(str(APP_CONTENT_DIR), Language.EN)
+    brief = build_brief_template(
+        Route.PRIMARY_CARE,
+        ["MB_DIABETES"],
+        flags,
+        [],
+        Language.EN,
+        explainer,
+        "Owner view.",
+        {"MB_DIABETES": ("EXC_MB_DIABETES",)},
+    )
+    raw = brief.model_dump(mode="json")
+    raw["flags"][0]["sources"] = ["EXC_MADE_UP"]
+    context = ValidationContext(
+        language=Language.EN,
+        route=Route.PRIMARY_CARE,
+        present_flag_ids=frozenset({"MB_DIABETES"}),
+        all_flag_ids=frozenset({"MB_DIABETES"}),
+        allowed_numbers=frozenset({"1", "24", "5", "0"}),
+        provided_sources=frozenset({"EXC_MB_DIABETES"}),
+    )
+    result = validate_brief(raw, context)
+    assert result.ok is False
+    assert any("unknown source" in error for error in result.errors)
+
+
+def test_template_cites_index_excerpts() -> None:
+    """Populate template sources from the excerpt index."""
+    flags = [
+        _flag("MB_DIABETES", "PRESENT", "SNP_DIABETES"),
+        _flag("LS_TOBACCO", "NOT_ASSESSABLE", "SNP_TOBACCO"),
+    ]
+    output = build_template_explanation(
+        Route.PRIMARY_CARE,
+        flags,
+        {"tobacco_vaping_shisha": "Why tobacco?"},
+        Language.EN,
+        load_snippets(str(APP_CONTENT_DIR), Language.EN),
+        load_next_steps(str(APP_CONTENT_DIR), Language.EN),
+        load_explainer(str(APP_CONTENT_DIR), Language.EN),
+        {"MB_DIABETES": ("EXC_MB_DIABETES",)},
+    )
+    by_flag = {entry.flag_id: entry.sources for entry in output.flags}
+    assert by_flag == {"MB_DIABETES": ["EXC_MB_DIABETES"], "LS_TOBACCO": []}

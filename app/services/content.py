@@ -42,6 +42,30 @@ class SnippetsFile(BaseModel):
     snippets: dict[str, str] = Field(description="Snippet text by id.")
 
 
+class ExcerptEntry(BaseModel):
+    """One citable draft excerpt."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: str = Field(min_length=1, description="Stable excerpt id.")
+    text: str = Field(min_length=1, description="Excerpt text in the file language.")
+    applies_to_flags: list[str] = Field(
+        min_length=1, description="Flag ids this excerpt may be cited for."
+    )
+    source_hint: str = Field(description="Believed provenance (unvalidated).")
+    verbatim: bool = Field(description="True only for advisor-approved verbatim quotes.")
+    requires_clinical_validation: bool = Field(description="True until clinically validated.")
+
+
+class ExcerptsFile(BaseModel):
+    """Excerpt corpus content file."""
+
+    model_config = ConfigDict(frozen=True)
+
+    needs_native_review: bool = Field(description="True until Arabic review exists.")
+    excerpts: list[ExcerptEntry] = Field(description="Corpus excerpts.")
+
+
 class NextStepsFile(BaseModel):
     """Next-step content file."""
 
@@ -174,6 +198,31 @@ def load_snippets(content_dir: str, language: Language) -> SnippetsFile:
     raw = _load_json(content_dir, f"snippets.{language.value}.json")
     loaded = _parse("snippets", SnippetsFile, raw)
     _require_review("snippets", loaded.needs_native_review)
+    return loaded
+
+
+@lru_cache(maxsize=16)
+def load_excerpts(content_dir: str, language: Language) -> ExcerptsFile:
+    """Load citable excerpts for one language.
+
+    Args:
+        content_dir: Content directory.
+        language: Language to load.
+
+    Returns:
+        Validated excerpts.
+
+    Raises:
+        ContentError: If the file is missing or invalid.
+    """
+    raw = _load_json(content_dir, f"excerpts.{language.value}.json")
+    loaded = _parse("excerpts", ExcerptsFile, raw)
+    _require_review("excerpts", loaded.needs_native_review)
+    seen: set[str] = set()
+    for entry in loaded.excerpts:
+        if entry.id in seen:
+            raise ContentError(f"Duplicate excerpt id {entry.id}.")
+        seen.add(entry.id)
     return loaded
 
 

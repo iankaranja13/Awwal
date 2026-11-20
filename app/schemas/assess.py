@@ -25,6 +25,7 @@ class AssessFlag(BaseModel):
     requires_clinical_validation: bool = Field(description="True until a validation flow exists.")
     explanation: str = Field(description="Plain-language explanation.")
     why_we_ask: str | None = Field(default=None, description="Why text for missing fields.")
+    sources: list[str] = Field(default_factory=list, description="Cited excerpt ids.")
 
 
 class MissingItem(BaseModel):

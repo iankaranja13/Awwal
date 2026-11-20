@@ -9,17 +9,19 @@ from sqlalchemy.orm import Session
 from app.core.config import Settings
 from app.core.enums import ConsentScope, ExplanationSource, FlagState, Language, Route
 from app.core.errors import ConsentRequiredError
+from app.llm.retrieval import build_excerpt_index
 from app.llm.templates import build_template_explanation
 from app.models import Assessment, Explanation, User, WorkflowTrace
 from app.orchestrator.trace import TraceRecorder
 from app.rules_engine.evaluator import compute_derived
 from app.rules_engine.loader import load_rules
-from app.rules_engine.models import AssessmentInput, FlagResult
+from app.rules_engine.models import AssessmentInput, FlagResult, RuleSet
 from app.rules_engine.triage import evaluate_flag_stage, evaluate_red_stage, select_route
 from app.schemas.explain import ExplainerOutput
 from app.services.consent import has_consent
 from app.services.content import (
     ContentError,
+    load_excerpts,
     load_explainer,
     load_next_steps,
     load_snippets,
@@ -89,6 +91,7 @@ def run_assessment(
     with recorder.timed("explanation") as detail:
         output, source = _explain(
             settings,
+            rules,
             language,
             decision.route,
             flag_results,
@@ -132,6 +135,7 @@ def run_assessment(
 
 def _explain(
     settings: Settings,
+    rules: RuleSet,
     language: Language,
     route: Route,
     flag_results: list[FlagResult],
@@ -142,6 +146,7 @@ def _explain(
 
     Args:
         settings: Application settings.
+        rules: Loaded rule set.
         language: Explanation language.
         route: Selected route.
         flag_results: Evaluated flags.
@@ -175,7 +180,9 @@ def _explain(
         for item in schema.items
     }
     snippets = load_snippets(settings.content_dir, language)
+    excerpts = load_excerpts(settings.content_dir, language)
+    excerpt_index = build_excerpt_index(excerpts, [rule.id for rule in rules.flags])
     output = build_template_explanation(
-        route, flag_results, why_map, language, snippets, next_steps, explainer
+        route, flag_results, why_map, language, snippets, next_steps, explainer, excerpt_index
     )
     return output, ExplanationSource.TEMPLATE

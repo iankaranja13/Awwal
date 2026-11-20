@@ -1,0 +1,245 @@
+{
+  "needs_native_review": true,
+  "excerpts": [
+    {
+      "id": "EXC_LS_TTC_STANDARD",
+      "text": "لقد مرت مدة على محاولة الإنجاب تجعل مناقشة تقييم الخصوبة أمراً معتاداً في هذه المرحلة.",
+      "applies_to_flags": [
+        "LS_TTC_STANDARD"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_TTC_EARLIER",
+      "text": "مع المدة التي ذكرتها، تُناقش المتابعة المبكرة عادةً.",
+      "applies_to_flags": [
+        "LS_TTC_EARLIER"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_UNDESCENDED_TESTIS",
+      "text": "تاريخ الخصية المعلقة من الأسباب التي تدعو الأطباء لاقتراح مراجعة الخصوبة.",
+      "applies_to_flags": [
+        "HX_UNDESCENDED_TESTIS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_TORSION_INJURY_SURGERY",
+      "text": "الالتواء أو الإصابة أو الجراحة السابقة قد تؤثر على صحة الخصية، لذا تُقترح المراجعة.",
+      "applies_to_flags": [
+        "HX_TORSION_INJURY_SURGERY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_HERNIA_GENITAL_SURGERY",
+      "text": "سابقة جراحة الفتق أو الجراحة التناسلية تستحق الذكر عند المراجعة.",
+      "applies_to_flags": [
+        "HX_HERNIA_GENITAL_SURGERY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_VARICOCELE",
+      "text": "دوالي الخصية المعروفة من الحالات الشائعة التي يمكن تقييمها أكثر.",
+      "applies_to_flags": [
+        "HX_VARICOCELE"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_GENITAL_INFECTION",
+      "text": "العدوى أو الالتهاب التناسلي السابق من المعلومات المهمة عند المراجعة.",
+      "applies_to_flags": [
+        "HX_GENITAL_INFECTION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_STI",
+      "text": "العدوى المنقولة جنسياً السابقة تستحق فحص متابعة.",
+      "applies_to_flags": [
+        "HX_STI"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_HX_MUMPS",
+      "text": "النكاف مع تورم الخصية من المعلومات المهمة عند المراجعة.",
+      "applies_to_flags": [
+        "HX_MUMPS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_BMI",
+      "text": "مؤشر كتلة جسمك عند مستوى يُناقش عنده الوزن عادةً ضمن مراجعة الصحة.",
+      "applies_to_flags": [
+        "MB_BMI"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_DIABETES",
+      "text": "يُتابع السكري مع الصحة العامة والإنجابية.",
+      "applies_to_flags": [
+        "MB_DIABETES"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_HYPERTENSION",
+      "text": "يُراجع ضغط الدم ضمن الصحة العامة.",
+      "applies_to_flags": [
+        "MB_HYPERTENSION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MB_CHOLESTEROL",
+      "text": "يُراجع الكوليسترول ضمن الصحة العامة.",
+      "applies_to_flags": [
+        "MB_CHOLESTEROL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_TOBACCO",
+      "text": "تعاطي التبغ أو السجائر الإلكترونية أو الشيشة قد يؤثر على الخصوبة، والتقليل منه مفيد.",
+      "applies_to_flags": [
+        "LS_TOBACCO"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_ALCOHOL",
+      "text": "تعاطي الكحول بانتظام قد يؤثر على الخصوبة، والتقليل منه مفيد.",
+      "applies_to_flags": [
+        "LS_ALCOHOL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_ANABOLIC_STEROIDS",
+      "text": "منتجات الستيرويد أو التستوستيرون قد تؤثر بقوة على الخصوبة؛ ناقش أي تعاطٍ مع الطبيب.",
+      "applies_to_flags": [
+        "LS_ANABOLIC_STEROIDS"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_SUBSTANCES",
+      "text": "بعض المواد قد تؤثر على الخصوبة؛ وخدمات الدعم يمكن أن تساعد.",
+      "applies_to_flags": [
+        "LS_SUBSTANCES"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_LS_OCCUPATIONAL",
+      "text": "التعرض المهني للحرارة أو المواد الكيميائية قد يكون مهماً؛ والوقاية والمراجعة تساعدان.",
+      "applies_to_flags": [
+        "LS_OCCUPATIONAL"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; Australian male infertility guideline)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MX_CHEMO_RADIATION",
+      "text": "العلاج الكيميائي أو الإشعاعي السابق من المعلومات المهمة لمراجعة المختص.",
+      "applies_to_flags": [
+        "MX_CHEMO_RADIATION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_MX_CHRONIC",
+      "text": "الأمراض المزمنة جزء من الصورة الصحية العامة.",
+      "applies_to_flags": [
+        "MX_CHRONIC"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_SX_SEXUAL_FUNCTION",
+      "text": "التغيرات في الرغبة أو الوظيفة الجنسية من الأسباب الشائعة لطلب المراجعة.",
+      "applies_to_flags": [
+        "SX_SEXUAL_FUNCTION"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (EAU; AUA/ASRM)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_PX_ABNORMAL_SEMEN",
+      "text": "نتيجة تحليل السائل المنوي غير الطبيعية السابقة تُراجع عادةً مع مختص.",
+      "applies_to_flags": [
+        "PX_ABNORMAL_SEMEN"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_PX_ABNORMAL_HORMONE",
+      "text": "نتيجة الهرمونات غير الطبيعية السابقة تضيف سياقاً للمراجعة.",
+      "applies_to_flags": [
+        "PX_ABNORMAL_HORMONE"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; WHO)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    },
+    {
+      "id": "EXC_FH_FAMILY_HISTORY",
+      "text": "الأنماط العائلية من المعلومات المفيدة عند المراجعة.",
+      "applies_to_flags": [
+        "FH_FAMILY_HISTORY"
+      ],
+      "source_hint": "TO BE CONFIRMED BY CLINICAL ADVISOR (AUA/ASRM; EAU)",
+      "verbatim": false,
+      "requires_clinical_validation": true
+    }
+  ]
+}

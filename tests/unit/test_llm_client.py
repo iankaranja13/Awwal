@@ -108,7 +108,7 @@ def test_factory_rejects_unconfigured_providers() -> None:
 
 def test_load_prompt_reads_versioned_files() -> None:
     """Load versioned prompts and fail clearly when missing."""
-    assert PROMPT_VERSION == "v1"
+    assert PROMPT_VERSION == "v2"
     assert "screening" in load_prompt("explain").lower()
     assert "brief" in load_prompt("brief").lower()
     with pytest.raises(LLMError, match="Cannot read prompt"):
@@ -302,3 +302,14 @@ def test_factory_rejects_incomplete_azure_config() -> None:
         values = {**base, missing: ""}
         with pytest.raises(LLMError, match="Azure OpenAI needs"):
             create_client(_settings(**values))
+
+
+def test_mock_cites_input_excerpts() -> None:
+    """Cite provided excerpt ids per flag in mock outputs."""
+    provider = MockProvider(content_dir=str(APP_CONTENT_DIR))
+    user_json = dict(_explain_input())
+    user_json["excerpts"] = [
+        {"excerpt_id": "EXC_MB_DIABETES", "text": "Draft.", "flag_ids": ["MB_DIABETES"]}
+    ]
+    output = provider.generate("sys", user_json, {}, 8.0)
+    assert output["flags"][0]["sources"] == ["EXC_MB_DIABETES"]

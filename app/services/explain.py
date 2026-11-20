@@ -12,6 +12,7 @@ from app.core.config import Settings
 from app.core.enums import ExplanationSource, FlagState, Language
 from app.llm.client import PROMPT_VERSION, LLMClient, create_client, load_prompt
 from app.llm.errors import LLMError
+from app.llm.retrieval import build_excerpt_index
 from app.llm.templates import build_template_explanation
 from app.llm.validator import (
     ValidationContext,
@@ -25,7 +26,14 @@ from app.rules_engine.models import AssessmentInput, FlagResult
 from app.schemas.explain import ExplainerOutput
 from app.services.assessment import get_own_assessment, latest_explanation
 from app.services.audit import record as record_audit
-from app.services.content import load_explainer, load_next_steps, load_snippets, load_static_safety
+from app.services.content import (
+    ExcerptsFile,
+    load_excerpts,
+    load_explainer,
+    load_next_steps,
+    load_snippets,
+    load_static_safety,
+)
 from app.services.intake import get_stored_answers, load_intake_schema
 
 logger = logging.getLogger("awwal.explain")
@@ -47,11 +55,13 @@ def _explain_user_json(
     next_step_text: str,
     disclaimer: str,
     why_map: dict[str, str],
+    excerpts: ExcerptsFile,
 ) -> dict[str, Any]:
     """Build structured LLM input without personal data.
 
-    Only flag ids, states, reason fields, snippet texts and the language are
-    included; names, handles and contact details never reach the model.
+    Only flag ids, states, reason fields, snippet texts, citable excerpts
+    and the language are included; names, handles and contact details never
+    reach the model.
 
     Args:
         assessment: Stored assessment row.
@@ -60,6 +70,7 @@ def _explain_user_json(
         next_step_text: Next step the output must stay consistent with.
         disclaimer: Required disclaimer text.
         why_map: Why text by item id.
+        excerpts: Citable excerpt corpus for the language.
 
     Returns:
         Job input mapping.
@@ -84,6 +95,14 @@ def _explain_user_json(
         "missing_items": list(assessment.missing_items),
         "next_step_text": next_step_text,
         "disclaimer": disclaimer,
+        "excerpts": [
+            {
+                "excerpt_id": entry.id,
+                "text": entry.text,
+                "flag_ids": list(entry.applies_to_flags),
+            }
+            for entry in excerpts.excerpts
+        ],
     }
 
 
@@ -140,8 +159,10 @@ def explain_assessment(
         for item in schema.items
     }
     snippets = load_snippets(settings.content_dir, target)
+    excerpts = load_excerpts(settings.content_dir, target)
+    excerpt_index = build_excerpt_index(excerpts, [rule.id for rule in rules.flags])
     template = build_template_explanation(
-        row.route, flags, why_map, target, snippets, next_steps, explainer
+        row.route, flags, why_map, target, snippets, next_steps, explainer, excerpt_index
     )
     stored_answers, _ = get_stored_answers(session, user, settings.field_encryption_key)
     inputs = AssessmentInput.model_validate({"answers": stored_answers})
@@ -154,9 +175,10 @@ def explain_assessment(
             flag.id for flag in flags if flag.state == FlagState.NOT_ASSESSABLE
         ),
         allowed_numbers=build_allowed_numbers(rules, flags, len(row.missing_items), inputs),
+        provided_sources=frozenset(entry.id for entry in excerpts.excerpts),
     )
     user_json = _explain_user_json(
-        row, flags, target, template.next_step_text, template.disclaimer, why_map
+        row, flags, target, template.next_step_text, template.disclaimer, why_map, excerpts
     )
     model, prompt_version = _model_info(settings)
     try:

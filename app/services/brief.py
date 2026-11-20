@@ -12,6 +12,7 @@ from app.core.config import Settings
 from app.core.enums import ExplanationSource, FlagState, Language
 from app.llm.client import PROMPT_VERSION, LLMClient, create_client, load_prompt
 from app.llm.errors import LLMError
+from app.llm.retrieval import build_excerpt_index
 from app.llm.templates import build_brief_template
 from app.llm.validator import (
     ValidationContext,
@@ -25,7 +26,7 @@ from app.rules_engine.models import AssessmentInput, FlagResult
 from app.schemas.explain import BriefOutput
 from app.services.assessment import get_accessible_assessment, latest_explanation
 from app.services.audit import record as record_audit
-from app.services.content import load_explainer
+from app.services.content import ExcerptsFile, load_excerpts, load_explainer
 from app.services.intake import get_stored_answers
 
 logger = logging.getLogger("awwal.brief")
@@ -51,6 +52,7 @@ def _brief_user_json(
     scope_note: str,
     reason_hint: str,
     rationale_hint: str,
+    excerpts: ExcerptsFile,
 ) -> dict[str, Any]:
     """Build structured LLM input without personal data.
 
@@ -63,6 +65,7 @@ def _brief_user_json(
         scope_note: Record scope note.
         reason_hint: Template reason for contact.
         rationale_hint: Template route rationale.
+        excerpts: Citable excerpt corpus for the language.
 
     Returns:
         Job input mapping.
@@ -85,6 +88,14 @@ def _brief_user_json(
         "scope_note": scope_note,
         "reason_hint": reason_hint,
         "rationale_hint": rationale_hint,
+        "excerpts": [
+            {
+                "excerpt_id": entry.id,
+                "text": entry.text,
+                "flag_ids": list(entry.applies_to_flags),
+            }
+            for entry in excerpts.excerpts
+        ],
     }
 
 
@@ -123,6 +134,8 @@ def build_brief(
         scope_note = explainer.brief_scope_owner
     else:
         scope_note = explainer.brief_scope_shared
+    excerpts = load_excerpts(settings.content_dir, target)
+    excerpt_index = build_excerpt_index(excerpts, [rule.id for rule in rules.flags])
     template = build_brief_template(
         row.route,
         list(row.route_reason),
@@ -131,6 +144,7 @@ def build_brief(
         target,
         explainer,
         scope_note,
+        excerpt_index,
     )
     stored, _ = get_stored_answers(session, user, settings.field_encryption_key)
     inputs = AssessmentInput.model_validate({"answers": stored})
@@ -141,6 +155,7 @@ def build_brief(
         all_flag_ids=frozenset(flag.id for flag in flags),
         not_assessable_ids=frozenset(),
         allowed_numbers=build_allowed_numbers(rules, flags, len(row.missing_items), inputs),
+        provided_sources=frozenset(entry.id for entry in excerpts.excerpts),
     )
     user_json = _brief_user_json(
         row.route.value,
@@ -151,6 +166,7 @@ def build_brief(
         template.scope_note,
         template.reason_for_contact,
         template.route_rationale,
+        excerpts,
     )
     model = "mock" if settings.llm_provider == "mock" else settings.llm_model
     prompt_version = None if settings.llm_provider == "mock" else PROMPT_VERSION
