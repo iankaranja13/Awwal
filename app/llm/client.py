@@ -8,6 +8,7 @@ import httpx
 from app.core.config import Settings
 from app.llm.errors import LLMError
 from app.llm.providers.anthropic import AnthropicProvider
+from app.llm.providers.azure_openai import AzureOpenAIProvider
 from app.llm.providers.mock import MockProvider
 from app.llm.providers.openai_compatible import OpenAICompatibleProvider
 
@@ -77,6 +78,26 @@ def create_client(settings: Settings, transport: httpx.BaseTransport | None = No
         return AnthropicProvider(
             api_key=settings.llm_api_key,
             model=settings.llm_model,
+            timeout=settings.llm_timeout_seconds,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+            transport=transport,
+        )
+    if settings.llm_provider == "azure_openai":
+        if (
+            not settings.llm_api_key
+            or not settings.llm_model
+            or not settings.llm_base_url
+            or not settings.llm_api_version
+        ):
+            raise LLMError(
+                "Azure OpenAI needs LLM_API_KEY, LLM_MODEL, LLM_BASE_URL and LLM_API_VERSION."
+            )
+        return AzureOpenAIProvider(
+            api_key=settings.llm_api_key,
+            model=settings.llm_model,
+            base_url=settings.llm_base_url,
+            api_version=settings.llm_api_version,
             timeout=settings.llm_timeout_seconds,
             temperature=settings.llm_temperature,
             max_tokens=settings.llm_max_tokens,

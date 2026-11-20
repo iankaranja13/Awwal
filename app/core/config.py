@@ -39,12 +39,15 @@ class Settings(BaseSettings):
     content_dir: str = Field(
         default="./app/content", description="Directory holding bilingual content files."
     )
-    llm_provider: Literal["mock", "anthropic", "openai_compatible"] = Field(
+    llm_provider: Literal["mock", "anthropic", "openai_compatible", "azure_openai"] = Field(
         default="mock", description="LLM provider name."
     )
     llm_model: str = Field(default="", description="LLM model name (never hard-coded in code).")
     llm_api_key: str = Field(default="", description="LLM provider API key.")
     llm_base_url: str = Field(default="", description="Base URL for OpenAI-compatible providers.")
+    llm_api_version: str = Field(
+        default="", description="REST API version for the Azure OpenAI provider."
+    )
     llm_timeout_seconds: float = Field(
         default=8.0, gt=0, description="LLM request timeout in seconds."
     )

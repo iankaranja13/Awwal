@@ -41,6 +41,17 @@ class OpenAICompatibleProvider:
         self.max_tokens = max_tokens
         self.transport = transport
 
+    def _endpoint(self) -> str:
+        """Return the chat-completions URL for the configured server."""
+        return f"{self.base_url}/chat/completions"
+
+    def _headers(self) -> dict[str, str]:
+        """Return request headers, adding bearer auth when a key exists."""
+        headers = {"content-type": "application/json"}
+        if self.api_key:
+            headers["authorization"] = f"Bearer {self.api_key}"
+        return headers
+
     def generate(
         self, system: str, user_json: dict[str, Any], json_schema: dict[str, Any], timeout: float
     ) -> dict[str, Any]:
@@ -76,14 +87,9 @@ class OpenAICompatibleProvider:
             "max_tokens": self.max_tokens,
             "response_format": {"type": "json_object"},
         }
-        headers = {"content-type": "application/json"}
-        if self.api_key:
-            headers["authorization"] = f"Bearer {self.api_key}"
         try:
             with httpx.Client(transport=self.transport, timeout=timeout) as client:
-                response = client.post(
-                    f"{self.base_url}/chat/completions", json=payload, headers=headers
-                )
+                response = client.post(self._endpoint(), json=payload, headers=self._headers())
         except httpx.TimeoutException as exc:
             raise LLMError("LLM request timed out.") from exc
         except httpx.HTTPError as exc:

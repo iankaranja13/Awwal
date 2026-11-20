@@ -10,6 +10,7 @@ from app.core.config import Settings
 from app.llm.client import PROMPT_VERSION, create_client, load_prompt
 from app.llm.errors import LLMError
 from app.llm.providers.anthropic import AnthropicProvider
+from app.llm.providers.azure_openai import AzureOpenAIProvider
 from app.llm.providers.mock import MockProvider
 from app.llm.providers.openai_compatible import OpenAICompatibleProvider
 from app.schemas.explain import ExplainerOutput
@@ -223,3 +224,81 @@ def test_openai_failures() -> None:
         )
         with pytest.raises(LLMError, match=match):
             provider.generate("sys", {}, {}, 8.0)
+
+
+def test_azure_sends_key_header_and_versioned_url() -> None:
+    """Use api-key auth and the api-version query on the deployment URL."""
+    captured: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["headers"] = dict(request.headers)
+        captured["url"] = request.url
+        body = json.loads(request.content.decode("utf-8"))
+        captured["model"] = body["model"]
+        return httpx.Response(200, json={"choices": [{"message": {"content": '{"ok": 1}'}}]})
+
+    provider = AzureOpenAIProvider(
+        api_key="az-key",
+        model="awwal-gpt",
+        base_url="https://res.openai.azure.com/openai/deployments/awwal-gpt/",
+        api_version="2024-10-21",
+        timeout=8.0,
+        temperature=0.2,
+        max_tokens=5,
+        transport=httpx.MockTransport(handler),
+    )
+    assert provider.generate("sys", {}, {}, 8.0) == {"ok": 1}
+    assert captured["headers"]["api-key"] == "az-key"
+    assert "authorization" not in captured["headers"]
+    assert captured["url"].path == "/openai/deployments/awwal-gpt/chat/completions"
+    assert captured["url"].params["api-version"] == "2024-10-21"
+    assert captured["model"] == "awwal-gpt"
+
+
+def test_azure_failure_maps_to_llm_error() -> None:
+    """Map Azure error statuses to LLMError."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(401, json={})
+
+    provider = AzureOpenAIProvider(
+        api_key="bad",
+        model="m",
+        base_url="https://res.openai.azure.com/openai/deployments/m",
+        api_version="2024-10-21",
+        timeout=8.0,
+        temperature=0.2,
+        max_tokens=5,
+        transport=httpx.MockTransport(handler),
+    )
+    with pytest.raises(LLMError, match="status 401"):
+        provider.generate("sys", {}, {}, 8.0)
+
+
+def test_factory_builds_azure_when_configured() -> None:
+    """Build the Azure provider from settings."""
+    client = create_client(
+        _settings(
+            llm_provider="azure_openai",
+            llm_api_key="az-key",
+            llm_model="awwal-gpt",
+            llm_base_url="https://res.openai.azure.com/openai/deployments/awwal-gpt",
+            llm_api_version="2024-10-21",
+        )
+    )
+    assert isinstance(client, AzureOpenAIProvider)
+
+
+def test_factory_rejects_incomplete_azure_config() -> None:
+    """Require all four Azure settings before building the client."""
+    base = {
+        "llm_provider": "azure_openai",
+        "llm_api_key": "az-key",
+        "llm_model": "awwal-gpt",
+        "llm_base_url": "https://res.openai.azure.com/openai/deployments/awwal-gpt",
+        "llm_api_version": "2024-10-21",
+    }
+    for missing in ("llm_api_key", "llm_model", "llm_base_url", "llm_api_version"):
+        values = {**base, missing: ""}
+        with pytest.raises(LLMError, match="Azure OpenAI needs"):
+            create_client(_settings(**values))
