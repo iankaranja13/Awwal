@@ -1,6 +1,6 @@
 # Awwal benchmark report
 
-Generated: 2026-11-20T11:23:29.605889+00:00 (rules 0.1, provider mock, seed 20261119)
+Generated: 2026-11-20T11:39:26.713207+00:00 (rules 0.1, provider mock, seed 20261119)
 
 ## Core cases
 
@@ -36,6 +36,11 @@ LLM calls: 109, fallbacks: 0, rejections: 0
 Citation precision: 18/18
 Present-flag coverage: 16/16
 Cited-set parity: 9/9
+
+## Service measures
+
+Median time-to-triage (server trace): 2.0 ms
+Referral completed to documented outcome: yes
 
 ## Subgroups
 

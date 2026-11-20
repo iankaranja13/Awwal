@@ -1,5 +1,7 @@
 {
-  "generated_at": "2026-11-20T11:23:29.605889+00:00",
+  "generated_at": "2026-11-20T11:39:26.713207+00:00",
+  "median_triage_ms": 2.0,
+  "referral_completed": true,
   "rules_version": "0.1",
   "provider": "mock",
   "model": "mock",

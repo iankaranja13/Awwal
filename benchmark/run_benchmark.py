@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import os
+import statistics
 import sys
 import tempfile
 import uuid
@@ -210,6 +211,24 @@ def _citation_stats(
     return precise, covered, len(present_ids)
 
 
+def _trace_ms(engine: Any, assessment_id: str) -> float:
+    """Read one assessment's server-side pipeline duration.
+
+    Args:
+        engine: Database engine.
+        assessment_id: Assessment id.
+
+    Returns:
+        Workflow trace duration in milliseconds.
+    """
+    with engine.connect() as connection:
+        value = connection.execute(
+            text("SELECT duration_ms FROM workflow_traces WHERE assessment_id = :id"),
+            {"id": uuid.UUID(assessment_id).hex},
+        ).scalar_one()
+    return float(value)
+
+
 def _stored_text(engine: Any, assessment_id: str) -> dict[str, Any]:
     """Read one stored explanation text from the database.
 
@@ -273,6 +292,7 @@ def _run_pipeline_case(
     for language, body in (("en", english), ("ar", arabic)):
         stored = _stored_text(engine, body["assessment_id"])
         stored_texts[language] = stored
+        stats["timing"].append(_trace_ms(engine, body["assessment_id"]))
         valid = _validate_stored_text(rules, case["answers"], stored, language, excerpt_ids)
         stats["validator"]["checked"] += 1
         stats["validator"]["passed"] += int(valid)
@@ -512,6 +532,11 @@ def _write_report(output_dir: Path, summary: dict[str, Any]) -> None:
         f"Present-flag coverage: {summary['citation_covered']}/{summary['citation_cover_total']}",
         f"Cited-set parity: {summary['citation_parity']}",
         "",
+        "## Service measures",
+        "",
+        f"Median time-to-triage (server trace): {summary['median_triage_ms']} ms",
+        f"Referral completed to documented outcome: {'yes' if summary['referral_completed'] else 'NO'}",
+        "",
         "## Subgroups",
         "",
         "| Age | Language | Completeness | Count | Routes |",
@@ -560,6 +585,7 @@ def _empty_stats() -> dict[str, Any]:
         "red": {"checked": 0, "passed": 0},
         "clear": {"checked": 0, "passed": 0},
         "mono": {"checked": 0, "passed": 0},
+        "timing": [],
         "subgroups": [],
     }
 
@@ -680,8 +706,15 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         }
         for key, bucket in sorted(groups.items())
     ]
+    timings = sorted(stats["timing"])
+    median_ms = round(statistics.median(timings), 1) if timings else 0.0
+    journey_done = any(
+        record.get("journey", {}).get("journey_match", False) for record in core_records
+    )
     summary = {
         "generated_at": datetime.now(UTC).isoformat(),
+        "median_triage_ms": median_ms,
+        "referral_completed": journey_done,
         "rules_version": settings.rules_version,
         "provider": settings.llm_provider,
         "model": settings.llm_model or "mock",
