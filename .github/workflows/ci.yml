@@ -24,6 +24,9 @@ jobs:
           --health-retries 10
     env:
       DATABASE_URL: postgresql+psycopg://awwal:awwal@localhost:5432/awwal
+      # Throwaway CI-only secrets for the ephemeral test database.
+      JWT_SECRET: ci-test-secret-value
+      FIELD_ENCRYPTION_KEY: 1KqE7ljKIeXd3bUyqpQH6Q8rvqAQ4_6VmkJP9-9o6fU=
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
