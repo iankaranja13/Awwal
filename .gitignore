@@ -51,6 +51,9 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 
+# macOS metadata files created on external drives
+._*
+
 # Build artefacts
 dist/
 build/

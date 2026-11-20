@@ -10,6 +10,7 @@ import { BackLink, Button, Label, LinkButton, Page, useRequire } from "@/compone
 import { RouteLine } from "@/components/route-line";
 import { TraceSheet } from "@/components/trace-sheet";
 import { Icon } from "@/components/icon";
+import { CalendarPlus, ListTree, PencilLine, Phone } from "lucide-react";
 
 export default function NextStepPage() {
   const { assessment, setTopicIndex } = useStore();
@@ -30,7 +31,7 @@ export default function NextStepPage() {
           animate={{ opacity: 1 }}
           className="fixed inset-0 -z-10 bg-alarm-soft"
         />
-        <div className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-12 lg:gap-20">
+        <div className="grid flex-1 items-center gap-10 py-10 sm:gap-12 sm:py-16 lg:grid-cols-12 lg:gap-20">
           <div className="lg:col-span-7">
             <motion.span
               aria-hidden
@@ -49,17 +50,18 @@ export default function NextStepPage() {
             <p className="text-lg text-ink">{L(assessment.routeReason)}</p>
             <a
               href="tel:998"
-              className="mt-10 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-alarm px-10 text-base font-medium text-white transition-[filter,transform] hover:brightness-110 active:scale-[0.985]"
+              className="mt-10 flex h-14 w-full items-center justify-center gap-2 rounded-full bg-alarm px-10 sm:inline-flex sm:w-auto text-base font-medium text-white transition-[filter,transform] hover:brightness-110 active:scale-[0.985]"
             >
-              <Icon name="phone" />
+              <Phone className="size-5" strokeWidth={1.8} aria-hidden />
               {t("urgentCall")}
             </a>
             <p className="mt-4 text-base text-ink">{t("urgentEd")}</p>
             <button
               type="button"
               onClick={() => setTrace(true)}
-              className="mt-8 cursor-pointer text-sm text-muted underline-offset-4 hover:underline"
+              className="mt-8 inline-flex h-11 cursor-pointer items-center gap-1.5 text-sm text-muted underline-offset-4 hover:underline"
             >
+              <ListTree className="size-4" strokeWidth={1.6} aria-hidden />
               {t("howDecided")}
             </button>
           </div>
@@ -83,19 +85,27 @@ export default function NextStepPage() {
   // Self-care routes need no booking, so they offer none.
   const actions = provisional ? (
     <>
-      <Button onClick={answerMissing}>{t("answerMissing")}</Button>
+      <Button onClick={answerMissing}>
+        <PencilLine className="size-5" strokeWidth={1.7} aria-hidden />
+        {t("answerMissing")}
+      </Button>
       <LinkButton href="/results" variant="quiet">
         {t("seeResults")}
       </LinkButton>
     </>
   ) : selfCare ? (
     <Button variant="quiet" onClick={() => setTrace(true)}>
+      <ListTree className="size-4" strokeWidth={1.6} aria-hidden />
       {t("howDecided")}
     </Button>
   ) : (
     <>
-      <LinkButton href="/booking">{t("book")}</LinkButton>
+      <LinkButton href="/booking">
+        <CalendarPlus className="size-5" strokeWidth={1.7} aria-hidden />
+        {t("book")}
+      </LinkButton>
       <Button variant="quiet" onClick={() => setTrace(true)}>
+        <ListTree className="size-4" strokeWidth={1.6} aria-hidden />
         {t("howDecided")}
       </Button>
     </>
@@ -111,7 +121,7 @@ export default function NextStepPage() {
         !selfCare && !provisional ? <p className="mt-6 text-sm text-muted">{t("reviewNote")}</p> : null
       }
     >
-      <div className="rounded-[2rem] bg-paper px-6 pb-10 pt-12 md:px-10">
+      <div className="rounded-[1.75rem] bg-paper px-3 pb-8 pt-10 sm:rounded-[2rem] sm:px-6 sm:pb-10 sm:pt-12 md:px-10">
         <RouteLine route={route} />
       </div>
 

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useId, useRef } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useId, useRef, useState } from "react";
+import { AnimatePresence, motion, useDragControls } from "motion/react";
 import { Icon } from "./icon";
+import { isFlowRoute } from "./nav";
 
 /* ---------- Buttons ---------- */
 
@@ -46,7 +47,7 @@ export function LinkButton({
 
 export function BackLink({ href, label, onClick }: { href?: string; label: string; onClick?: () => void }) {
   const cls =
-    "-ms-2 mb-6 inline-flex h-10 w-fit items-center gap-1 rounded-full pe-3 ps-1 text-sm text-muted transition-colors hover:text-ink";
+    "-ms-2 mb-4 inline-flex h-11 w-fit sm:mb-6 sm:h-10 items-center gap-1 rounded-full pe-3 ps-1 text-sm text-muted transition-colors hover:text-ink";
   const inner = (
     <>
       <Icon name="back" className="size-4" />
@@ -84,16 +85,43 @@ export function Page({
   actions?: React.ReactNode;
   children?: React.ReactNode;
 }) {
+  const flow = isFlowRoute(usePathname());
   return (
-    <div className="grid flex-1 gap-12 py-10 lg:grid-cols-12 lg:gap-20 lg:py-16">
+    <div className="grid flex-1 gap-8 py-8 sm:gap-12 sm:py-10 lg:grid-cols-12 lg:gap-20 lg:py-16">
       <div className="lg:sticky lg:top-12 lg:col-span-5 lg:self-start">
         {back}
         <h1 className="display text-xl font-light text-ink text-balance md:text-2xl">{title}</h1>
-        {sub ? <p className="mt-4 max-w-md text-base text-muted">{sub}</p> : null}
+        {sub ? <p className="mt-3 max-w-md text-base text-muted sm:mt-4">{sub}</p> : null}
         {aside}
-        {actions ? <div className="mt-10 flex flex-wrap items-center gap-3">{actions}</div> : null}
+        {/* Desktop: actions sit under the heading and stay in view */}
+        {actions ? <div className="mt-10 hidden flex-wrap items-center gap-3 lg:flex">{actions}</div> : null}
       </div>
-      <div className="lg:col-span-7 lg:pt-2">{children}</div>
+      <div className="lg:col-span-7 lg:pt-2">
+        {children}
+        {/* Phones and tablets: actions come after the content, where the eye ends up.
+            Inside the check flow they are pinned to the bottom of the screen. */}
+        {actions ? (
+          flow ? (
+            <>
+              <div aria-hidden className="h-32 lg:hidden" />
+              <BottomBar>{actions}</BottomBar>
+            </>
+          ) : (
+            <div className="mt-10 flex flex-wrap items-center gap-3 lg:hidden">{actions}</div>
+          )
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/** Pinned action bar for phones. The first child is the primary action. */
+export function BottomBar({ children, className = "lg:hidden" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={`fixed inset-x-0 bottom-0 z-20 border-t border-line bg-mist/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-md sm:px-6 ${className}`}
+    >
+      <div className="mx-auto flex max-w-xl flex-col gap-1 [&>*]:w-full">{children}</div>
     </div>
   );
 }
@@ -111,16 +139,28 @@ export function Toggle({
   label,
   sub,
   disabled,
+  icon,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label: string;
   sub?: string;
   disabled?: boolean;
+  icon?: React.ReactNode;
 }) {
   const id = useId();
   return (
-    <div className="flex items-center gap-6 py-5">
+    <div className="flex items-center gap-4 py-5 sm:gap-6">
+      {icon ? (
+        <span
+          aria-hidden
+          className={`grid size-10 shrink-0 place-items-center rounded-full transition-colors duration-300 ${
+            checked ? "bg-pine-soft text-pine" : "bg-paper text-muted ring-1 ring-line"
+          }`}
+        >
+          {icon}
+        </span>
+      ) : null}
       <label htmlFor={id} className="flex-1 cursor-pointer">
         <span className="block text-base text-ink">{label}</span>
         {sub ? <span className="mt-0.5 block text-sm text-muted">{sub}</span> : null}
@@ -164,7 +204,7 @@ export function Chip({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`relative inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-full transition-colors duration-200 ${
+      className={`relative inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-full sm:h-10 transition-colors duration-200 ${
         quiet ? "px-3 text-sm" : "px-4 text-sm"
       } ${
         selected
@@ -192,7 +232,20 @@ export function Chip({
   );
 }
 
-/* ---------- Side drawer ---------- */
+/* ---------- Sheet ----------
+   Desktop: a drawer from the side. Phones: a sheet from the bottom, in thumb reach. */
+
+function useWide() {
+  const [wide, setWide] = useState(true);
+  useEffect(() => {
+    const m = window.matchMedia("(min-width: 640px)");
+    const on = () => setWide(m.matches);
+    on();
+    m.addEventListener("change", on);
+    return () => m.removeEventListener("change", on);
+  }, []);
+  return wide;
+}
 
 export function Sheet({
   open,
@@ -211,6 +264,8 @@ export function Sheet({
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   const titleId = useId();
+  const wide = useWide();
+  const drag = useDragControls();
 
   useEffect(() => {
     if (!open) return;
@@ -226,10 +281,12 @@ export function Sheet({
     };
   }, [open]);
 
+  const off = wide ? { x: "100%" } : { y: "100%" };
+
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-40 flex justify-end">
+        <div className="fixed inset-0 z-40 flex items-end justify-end sm:items-stretch">
           <motion.div
             className="absolute inset-0 bg-ink/25"
             initial={{ opacity: 0 }}
@@ -243,13 +300,28 @@ export function Sheet({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            initial={off}
+            animate={{ x: 0, y: 0 }}
+            exit={off}
             transition={{ type: "spring", stiffness: 340, damping: 38 }}
-            className="relative h-full w-full max-w-md overflow-y-auto bg-paper px-10 py-10 outline-none"
+            drag={wide ? false : "y"}
+            dragControls={drag}
+            dragListener={false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 100 || info.velocity.y > 500) onClose();
+            }}
+            className="relative max-h-[88dvh] w-full overflow-y-auto rounded-t-[1.75rem] bg-paper px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-3 outline-none sm:h-full sm:max-h-none sm:max-w-md sm:rounded-none sm:px-10 sm:py-10"
           >
-            <div className="mb-10 flex items-center justify-between">
+            <div
+              aria-hidden
+              onPointerDown={(e) => drag.start(e)}
+              className="-mx-6 -mt-3 flex touch-none justify-center pb-4 pt-3 sm:hidden"
+            >
+              <span className="block h-1 w-10 rounded-full bg-line" />
+            </div>
+            <div className="mb-6 flex items-center justify-between sm:mb-10">
               <h2 id={titleId} className="text-lg font-normal text-ink">
                 {title}
               </h2>
@@ -257,7 +329,7 @@ export function Sheet({
                 type="button"
                 onClick={onClose}
                 aria-label={closeLabel}
-                className="-me-2 grid size-10 cursor-pointer place-items-center rounded-full text-muted hover:bg-mist hover:text-ink"
+                className="-me-2 grid size-11 cursor-pointer place-items-center rounded-full text-muted hover:bg-mist hover:text-ink sm:size-10"
               >
                 <Icon name="close" />
               </button>

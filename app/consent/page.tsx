@@ -5,6 +5,8 @@ import { useStore, useT } from "@/lib/store";
 import { BackLink, Button, Page, Toggle } from "@/components/ui";
 import type { ConsentScope } from "@/lib/types";
 import type { StringKey } from "@/lib/strings";
+import { ArrowRight } from "lucide-react";
+import { CONSENT_ICON } from "@/components/consent-icons";
 
 const ITEMS: { scope: ConsentScope; label: StringKey; sub: StringKey }[] = [
   { scope: "intake", label: "c_intake", sub: "c_intake_sub" },
@@ -26,19 +28,24 @@ export default function ConsentPage() {
       actions={
         <Button disabled={!consent.intake} onClick={() => router.push("/intake")}>
           {t("agree")}
+          <ArrowRight className="flip-rtl size-5" strokeWidth={1.8} aria-hidden />
         </Button>
       }
     >
       <div className="divide-y divide-line border-y border-line">
-        {ITEMS.map((i) => (
+        {ITEMS.map((i) => {
+          const I = CONSENT_ICON[i.scope];
+          return (
           <Toggle
             key={i.scope}
             checked={consent[i.scope]}
             onChange={(v) => setConsent(i.scope, v)}
             label={t(i.label)}
             sub={t(i.sub)}
+            icon={<I className="size-[1.1rem]" strokeWidth={1.6} />}
           />
-        ))}
+          );
+        })}
       </div>
       {error && (
         <p role="alert" className="mt-4 text-sm text-alarm">

@@ -7,6 +7,8 @@ import { ROUTE_TEXT, SEEDED_QUEUE } from "@/lib/mock";
 import type { Bi, Route } from "@/lib/types";
 import { Button, Chip, Label } from "@/components/ui";
 import { Icon } from "@/components/icon";
+import { BackLink } from "@/components/ui";
+import { CheckCircle2, Inbox, NotebookPen, Route as RouteIcon } from "lucide-react";
 import { Marker } from "@/components/flag-row";
 
 type Case = { id: string; handle: string; route: Route; waiting: Bi; present: { label: Bi; source?: string }[]; unknown: Bi[] };
@@ -38,16 +40,25 @@ export default function ClinicianPage() {
   ];
   const pending = cases.filter((c) => !reviews[c.id]);
   const active = pending.find((c) => c.id === openId);
+  const open = (id: string | null) => {
+    setOpenId(id);
+    // On phones the brief replaces the queue, so start it at the top.
+    if (window.matchMedia("(max-width: 1023px)").matches) window.scrollTo({ top: 0 });
+  };
 
   return (
-    <div className="grid flex-1 gap-12 py-10 lg:grid-cols-12 lg:gap-16 lg:py-16">
-      <aside className="lg:col-span-4">
+    <div className="grid flex-1 gap-8 py-8 sm:gap-12 sm:py-10 lg:grid-cols-12 lg:gap-16 lg:py-16">
+      {/* Phones: master-detail as two screens. The queue hides while a brief is open. */}
+      <aside className={`lg:col-span-4 ${active ? "hidden lg:block" : ""}`}>
         <h1 className="display text-xl font-light text-ink">{t("clinicianTitle")}</h1>
         <p className="mt-3 text-base text-muted">
           {pending.length} {t("waiting")}
         </p>
         {pending.length === 0 ? (
-          <p className="mt-10 text-base text-muted">{t("queueEmpty")}</p>
+          <div className="mt-10 flex items-center gap-3 text-base text-muted">
+            <CheckCircle2 className="size-5 text-pine" strokeWidth={1.6} aria-hidden />
+            {t("queueEmpty")}
+          </div>
         ) : (
           <ul className="mt-10 divide-y divide-line border-y border-line">
             <AnimatePresence initial={false}>
@@ -59,9 +70,17 @@ export default function ClinicianPage() {
                     <button
                       type="button"
                       aria-current={on ? "true" : undefined}
-                      onClick={() => setOpenId(c.id)}
+                      onClick={() => open(c.id)}
                       className="group flex w-full cursor-pointer items-center gap-4 py-5 ps-5 text-start"
                     >
+                      <span
+                        aria-hidden
+                        className={`grid size-10 shrink-0 place-items-center rounded-full text-sm font-medium ${
+                          c.id === "me" ? "bg-pine text-paper" : "bg-pine-soft text-pine"
+                        }`}
+                      >
+                        {c.handle.charAt(0)}
+                      </span>
                       <span className="flex-1">
                         <span className={`block text-base ${on ? "font-medium text-ink" : "text-ink group-hover:text-pine"}`}>{c.handle}</span>
                         <span className="block text-sm text-muted">
@@ -78,11 +97,14 @@ export default function ClinicianPage() {
         )}
       </aside>
 
-      <section className="lg:col-span-8">
+      <section className={`lg:col-span-8 ${active ? "" : "hidden lg:block"}`}>
         <AnimatePresence mode="wait" initial={false}>
           {active ? (
             <motion.div key={active.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <Brief c={active} onSign={(r, n) => signOff(active.id, r, n)} onDone={() => setOpenId(null)} />
+              <div className="lg:hidden">
+                <BackLink label={t("backToQueue")} onClick={() => open(null)} />
+              </div>
+              <Brief c={active} onSign={(r, n) => signOff(active.id, r, n)} onDone={() => open(null)} />
             </motion.div>
           ) : (
             <motion.div
@@ -92,7 +114,10 @@ export default function ClinicianPage() {
               exit={{ opacity: 0 }}
               className="grid min-h-[22rem] place-items-center rounded-[2rem] border border-dashed border-line text-base text-muted"
             >
-              {t("selectCase")}
+              <span className="flex flex-col items-center gap-3">
+                <Inbox className="size-7" strokeWidth={1.4} aria-hidden />
+                {t("selectCase")}
+              </span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -124,7 +149,7 @@ function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string
   };
 
   return (
-    <div className="rounded-[2rem] bg-paper p-8 md:p-12">
+    <div className="rounded-[1.75rem] bg-paper p-5 sm:rounded-[2rem] sm:p-8 md:p-12">
       <h2 className="display text-xl font-light text-ink">{c.handle}</h2>
 
       <div className="mt-10 grid gap-10 md:grid-cols-2">
@@ -161,6 +186,7 @@ function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string
 
       <div className="mt-10">
         <Label>
+          <RouteIcon className="me-1.5 inline size-4 align-[-3px]" strokeWidth={1.6} aria-hidden />
           {t("routeH")}
           {route !== c.route && (
             <span className="text-pine">
@@ -179,7 +205,8 @@ function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string
       </div>
 
       <div className="mt-10">
-        <label htmlFor="note" className="mb-2 block text-sm text-muted">
+        <label htmlFor="note" className="mb-2 flex items-center gap-1.5 text-sm text-muted">
+          <NotebookPen className="size-4" strokeWidth={1.6} aria-hidden />
           {t("notesH")}
         </label>
         <textarea
@@ -199,7 +226,7 @@ function Brief({ c, onSign, onDone }: { c: Case; onSign: (r: Route, note: string
       )}
 
       <div className="mt-8">
-        <Button onClick={sign} aria-disabled={signed}>
+        <Button onClick={sign} aria-disabled={signed} className="w-full sm:w-auto">
           <AnimatePresence mode="wait" initial={false}>
             {signed ? (
               <motion.span key="done" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-2">

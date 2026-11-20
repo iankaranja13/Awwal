@@ -33,7 +33,7 @@ export function RouteLine({ route }: { route: Route }) {
         {ROUTE_LADDER.map((r) => {
           const mine = r === target;
           return (
-            <li key={r} className="flex flex-col items-center gap-4 text-center" aria-current={mine ? "step" : undefined}>
+            <li key={r} className="flex flex-col items-center gap-3 text-center sm:gap-4" aria-current={mine ? "step" : undefined}>
               <span className="relative grid size-8 place-items-center">
                 {mine ? (
                   <>
@@ -58,7 +58,7 @@ export function RouteLine({ route }: { route: Route }) {
                 )}
               </span>
               <motion.span
-                className={mine ? "text-base font-medium text-ink" : "text-sm text-muted"}
+                className={mine ? "text-sm font-medium text-ink sm:text-base" : "text-xs text-muted sm:text-sm"}
                 initial={mine ? { opacity: 0, y: 4 } : false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}

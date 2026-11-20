@@ -8,6 +8,7 @@ import { Button, Label, LinkButton, Page, useRequire } from "@/components/ui";
 import { FlagRow } from "@/components/flag-row";
 import { TraceSheet } from "@/components/trace-sheet";
 import { Icon } from "@/components/icon";
+import { ArrowRight, ListTree } from "lucide-react";
 
 export default function ResultsPage() {
   const { assessment } = useStore();
@@ -27,8 +28,12 @@ export default function ResultsPage() {
       sub={t("resultsNote")}
       actions={
         <>
-          <LinkButton href="/next">{t("nextStep")}</LinkButton>
+          <LinkButton href="/next">
+            {t("nextStep")}
+            <ArrowRight className="flip-rtl size-5" strokeWidth={1.8} aria-hidden />
+          </LinkButton>
           <Button variant="quiet" onClick={() => setTrace(true)}>
+            <ListTree className="size-4" strokeWidth={1.6} aria-hidden />
             {t("howDecided")}
           </Button>
         </>

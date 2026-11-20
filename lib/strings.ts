@@ -172,6 +172,18 @@ export const STRINGS = {
   you: { en: "You (this device)", ar: "أنت (هذا الجهاز)" },
   backToQueue: { en: "Queue", ar: "القائمة" },
   edited: { en: "changed from", ar: "تغيّر من" },
+
+  /* Mobile navigation */
+  navHome: { en: "Home", ar: "الرئيسية" },
+  tabReferral: { en: "Referral", ar: "الإحالة" },
+  tabCheck: { en: "Continue my check", ar: "تابع الفحص" },
+  tabClinician: { en: "Clinician", ar: "الطبيب" },
+  stepOf: { en: "Step", ar: "خطوة" },
+  answered: { en: "answered", ar: "مُجاب" },
+  needProvider: { en: "Choose a provider", ar: "اختر مقدّم الخدمة" },
+  needSlot: { en: "Choose a time", ar: "اختر موعدًا" },
+  needPhone: { en: "Add your phone number", ar: "أضف رقم هاتفك" },
+  needShare: { en: "Allow sharing with a clinician", ar: "اسمح بالمشاركة مع الطبيب" },
 } as const;
 
 export type StringKey = keyof typeof STRINGS;

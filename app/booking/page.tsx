@@ -7,7 +7,15 @@ import { useStore, useT } from "@/lib/store";
 import { BOOKABLE_ROUTES } from "@/lib/mapping";
 import { SLOTS } from "@/lib/mock";
 import type { BookingType, Lang } from "@/lib/types";
-import { BackLink, Button, Chip, Label, Page, Sheet, Toggle, useRequire } from "@/components/ui";
+import { BackLink, BottomBar, Button, Chip, Label, Page, Sheet, Toggle, useRequire } from "@/components/ui";
+import { Building2, CalendarCheck, ChevronDown, Clock, Droplet, House, Info, MapPin, Phone, TestTube, Video, type LucideIcon } from "lucide-react";
+
+const TYPE_ICON: Record<BookingType, LucideIcon> = {
+  teleconsult: Video,
+  blood_test: Droplet,
+  sample_collection: TestTube,
+  in_person: Building2,
+};
 
 const TYPES: BookingType[] = ["teleconsult", "blood_test", "sample_collection", "in_person"];
 
@@ -38,6 +46,22 @@ export default function BookingPage() {
   const list = providers;
   const phoneOk = phone.replace(/\D/g, "").length >= 9;
   const ready = providerId && slot !== null && phoneOk && consent.share_with_clinician;
+  const missing = !providerId
+    ? t("needProvider")
+    : slot === null
+      ? t("needSlot")
+      : !phoneOk
+        ? t("needPhone")
+        : !consent.share_with_clinician
+          ? t("needShare")
+          : null;
+  // Where the missing piece lives, so the hint can take you there.
+  const missingTarget = !providerId || slot === null ? "providers" : !phoneOk ? "phone" : "share";
+  const goToMissing = () => {
+    const el = document.getElementById(missingTarget);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (missingTarget === "phone") setTimeout(() => (el as HTMLInputElement | null)?.focus({ preventScroll: true }), 400);
+  };
 
   const pick = (id: string) => {
     setProviderId(id === providerId ? null : id);
@@ -58,7 +82,7 @@ export default function BookingPage() {
         <div className="mt-10 space-y-8">
           {/* type: segmented control with a sliding indicator */}
           <div>
-            <div role="radiogroup" aria-label={t("bookTitle")} className="grid max-w-md grid-cols-4 rounded-full bg-paper p-1 ring-1 ring-line">
+            <div role="radiogroup" aria-label={t("bookTitle")} className="grid w-full max-w-md grid-cols-2 gap-1 rounded-[1.5rem] bg-paper p-1 ring-1 ring-line sm:grid-cols-4 sm:gap-0 sm:rounded-full">
               {TYPES.map((ty) => (
                 <button
                   key={ty}
@@ -70,7 +94,7 @@ export default function BookingPage() {
                     setProviderId(null);
                     setSlot(null);
                   }}
-                  className={`relative h-10 cursor-pointer rounded-full text-sm transition-colors ${type === ty ? "text-paper" : "text-ink hover:text-pine"}`}
+                  className={`relative h-11 cursor-pointer rounded-full text-sm transition-colors sm:h-10 ${type === ty ? "text-paper" : "text-ink hover:text-pine"}`}
                 >
                   {type === ty && (
                     <motion.span
@@ -79,7 +103,13 @@ export default function BookingPage() {
                       transition={{ type: "spring", stiffness: 500, damping: 40 }}
                     />
                   )}
-                  <span className="relative">{t(`t_${ty}` as const)}</span>
+                  <span className="relative inline-flex items-center justify-center gap-1.5">
+                    {(() => {
+                      const I = TYPE_ICON[ty];
+                      return <I className="size-4 shrink-0" strokeWidth={1.7} aria-hidden />;
+                    })()}
+                    {t(`t_${ty}` as const)}
+                  </span>
                 </button>
               ))}
             </div>
@@ -87,8 +117,9 @@ export default function BookingPage() {
               <button
                 type="button"
                 onClick={() => setInfo(true)}
-                className="mt-3 cursor-pointer text-sm text-pine underline-offset-4 hover:underline"
+                className="mt-2 inline-flex h-11 cursor-pointer items-center gap-1.5 text-sm text-pine underline-offset-4 hover:underline"
               >
+                <Info className="size-4" strokeWidth={1.7} aria-hidden />
                 {t("howCollection")}
               </button>
             )}
@@ -111,7 +142,7 @@ export default function BookingPage() {
         </div>
       }
     >
-      <ul className="divide-y divide-line border-y border-line">
+      <ul id="providers" className="scroll-mt-24 divide-y divide-line border-y border-line">
         <AnimatePresence initial={false} mode="popLayout">
           {providersLoading ? (
             <motion.li key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 text-base text-muted">
@@ -138,10 +169,19 @@ export default function BookingPage() {
                     >
                       {on && <motion.span layoutId="provider-dot" className="size-2.5 rounded-full bg-pine" />}
                     </span>
-                    <span className="flex-1 text-base text-ink">{L(p.name)}</span>
-                    <span className="text-sm text-muted">
-                      {L(p.area)}
-                      {type === "sample_collection" && p.homeSampling ? `, ${t("home")}` : ""}
+                    <span className="flex flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                      <span className="text-base text-ink">{L(p.name)}</span>
+                      <span className="inline-flex items-center gap-1 text-sm text-muted">
+                        <MapPin className="size-3.5" strokeWidth={1.7} aria-hidden />
+                        {L(p.area)}
+                        {type === "sample_collection" && p.homeSampling ? (
+                          <>
+                            <span aria-hidden>·</span>
+                            <House className="size-3.5" strokeWidth={1.7} aria-hidden />
+                            {t("home")}
+                          </>
+                        ) : null}
+                      </span>
                     </span>
                   </button>
                   <AnimatePresence initial={false}>
@@ -153,8 +193,10 @@ export default function BookingPage() {
                         className="overflow-hidden"
                       >
                         <div className="flex flex-wrap gap-2 pb-6 ps-10">
+                          <span className="sr-only">{t("needSlot")}</span>
                           {SLOTS.map((s, i) => (
                             <Chip key={s.en} selected={slot === i} onClick={() => setSlot(i)}>
+                              {slot !== i && <Clock className="size-3.5 text-muted" strokeWidth={1.7} aria-hidden />}
                               {L(s)}
                             </Chip>
                           ))}
@@ -182,6 +224,8 @@ export default function BookingPage() {
                 {t("phone")}
               </label>
               <p className="mb-3 text-sm text-muted">{t("phoneHint")}</p>
+              <div className="relative">
+              <Phone aria-hidden className="pointer-events-none absolute start-5 top-1/2 size-4 -translate-y-1/2 text-muted" strokeWidth={1.7} />
               <input
                 id="phone"
                 type="tel"
@@ -189,13 +233,16 @@ export default function BookingPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+971 50 000 0000"
-                className="h-12 w-full rounded-full bg-paper px-5 text-base text-ink ring-1 ring-line outline-none transition-shadow placeholder:text-muted/60 focus:ring-2 focus:ring-pine"
+                className="h-12 w-full rounded-full bg-paper pe-5 ps-12 text-base text-ink ring-1 ring-line outline-none transition-shadow placeholder:text-muted/60 focus:ring-2 focus:ring-pine"
               />
+              </div>
             </div>
-            <div className="flex flex-col items-start gap-2">
+            <div className="hidden flex-col items-start gap-2 lg:flex">
               <Button disabled={!ready || busy} onClick={submit}>
+                <CalendarCheck className="size-5" strokeWidth={1.7} aria-hidden />
                 {busy ? t("working") : t("requestBooking")}
               </Button>
+              {missing && <p className="text-sm text-muted">{missing}</p>}
               {error && (
                 <p role="alert" className="text-sm text-alarm">
                   {t("serverError")} {error}
@@ -203,7 +250,7 @@ export default function BookingPage() {
               )}
             </div>
             {needsReview && !consent.share_with_clinician && (
-              <div className="border-y border-line md:col-span-2">
+              <div id="share" className="scroll-mt-24 border-y border-line md:col-span-2">
                 <Toggle
                   checked={consent.share_with_clinician}
                   onChange={(v) => setConsent("share_with_clinician", v)}
@@ -216,6 +263,37 @@ export default function BookingPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Phones: the request button is always in reach and says what's still needed */}
+      <div aria-hidden className="h-32 lg:hidden" />
+      <BottomBar>
+        <AnimatePresence mode="wait" initial={false}>
+          {missing && (
+            <motion.button
+              type="button"
+              key={missing}
+              onClick={goToMissing}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="inline-flex h-9 cursor-pointer items-center justify-center gap-1 text-sm text-pine"
+              aria-live="polite"
+            >
+              {missing}
+              <ChevronDown className="size-4" strokeWidth={1.8} aria-hidden />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        {error && (
+          <p role="alert" className="pb-2 text-center text-sm text-alarm">
+            {t("serverError")} {error}
+          </p>
+        )}
+        <Button disabled={!ready || busy} onClick={submit}>
+          <CalendarCheck className="size-5" strokeWidth={1.7} aria-hidden />
+          {busy ? t("working") : t("requestBooking")}
+        </Button>
+      </BottomBar>
 
       <Sheet open={info} onClose={() => setInfo(false)} title={t("howCollection")} closeLabel={t("close")}>
         <p className="text-base text-ink">{t("collectionBody")}</p>

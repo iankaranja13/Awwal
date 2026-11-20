@@ -6,6 +6,7 @@ import { useStore, useT } from "@/lib/store";
 import { SLOTS } from "@/lib/mock";
 import type { ReferralStatus } from "@/lib/types";
 import { Button, Label, LinkButton, Page } from "@/components/ui";
+import { BellRing, ClipboardList, FastForward, FileText, Hourglass, MessageSquareText, Stethoscope, X } from "lucide-react";
 
 const STAGES: ReferralStatus[] = ["proposed", "clinician_review", "confirmed", "booked", "attended", "result_explained", "closed"];
 
@@ -23,7 +24,16 @@ export default function StatusPage() {
 
   if (!referral) {
     return (
-      <Page title={t("statusTitle")} sub={t("noReferral")} actions={<LinkButton href="/">{t("startAssessment")}</LinkButton>} />
+      <Page
+        title={t("statusTitle")}
+        sub={t("noReferral")}
+        aside={
+          <span aria-hidden className="mt-8 grid size-14 place-items-center rounded-full bg-paper text-muted ring-1 ring-line">
+            <ClipboardList className="size-6" strokeWidth={1.5} />
+          </span>
+        }
+        actions={<LinkButton href="/" className="w-full sm:w-auto">{t("startAssessment")}</LinkButton>}
+      />
     );
   }
 
@@ -50,10 +60,12 @@ export default function StatusPage() {
             {/* Demo controls stand in for staff. Rule 7: only a clinician can confirm. */}
             {referral.status === "clinician_review" ? (
               <LinkButton href="/clinician" variant="quiet">
+                <Stethoscope className="size-4" strokeWidth={1.7} aria-hidden />
                 {t("clinicianRole")}
               </LinkButton>
             ) : referral.status === "result_explained" ? null : (
               <Button variant="quiet" disabled={busy} onClick={() => advanceReferral(demoBy)}>
+                <FastForward className="size-4" strokeWidth={1.7} aria-hidden />
                 {t("demoNext")}
               </Button>
             )}
@@ -62,8 +74,9 @@ export default function StatusPage() {
                 type="button"
                 onClick={() => cancelReferral()}
                 disabled={busy}
-                className="inline-flex h-12 cursor-pointer items-center rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft disabled:opacity-50"
+                className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft disabled:opacity-50"
               >
+                <X className="size-4" strokeWidth={1.8} aria-hidden />
                 {t("cancel")}
               </button>
             )}
@@ -113,19 +126,28 @@ export default function StatusPage() {
         <div className="space-y-10">
           <AnimatePresence mode="wait">
             {referral.status === "clinician_review" && (
-              <motion.p key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-base text-ink">
+              <motion.p key="pending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-start gap-3 rounded-2xl bg-paper p-4 text-base text-ink ring-1 ring-line">
+                <Hourglass className="mt-0.5 size-5 shrink-0 text-pine" strokeWidth={1.6} aria-hidden />
                 {t("pendingReview")}
               </motion.p>
             )}
           </AnimatePresence>
 
           {referral.clinicianNote && (
-            <p className="border-s-2 border-pine ps-4 text-base text-ink">{referral.clinicianNote}</p>
+            <p className="flex items-start gap-3 border-s-2 border-pine ps-4 text-base text-ink">
+              <MessageSquareText className="mt-0.5 size-5 shrink-0 text-pine" strokeWidth={1.6} aria-hidden />
+              {referral.clinicianNote}
+            </p>
           )}
 
           {referral.outcomeNote && (
             <div>
-              <Label>{t("outcome")}</Label>
+              <Label>
+                <span className="inline-flex items-center gap-1.5">
+                  <FileText className="size-4" strokeWidth={1.6} aria-hidden />
+                  {t("outcome")}
+                </span>
+              </Label>
               <p className="text-base text-ink">{L(referral.outcomeNote)}</p>
             </div>
           )}
@@ -157,7 +179,10 @@ export default function StatusPage() {
           {referral.reminders.length > 0 && (
             <div>
               <Label>
-                {t("reminders")} ({t("simulated")})
+                <span className="inline-flex items-center gap-1.5">
+                  <BellRing className="size-4" strokeWidth={1.6} aria-hidden />
+                  {t("reminders")} ({t("simulated")})
+                </span>
               </Label>
               <ul className="space-y-2">
                 {referral.reminders.map((r, i) => (

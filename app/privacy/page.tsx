@@ -7,7 +7,8 @@ import { useStore, useT } from "@/lib/store";
 import type { ConsentScope } from "@/lib/types";
 import type { StringKey } from "@/lib/strings";
 import { Button, Label, Page, Sheet, Toggle } from "@/components/ui";
-import { Icon } from "@/components/icon";
+import { CONSENT_ICON } from "@/components/consent-icons";
+import { Download, History, Link2, Link2Off, ShieldCheck, Share2, Trash2, type LucideIcon } from "lucide-react";
 
 const SCOPES: [ConsentScope, StringKey][] = [
   ["intake", "c_intake"],
@@ -58,14 +59,15 @@ export default function PrivacyPage() {
       actions={
         <>
           <Button variant="quiet" onClick={download}>
-            <Icon name="download" className="size-4" />
+            <Download className="size-4" strokeWidth={1.7} aria-hidden />
             {t("exportData")}
           </Button>
           <button
             type="button"
             onClick={() => setConfirm(true)}
-            className="inline-flex h-12 cursor-pointer items-center rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft"
+            className="inline-flex h-12 cursor-pointer items-center gap-2 rounded-full px-5 text-base font-medium text-alarm transition-colors hover:bg-alarm-soft"
           >
+            <Trash2 className="size-4" strokeWidth={1.7} aria-hidden />
             {t("deleteData")}
           </button>
         </>
@@ -77,15 +79,24 @@ export default function PrivacyPage() {
         </p>
       )}
 
-      <Section title={t("consentH")}>
+      <Section title={t("consentH")} icon={ShieldCheck}>
         <div className="divide-y divide-line">
           {SCOPES.map(([s, k]) => (
-            <Toggle key={s} checked={consent[s]} onChange={(v) => setConsent(s, v)} label={t(k)} />
+            <Toggle
+              key={s}
+              checked={consent[s]}
+              onChange={(v) => setConsent(s, v)}
+              label={t(k)}
+              icon={(() => {
+                const I = CONSENT_ICON[s];
+                return <I className="size-[1.1rem]" strokeWidth={1.6} />;
+              })()}
+            />
           ))}
         </div>
       </Section>
 
-      <Section title={t("sharesH")}>
+      <Section title={t("sharesH")} icon={Share2}>
         <ul className="divide-y divide-line">
           <AnimatePresence initial={false}>
             {shares.map((s) => (
@@ -95,17 +106,25 @@ export default function PrivacyPage() {
                 animate={{ opacity: 1, height: "auto" }}
                 className="flex items-center justify-between gap-4 overflow-hidden py-4"
               >
-                <span>
+                <span className="flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className={`grid size-10 shrink-0 place-items-center rounded-full ${s.revokedAt ? "bg-paper text-muted ring-1 ring-line" : "bg-pine-soft text-pine"}`}
+                  >
+                    {s.revokedAt ? <Link2Off className="size-4" strokeWidth={1.7} /> : <Link2 className="size-4" strokeWidth={1.7} />}
+                  </span>
+                  <span>
                   <span className="block text-base text-ink">{L(s.recipient)}</span>
                   <span className="block text-sm text-muted">
                     {s.revokedAt ? t("revoked") : `${t("expires")} ${date(s.expiresAt)}`}
+                  </span>
                   </span>
                 </span>
                 {!s.revokedAt && (
                   <button
                     type="button"
                     onClick={() => revokeShare(s.id)}
-                    className="h-10 cursor-pointer rounded-full px-4 text-sm text-alarm hover:bg-alarm-soft"
+                    className="h-11 shrink-0 cursor-pointer rounded-full px-4 text-sm text-alarm hover:bg-alarm-soft"
                   >
                     {t("revoke")}
                   </button>
@@ -126,13 +145,13 @@ export default function PrivacyPage() {
         )}
       </Section>
 
-      <Section title={t("activityH")}>
+      <Section title={t("activityH")} icon={History}>
         {audit.length === 0 ? (
           <p className="py-4 text-base text-muted">{t("noActivity")}</p>
         ) : (
           <ul className="divide-y divide-line">
             {activity.map((e) => (
-              <li key={e.id} className="flex items-baseline justify-between gap-6 py-3">
+              <li key={e.id} className="flex items-baseline justify-between gap-4 py-3 sm:gap-6">
                 <span className="text-base text-ink">{L(e.action)}</span>
                 <span className="shrink-0 text-sm tabular-nums text-muted">{date(e.at)}</span>
               </li>
@@ -148,8 +167,9 @@ export default function PrivacyPage() {
 
       <Sheet open={confirm} onClose={() => setConfirm(false)} title={t("deleteConfirmTitle")} closeLabel={t("close")}>
         <p className="text-base text-ink">{t("deleteConfirmBody")}</p>
-        <div className="mt-10 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-col gap-2 sm:mt-10 sm:flex-row sm:flex-wrap sm:gap-3">
           <Button variant="alarm" disabled={busy} onClick={remove}>
+            <Trash2 className="size-4" strokeWidth={1.7} aria-hidden />
             {busy ? t("working") : t("deleteConfirm")}
           </Button>
           <Button variant="quiet" onClick={() => setConfirm(false)}>
@@ -161,10 +181,15 @@ export default function PrivacyPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, icon: I, children }: { title: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
     <section className="mb-12 last:mb-0">
-      <Label>{title}</Label>
+      <Label>
+        <span className="inline-flex items-center gap-1.5">
+          <I className="size-4" strokeWidth={1.6} aria-hidden />
+          {title}
+        </span>
+      </Label>
       <div className="border-t border-line">{children}</div>
     </section>
   );
