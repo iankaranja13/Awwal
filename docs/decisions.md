@@ -60,6 +60,11 @@ Anthropic one environment variable away for quality comparison. Alternatives
 (hosted-first) were rejected on privacy-by-design grounds for a prototype
 handling reproductive-health answers.
 
+Update: `azure_openai` added as a second hosted option for challenge
+evaluation (api-key auth, versioned deployment URL). Same rules apply:
+structured generation only, validator-gated, template fallback. The model
+name still comes only from `LLM_MODEL` (set it to the deployment name).
+
 ## DR-007: Monotonicity holds for added uncertainty, not removed evidence
 
 What: the tested invariant is weak monotonicity: turning non-trigger answers

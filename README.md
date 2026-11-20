@@ -92,6 +92,7 @@ rates, language parity and subgroup tables.
 - `docs/deployment.md` deployment and operations
 - `docs/decisions.md` short decision records
 - `docs/research-grounding.md` published guidance the design draws on
+- `docs/rag-grounding-design.md` citation-grounding proposal (design only)
 - `docs/open-clinical-questions.md` questions for the clinical advisor
 - `docs/todo.md` follow-ups (no stray TODOs in code)
 
