@@ -55,3 +55,7 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Vercel project linkage (machine-specific)
+.vercel/
+.vercel

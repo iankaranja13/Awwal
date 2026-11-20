@@ -9,7 +9,7 @@
   ],
   "functions": {
     "api/index.py": {
-      "includeFiles": ["rules/**", "app/content/**"]
+      "includeFiles": "rules/**,app/content/**"
     }
   }
 }
