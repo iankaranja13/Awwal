@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID
 
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select, text, update
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ColumnElement
 
@@ -12,6 +12,7 @@ from app.core.clock import utc_now
 from app.models import (
     Assessment,
     AuditLog,
+    ClinicianReview,
     Consent,
     Explanation,
     IntakeAnswers,
@@ -195,9 +196,10 @@ def erase_user_data(
 ) -> DeleteResponse:
     """Erase one user's data with audit anonymisation.
 
-    Consent receipts stay as the legal record. Referral events go with
-    their referrals (erasure overrides append-only for the deleted
-    aggregate); audit rows are anonymised, never deleted.
+    Consent receipts stay as the legal record on self-delete; a hard
+    reset removes them with the row they reference. Referral events go
+    with their referrals (erasure sets a transaction-local override the
+    trigger honours); audit rows are anonymised, never deleted.
 
     Args:
         session: Database session.
@@ -210,6 +212,9 @@ def erase_user_data(
     """
     moment = now if now is not None else utc_now()
     removed: dict[str, int] = {}
+    bind = session.get_bind()
+    if bind is not None and bind.dialect.name == "postgresql":
+        session.execute(text("SET LOCAL awwal.erase_override = 'on'"))
     assessment_ids = session.scalars(
         select(Assessment.id).where(Assessment.user_id == user.id)
     ).all()
@@ -224,6 +229,9 @@ def erase_user_data(
     )
     removed["workflow_traces"] = _delete_where(
         session, WorkflowTrace, WorkflowTrace.assessment_id.in_(assessment_ids)
+    )
+    removed["clinician_reviews"] = _delete_where(
+        session, ClinicianReview, ClinicianReview.assessment_id.in_(assessment_ids)
     )
     removed["assessments"] = _delete_where(session, Assessment, Assessment.user_id == user.id)
     removed["intake_answers"] = _delete_where(
@@ -246,8 +254,10 @@ def erase_user_data(
         select(func.count()).select_from(Consent).where(Consent.user_id == user.id)
     )
     if hard:
+        removed["consents"] = _delete_where(session, Consent, Consent.user_id == user.id)
         session.delete(user)
         removed["users"] = 1
+        consents_kept = 0
     else:
         user.deleted_at = moment
         removed["users"] = 0

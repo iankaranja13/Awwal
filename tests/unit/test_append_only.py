@@ -40,6 +40,15 @@ def test_migration_defines_audit_guard_trigger() -> None:
     assert "DROP TRIGGER IF EXISTS audit_log_guarded" in source
 
 
+def test_migration_defines_erase_aware_triggers() -> None:
+    """Ship the transaction-local erasure override for guarded tables."""
+    source = (MIGRATIONS / "phase7_erase_bypass.py").read_text(encoding="utf-8")
+    assert "erase_aware_append_only_guard" in source
+    assert "current_setting('awwal.erase_override', true)" in source
+    assert '_GUARDED_TABLES = ("consents", "referral_events")' in source
+    assert 'down_revision: str | None = "phase6_shares"' in source
+
+
 @needs_postgres
 def test_consents_reject_update_and_delete() -> None:
     """Block UPDATE and DELETE on consents in Postgres (migrated first)."""
