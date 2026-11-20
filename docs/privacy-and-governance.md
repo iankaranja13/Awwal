@@ -74,4 +74,5 @@ It implements the principles above on synthetic data only. It is not
 clinically validated and claims no compliance with any health-data
 regime. Roadmap only, not implemented: the DoH Responsible AI Standard,
 ADHICS, DoH digital-product licensing, UAE health-data residency
-requirements, and Malaffi/Sahhatna integration.
+requirements, and Malaffi/Sahhatna integration. The published guidance
+the safety design draws on is listed in `docs/research-grounding.md`.

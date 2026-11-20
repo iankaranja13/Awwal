@@ -182,3 +182,19 @@ assessment is two cheap rows and keeps the bilingual toggle instant.
 Approximations are explicit in code and in the clinical questions file,
 never silent.
 
+## DR-016: Research grounding references
+
+What: `docs/research-grounding.md` records the published guidance the
+design draws on (WHO infertility guideline 2025, AUA/ASRM male
+infertility update 2024, WHO AI ethics 2021, NIST AI 600-1) with an
+honest mapping from each source to implemented behaviour and evidence.
+Each reference was verified to exist (live publisher page or DOI
+resolution) before being cited.
+
+Why: the guidelines inform the approach, not the draft content. Rule
+`source` fields keep saying `TO BE CONFIRMED BY CLINICAL ADVISOR`
+instead of citing these papers, because rewriting them would fabricate
+a derivation trail the rules do not have; the grounding doc states that
+boundary explicitly so no reviewer mistakes approach-alignment for
+clinical validation.
+

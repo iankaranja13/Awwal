@@ -91,6 +91,7 @@ rates, language parity and subgroup tables.
 - `docs/privacy-and-governance.md` data handling and governance
 - `docs/deployment.md` deployment and operations
 - `docs/decisions.md` short decision records
+- `docs/research-grounding.md` published guidance the design draws on
 - `docs/open-clinical-questions.md` questions for the clinical advisor
 - `docs/todo.md` follow-ups (no stray TODOs in code)
 
