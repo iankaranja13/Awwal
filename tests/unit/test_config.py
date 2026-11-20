@@ -37,3 +37,28 @@ def test_settings_split_cors_origins(field_encryption_key: str) -> None:
         cors_origins="https://a.example, https://b.example ,,",
     )
     assert settings.cors_origin_list == ["https://a.example", "https://b.example"]
+
+
+def test_settings_normalize_driverless_postgres_url(field_encryption_key: str) -> None:
+    """Map hosted postgres:// URLs to the installed psycopg driver."""
+    settings = Settings(
+        jwt_secret="test-secret-value",
+        field_encryption_key=field_encryption_key,
+        database_url="postgres://u:p@host:5432/db?sslmode=require",
+    )
+    assert settings.database_url == "postgresql+psycopg://u:p@host:5432/db?sslmode=require"
+
+
+def test_settings_keep_explicit_database_driver(field_encryption_key: str) -> None:
+    """Leave explicit drivers and sqlite URLs unchanged."""
+    url = "postgresql+psycopg://u:p@host:5432/db"
+    settings = Settings(
+        jwt_secret="test-secret-value", field_encryption_key=field_encryption_key, database_url=url
+    )
+    assert settings.database_url == url
+    lite = Settings(
+        jwt_secret="test-secret-value",
+        field_encryption_key=field_encryption_key,
+        database_url="sqlite:////tmp/test.db",
+    )
+    assert lite.database_url == "sqlite:////tmp/test.db"

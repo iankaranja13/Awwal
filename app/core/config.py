@@ -66,6 +66,26 @@ class Settings(BaseSettings):
     )
     rules_version: str = Field(default="0.1", description="Rule version to load.")
 
+    @field_validator("database_url")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """Map driverless postgres schemes to the installed psycopg driver.
+
+        Hosted providers (Neon, Supabase, Heroku) emit ``postgres://`` URLs;
+        SQLAlchemy would pair those with psycopg2, which is not installed.
+        Explicit drivers and non-postgres URLs pass through unchanged.
+
+        Args:
+            value: Raw database URL from the settings sources.
+
+        Returns:
+            The URL with a driverless postgres scheme rewritten, else unchanged.
+        """
+        scheme, separator, rest = value.partition("://")
+        if separator and "+" not in scheme and scheme in ("postgres", "postgresql"):
+            return f"postgresql+psycopg://{rest}"
+        return value
+
     @field_validator("field_encryption_key")
     @classmethod
     def _validate_encryption_key(cls, value: str) -> str:
